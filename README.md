@@ -8,6 +8,6 @@
    ```
 2. Once the datasets are downloaded and preprocessed, in the `root` directory, use the following command to train models and save results to the `results` directory.
    ```bash
-   source search.sh
+   source search_benchmarks_rws.sh
    ```
 3. After training the models and saving the results, load the results in the `load_results.ipynb` notebook located in the `results` directory.
