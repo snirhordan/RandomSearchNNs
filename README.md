@@ -1,5 +1,5 @@
 # RandomSearchNNs
-[Under Review] Efficient and Expressive Graph Learning via Random Search Neural Networks
+[NeurIPS 2025] Efficient and Expressive Graph Learning via Random Search Neural Networks
 
 ## Instructions for Reproducibility
 1. In the `generation` directory, use the following command to download and preprocess datasets from PyTorch Geometric:
