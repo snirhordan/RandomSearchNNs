@@ -42,13 +42,21 @@ from generation.qm9 import (  # noqa: E402
 # Helpers wiring distances + bond features through into add_edge_feat
 # ---------------------------------------------------------------------------
 
+# OGB-style bond feature width used throughout the QM9 pipeline:
+# (bond_type_idx, stereo, is_conjugated). Centralised so add_edge_feat
+# bonus accounting and the dense scatter agree.
+BOND_FEAT_DIM: int = 3
+
 
 def edge_attr_to_dense(data) -> torch.Tensor:
-    """Scatter ``data.edge_attr`` (E x 3) into a dense ``(N, N, 3)`` tensor.
+    """Scatter ``data.edge_attr`` (E x BOND_FEAT_DIM) into a dense
+    ``(N, N, BOND_FEAT_DIM)`` tensor.
 
     Non-edge entries are zero. The input ``data`` must expose ``edge_index``
-    of shape ``(2, E)``, ``edge_attr`` of shape ``(E, 3)`` and ``num_nodes``
-    (or ``x``).
+    of shape ``(2, E)``, ``edge_attr`` of shape ``(E, BOND_FEAT_DIM)`` and
+    ``num_nodes`` (or ``x``). The output tensor is placed on the same
+    device as ``data.edge_index`` so downstream samplers (which index into
+    it) do not silently incur a CPU<->GPU round-trip.
     """
     if hasattr(data, "num_nodes") and data.num_nodes is not None:
         n = int(data.num_nodes)
@@ -57,13 +65,15 @@ def edge_attr_to_dense(data) -> torch.Tensor:
     else:
         n = int(data.edge_index.max()) + 1
     e_attr = data.edge_attr
+    device = data.edge_index.device if hasattr(data, "edge_index") else torch.device("cpu")
     if e_attr is None or e_attr.numel() == 0:
-        return torch.zeros((n, n, 3), dtype=torch.float)
-    if e_attr.dim() != 2 or e_attr.size(-1) != 3:
+        return torch.zeros((n, n, BOND_FEAT_DIM), dtype=torch.float, device=device)
+    if e_attr.dim() != 2 or e_attr.size(-1) != BOND_FEAT_DIM:
         raise ValueError(
-            f"edge_attr_to_dense expects (E, 3); got shape {tuple(e_attr.shape)}"
+            f"edge_attr_to_dense expects (E, {BOND_FEAT_DIM}); "
+            f"got shape {tuple(e_attr.shape)}"
         )
-    out = torch.zeros((n, n, 3), dtype=torch.float)
+    out = torch.zeros((n, n, BOND_FEAT_DIM), dtype=torch.float, device=device)
     src = data.edge_index[0].long()
     dst = data.edge_index[1].long()
     out[src, dst] = e_attr.float()
@@ -86,12 +96,12 @@ def build_add_edge_feat(
 
     Otherwise returns a ``(N, N, B)`` float tensor with::
 
-        B = K * distances + 3 * mol_edge_feat
+        B = K * distances + BOND_FEAT_DIM * mol_edge_feat
 
     where the first ``K`` channels (when ``distances=1``) are the Gaussian
-    RBF expansion of pairwise Euclidean distances, and the trailing 3
-    channels (when ``mol_edge_feat=1``) hold the dense bond-feature
-    expansion of ``data.edge_attr``.
+    RBF expansion of pairwise Euclidean distances, and the trailing
+    ``BOND_FEAT_DIM`` channels (when ``mol_edge_feat=1``) hold the dense
+    bond-feature expansion of ``data.edge_attr``.
     """
     parts = []
     if distances:
@@ -122,14 +132,21 @@ def compute_pe_in_dim(walk_type: str, w: int, distances: int,
       should not be constructed in that mode unless the user explicitly
       supplies a non-trivial bonus B.
     """
-    bonus = rbf_K * distances + 3 * mol_edge_feat
+    bonus = rbf_K * distances + BOND_FEAT_DIM * mol_edge_feat
     if walk_type in ("walk", "walk_ada"):
         return 2 * w + bonus
     if walk_type in ("dfs", "bfs"):
         return w + bonus
     if walk_type in ("walk_mdlr", "walk_rum",
                      "walk_mdlr_ada", "walk_rum_ada"):
-        return bonus  # baseline produces no walk_pe; only meaningful with bonus>0
+        if bonus == 0:
+            raise ValueError(
+                f"walk_type={walk_type!r} produces no walk_pe in the baseline "
+                "(distances=0 and mol_edge_feat=0); pe_in_dim would be 0 and "
+                "the PE Linear layer is not constructible. Enable distances "
+                "and/or mol_edge_feat, or pick a walk-style sampler."
+            )
+        return bonus
     raise ValueError(f"unknown walk_type {walk_type!r}")
 
 
@@ -188,7 +205,7 @@ def main() -> int:
         mol_edge_feat=args.mol_edge_feat,
         rbf_K=args.rbf_K,
     )
-    bonus = args.rbf_K * args.distances + 3 * args.mol_edge_feat
+    bonus = args.rbf_K * args.distances + BOND_FEAT_DIM * args.mol_edge_feat
 
     print(
         f"Loaded QM9 (N={len(ds)}), target={args.target}, "
@@ -199,6 +216,7 @@ def main() -> int:
 
 
 __all__ = [
+    "BOND_FEAT_DIM",
     "build_add_edge_feat",
     "compute_pe_in_dim",
     "edge_attr_to_dense",

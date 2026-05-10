@@ -79,7 +79,13 @@ def sample_bfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     # Optional per-step edge-feature stream appended to walk_pe (variant A).
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
@@ -185,7 +191,13 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     # Optional per-step edge-feature stream appended to walk_pe (variant A).
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
@@ -287,7 +299,13 @@ def sample_walks(data, nw, l, s, non_backtracking, add_edge_feat=None):
     # Optional per-step edge-feature stream appended to walk_pe (variant A).
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, l, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, l, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
@@ -401,7 +419,13 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking, add_edge_feat=None):
     # preserve that, otherwise we attach a (nw, l, B) walk_pe tensor.
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, l, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, l, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
@@ -525,7 +549,13 @@ def sample_walks_rum(data, nw, l, s, non_backtracking, add_edge_feat=None):
     # Optional per-step edge-feature stream appended to walk_pe (variant A).
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, l, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, l, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
@@ -663,7 +693,13 @@ def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, add_
     # Optional per-step edge-feature stream appended to walk_pe (variant A).
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
@@ -783,7 +819,13 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab,
     # Optional per-step edge-feature stream appended to walk_pe (variant A).
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
@@ -916,7 +958,13 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, 
     # Optional per-step edge-feature stream appended to walk_pe (variant A).
     if add_edge_feat is not None:
         d_edge = int(add_edge_feat.shape[-1])
-        walk_pe_extra = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
     else:
         walk_pe_extra = None
 
