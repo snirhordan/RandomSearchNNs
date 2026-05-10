@@ -98,52 +98,43 @@ def test_sample_walks_uniform_starting_vertex(random_graph_50):
     assert p > 0.01, f"starting distribution not uniform (p={p:.4f})"
 
 
-@pytest.mark.xfail(
-    reason=(
-        "Upstream bug: in utils.search.sample_walks, the non_backtracking branch "
-        "reads `prev_node = walk_ids[i, j-1]` AFTER `current_node` was already set "
-        "from that same slot, so `prev_node == current_node` and the filter only "
-        "removes self-loops instead of the true predecessor.  See sample_walks "
-        "around lines ~265-270."
-    ),
-    strict=True,
+@pytest.mark.parametrize(
+    "sampler_name",
+    [
+        "sample_walks",
+        "sample_walks_mdlr",
+        "sample_walks_rum",
+        "sample_walks_adaptive",
+        "sample_walks_mdlr_adaptive",
+        "sample_walks_rum_adaptive",
+    ],
 )
-def test_sample_walks_non_backtracking(tiny_graph):
-    """When non_backtracking=True, walks should avoid immediate backtracks where possible."""
-    nw, l, s = 6, 8, 2
+def test_non_backtracking_avoids_predecessor(sampler_name, tiny_graph, tiny_vocab):
+    """With non_backtracking=True, no walk should step back to its immediate
+    predecessor whenever the current node has another neighbor available."""
+    import utils.search as S
+    fn = getattr(S, sampler_name)
+    nw, s = 6, 2
     random.seed(0); torch.manual_seed(0); np.random.seed(0)
-    data = sample_walks(tiny_graph, nw, l, s, non_backtracking=True)
+    if sampler_name.endswith("_adaptive"):
+        l = tiny_graph.x.shape[0]
+        data = fn(tiny_graph.clone(), nw, l, s, True, l, tiny_vocab)
+    else:
+        l = 8
+        data = fn(tiny_graph.clone(), nw, l, s, True)
     ids = data.walk_ids[0]
     nbr = get_neighbor_dict(tiny_graph)
-    if isinstance(nbr, dict) is False:
-        nbr = tiny_graph._neighbor_dict
     for i in range(nw):
-        for j in range(2, l):
+        for j in range(2, ids.shape[1]):
             cur = int(ids[i, j - 1])
             prev = int(ids[i, j - 2])
             nxt = int(ids[i, j])
-            cur_nbrs = nbr[cur] if isinstance(nbr, dict) else tiny_graph._neighbor_dict[cur]
-            if len([x for x in cur_nbrs if x != prev]) > 0:
-                assert nxt != prev
-
-
-def test_sample_walks_non_backtracking_actual_behavior(tiny_graph):
-    """Document the actual behavior of the (buggy) ``non_backtracking`` flag.
-
-    Because of the bug above, ``non_backtracking=True`` only blocks the random
-    walk from emitting a self-loop transition.  This test checks that no walk
-    contains ``v -> v`` consecutive duplicates whenever ``v`` has at least one
-    neighbor different from itself.  The pentane graph has no self-loops, so
-    in practice both modes are equivalent.
-    """
-    nw, l, s = 6, 8, 2
-    random.seed(0); torch.manual_seed(0); np.random.seed(0)
-    data = sample_walks(tiny_graph, nw, l, s, non_backtracking=True)
-    ids = data.walk_ids[0]
-    # On a graph with no self-loops, consecutive duplicates should not occur.
-    for i in range(nw):
-        for j in range(1, l):
-            assert int(ids[i, j]) != int(ids[i, j - 1])
+            if len([x for x in nbr[cur] if x != prev]) > 0:
+                assert nxt != prev, (
+                    f"{sampler_name} stepped back to predecessor {prev} from "
+                    f"{cur} at walk {i}, position {j}, despite alternatives "
+                    f"{[x for x in nbr[cur] if x != prev]}"
+                )
 
 
 # ---------------------------------------------------------------------------
