@@ -262,8 +262,8 @@ def sample_walks(data, nw, l, s, non_backtracking):
             # Get neighbors from the set (if any)
             neighbors = neighbor_dict.get(current_node, set())
             if neighbors:
-                if non_backtracking and j >= 2:
-                    prev_node = walk_ids[i, j - 2].item()
+                if non_backtracking and j > 0:
+                    prev_node = walk_ids[i, j - 1].item()
                     # Filter out the immediate previous node.
                     filtered_neighbors = [n for n in neighbors if n != prev_node]
                     if filtered_neighbors:
@@ -366,8 +366,8 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking):
             neighbors = neighbor_dict.get(current_node, set())
             if neighbors:
                 # If non-backtracking, filter out the immediate previous node when possible.
-                if non_backtracking and j >= 2:
-                    prev_node = walk_ids[i, j - 2].item()
+                if non_backtracking and j > 0:
+                    prev_node = walk_ids[i, j - 1].item()
                     filtered_neighbors = [n for n in neighbors if n != prev_node]
                     candidate_neighbors = filtered_neighbors if filtered_neighbors else list(neighbors)
                 else:
@@ -496,8 +496,8 @@ def sample_walks_rum(data, nw, l, s, non_backtracking):
             #     next_node = current_node  # If no neighbor, stay at the current node.
 
             if neighbors:
-                if non_backtracking and j >= 2:
-                    prev_node = walk_ids[i, j - 2].item()
+                if non_backtracking and j > 0:
+                    prev_node = walk_ids[i, j - 1].item()
                     # Filter out the immediate previous node.
                     filtered_neighbors = [n for n in neighbors if n != prev_node]
                     if filtered_neighbors:
@@ -597,8 +597,8 @@ def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
             # Get neighbors from the set (if any)
             neighbors = neighbor_dict.get(current_node, set())
             if neighbors:
-                if non_backtracking and j >= 2:
-                    prev_node = walk_ids[i, j - 2].item()
+                if non_backtracking and j > 0:
+                    prev_node = walk_ids[i, j - 1].item()
                     # Filter out the immediate previous node.
                     filtered_neighbors = [n for n in neighbors if n != prev_node]
                     if filtered_neighbors:
@@ -708,8 +708,8 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab)
             neighbors = neighbor_dict.get(current_node, set())
             if neighbors:
                 # If non-backtracking, filter out the immediate previous node when possible.
-                if non_backtracking and j >= 2:
-                    prev_node = walk_ids[i, j - 2].item()
+                if non_backtracking and j > 0:
+                    prev_node = walk_ids[i, j - 1].item()
                     filtered_neighbors = [n for n in neighbors if n != prev_node]
                     candidate_neighbors = filtered_neighbors if filtered_neighbors else list(neighbors)
                 else:
@@ -847,8 +847,8 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
             #     next_node = current_node  # If no neighbor, stay at the current node.
 
             if neighbors:
-                if non_backtracking and j >= 2:
-                    prev_node = walk_ids[i, j - 2].item()
+                if non_backtracking and j > 0:
+                    prev_node = walk_ids[i, j - 1].item()
                     # Filter out the immediate previous node.
                     filtered_neighbors = [n for n in neighbors if n != prev_node]
                     if filtered_neighbors:
