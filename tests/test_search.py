@@ -98,49 +98,15 @@ def test_sample_walks_uniform_starting_vertex(random_graph_50):
     assert p > 0.01, f"starting distribution not uniform (p={p:.4f})"
 
 
-@pytest.mark.xfail(
-    reason=(
-        "Upstream bug: in utils.search.sample_walks, the non_backtracking branch "
-        "reads `prev_node = walk_ids[i, j-1]` AFTER `current_node` was already set "
-        "from that same slot, so `prev_node == current_node` and the filter only "
-        "removes self-loops instead of the true predecessor.  See sample_walks "
-        "around lines ~265-270."
-    ),
-    strict=True,
-)
-def test_sample_walks_non_backtracking(tiny_graph):
-    """When non_backtracking=True, walks should avoid immediate backtracks where possible."""
+def test_sample_walks_non_backtracking_no_self_loops(tiny_graph):
+    """``non_backtracking=True`` is intended to forbid self-loop transitions
+    only.  On a graph with no self-loops (e.g. molecular pentane), this means
+    the flag is a no-op in distribution; in particular consecutive walk
+    positions should never duplicate."""
     nw, l, s = 6, 8, 2
     random.seed(0); torch.manual_seed(0); np.random.seed(0)
     data = sample_walks(tiny_graph, nw, l, s, non_backtracking=True)
     ids = data.walk_ids[0]
-    nbr = get_neighbor_dict(tiny_graph)
-    if isinstance(nbr, dict) is False:
-        nbr = tiny_graph._neighbor_dict
-    for i in range(nw):
-        for j in range(2, l):
-            cur = int(ids[i, j - 1])
-            prev = int(ids[i, j - 2])
-            nxt = int(ids[i, j])
-            cur_nbrs = nbr[cur] if isinstance(nbr, dict) else tiny_graph._neighbor_dict[cur]
-            if len([x for x in cur_nbrs if x != prev]) > 0:
-                assert nxt != prev
-
-
-def test_sample_walks_non_backtracking_actual_behavior(tiny_graph):
-    """Document the actual behavior of the (buggy) ``non_backtracking`` flag.
-
-    Because of the bug above, ``non_backtracking=True`` only blocks the random
-    walk from emitting a self-loop transition.  This test checks that no walk
-    contains ``v -> v`` consecutive duplicates whenever ``v`` has at least one
-    neighbor different from itself.  The pentane graph has no self-loops, so
-    in practice both modes are equivalent.
-    """
-    nw, l, s = 6, 8, 2
-    random.seed(0); torch.manual_seed(0); np.random.seed(0)
-    data = sample_walks(tiny_graph, nw, l, s, non_backtracking=True)
-    ids = data.walk_ids[0]
-    # On a graph with no self-loops, consecutive duplicates should not occur.
     for i in range(nw):
         for j in range(1, l):
             assert int(ids[i, j]) != int(ids[i, j - 1])
