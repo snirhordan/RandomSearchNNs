@@ -1,0 +1,17 @@
+=== d-RWNN variant-B smoke test (separate walk_edge_feat) ===
+QM9 N=130831, vocab_size=6
+
+--- Backwards-compat check ---
+  sampler_identical: True
+  no_edge_encoding_attr: True
+  state_dict_keys_match: True
+  state_dict_values_match: True
+  PASS=True
+
+--- Four-flag matrix (m=4, w=4, max_len=12, batch=4, walk_ada) ---
+  distances=0 mol_edge_feat=0: edge_in_dim=0, walk_edge_feat=None, output_shape=(4, 1), finite=True
+  distances=1 mol_edge_feat=0: edge_in_dim=16, walk_edge_feat=(16, 12, 16), output_shape=(4, 1), finite=True
+  distances=0 mol_edge_feat=1: edge_in_dim=3, walk_edge_feat=(16, 12, 3), output_shape=(4, 1), finite=True
+  distances=1 mol_edge_feat=1: edge_in_dim=19, walk_edge_feat=(16, 12, 19), output_shape=(4, 1), finite=True
+
+OVERALL PASS=True

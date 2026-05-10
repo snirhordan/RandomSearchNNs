@@ -29,7 +29,7 @@ def get_neighbor_dict(data):
     data._neighbor_dict = neighbor_dict
     return neighbor_dict
     
-def sample_bfs(data, nw, s, max_len, vocab):
+def sample_bfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     """
     Performs optimized BFS-based searches on the graph and computes the edge encoding on the fly.
     
@@ -76,6 +76,13 @@ def sample_bfs(data, nw, s, max_len, vocab):
     encoding_edge = torch.zeros((nw, max_len, s), dtype=torch.float)
     lengths = []
 
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
+
     # For each BFS search:
     for i in range(nw):
         start_node = random.randint(0, num_nodes - 1)
@@ -83,7 +90,8 @@ def sample_bfs(data, nw, s, max_len, vocab):
         queue = deque([start_node])
         order = []  # Raw node indices in BFS order.
         pos = 0     # Current position in the BFS order.
-        
+        prev_in_order = -1  # Node we transitioned from (in traversal order).
+
         while queue and pos < max_len:
             node = queue.popleft()  # FIFO for BFS.
             if node in visited:
@@ -93,7 +101,7 @@ def sample_bfs(data, nw, s, max_len, vocab):
             # Record the embedding id and raw node id.
             searches_emb[i, pos] = data.x_emb[node]
             searches[i, pos] = node
-            
+
             # Compute edge encoding on the fly:
             for d in range(1, min(s, pos) + 1):
                 prev_node = order[pos - d]
@@ -101,6 +109,12 @@ def sample_bfs(data, nw, s, max_len, vocab):
                 if (node in neighbor_dict.get(prev_node, set())) or (prev_node in neighbor_dict.get(node, set())):
                     encoding_edge[i, pos, d - 1] = 1
 
+            # Per-step edge feature: edge (prev_in_order -> node) if it exists.
+            if walk_edge_feat is not None and pos > 0 and prev_in_order != -1:
+                if (node in neighbor_dict.get(prev_in_order, set())) or (prev_in_order in neighbor_dict.get(node, set())):
+                    walk_edge_feat[i, pos] = add_edge_feat[prev_in_order, node]
+
+            prev_in_order = node
             pos += 1
 
             # Append unvisited neighbors to the queue (randomized order for variability).
@@ -109,17 +123,19 @@ def sample_bfs(data, nw, s, max_len, vocab):
             for nb in neighbors:
                 if nb not in visited:
                     queue.append(nb)
-                    
+
         lengths.append(pos)
 
     data.walk_emb = searches_emb
     data.walk_ids = searches[None, :, :]
     data.walk_pe = encoding_edge
     data.lengths = torch.tensor(lengths, dtype=torch.long)
-    
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
+
     return data
 
-def sample_dfs(data, nw, s, max_len, vocab):
+def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     """
     Performs DFS-based searches on the graph and computes the edge encoding on the fly.
     
@@ -165,6 +181,13 @@ def sample_dfs(data, nw, s, max_len, vocab):
     encoding_edge = torch.zeros((nw, max_len, s), dtype=torch.float)
     lengths = []
 
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
+
     # For each DFS search:
     for i in range(nw):
         start_node = random.randint(0, num_nodes - 1)
@@ -172,7 +195,8 @@ def sample_dfs(data, nw, s, max_len, vocab):
         stack = [start_node]
         order = []  # To store the raw node indices in the DFS order.
         pos = 0     # Current position in the DFS order.
-        
+        prev_in_order = -1  # Node we transitioned from (in traversal order).
+
         while stack and pos < max_len:
             node = stack.pop()
             if node in visited:
@@ -182,7 +206,7 @@ def sample_dfs(data, nw, s, max_len, vocab):
             # Record the embedding id (from data.x_emb via vocab) and the raw node id.
             searches_emb[i, pos] = data.x_emb[node]
             searches[i, pos] = node
-            
+
             # Compute edge encoding on the fly for this node:
             for d in range(1, min(s, pos) + 1):
                 prev_node = order[pos - d]
@@ -190,6 +214,12 @@ def sample_dfs(data, nw, s, max_len, vocab):
                 if (node in neighbor_dict[prev_node]) or (prev_node in neighbor_dict[node]):
                     encoding_edge[i, pos, d - 1] = 1
 
+            # Per-step edge feature: edge (prev_in_order -> node) if it exists.
+            if walk_edge_feat is not None and pos > 0 and prev_in_order != -1:
+                if (node in neighbor_dict.get(prev_in_order, set())) or (prev_in_order in neighbor_dict.get(node, set())):
+                    walk_edge_feat[i, pos] = add_edge_feat[prev_in_order, node]
+
+            prev_in_order = node
             pos += 1
 
             # Push unvisited neighbors onto the stack in randomized order.
@@ -198,16 +228,18 @@ def sample_dfs(data, nw, s, max_len, vocab):
             for nb in neighbors:
                 if nb not in visited:
                     stack.append(nb)
-                    
+
         lengths.append(pos)
 
     data.walk_emb = searches_emb
     data.walk_ids = searches[None, :, :]
     data.walk_pe = encoding_edge
     data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
     return data
 
-def sample_walks(data, nw, l, s, non_backtracking):
+def sample_walks(data, nw, l, s, non_backtracking, add_edge_feat=None):
     """
     Samples random walks from a graph and computes two encodings on the fly:
     
@@ -250,9 +282,16 @@ def sample_walks(data, nw, l, s, non_backtracking):
     encoding_repeat = torch.zeros((nw, l, s), dtype=torch.float)
     encoding_edge = torch.zeros((nw, l, s), dtype=torch.float)
 
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, l, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
+
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
-    
+
     for i in range(nw):
         current_node = start_nodes[i].item()
         walk_ids[i, 0] = current_node
@@ -276,7 +315,7 @@ def sample_walks(data, nw, l, s, non_backtracking):
                 next_node = current_node
             walk_ids[i, j] = next_node
             walk_emb[i, j] = data.x_emb[next_node]
-            
+
             # Update encodings on the fly for offsets within the window (up to s)
             for d in range(1, min(s, j) + 1):
                 previous_node = walk_ids[i, j - d].item()
@@ -288,16 +327,23 @@ def sample_walks(data, nw, l, s, non_backtracking):
                 if (next_node in neighbor_dict[previous_node]) or (previous_node in neighbor_dict[next_node]):
                     encoding_edge[i, j, d - 1] = 1
 
+            # Per-step edge feature: edge (current_node -> next_node) if it exists.
+            if walk_edge_feat is not None:
+                if (next_node in neighbor_dict.get(current_node, set())) or (current_node in neighbor_dict.get(next_node, set())):
+                    walk_edge_feat[i, j] = add_edge_feat[current_node, next_node]
+
             current_node = next_node
 
     # Attach the results to the data object.
     data.walk_emb = walk_emb
     data.walk_ids = walk_ids[None, :, :]
     data.walk_pe = torch.cat([encoding_repeat, encoding_edge], dim=-1)
-    
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
+
     return data
 
-def sample_walks_mdlr(data, nw, l, s, non_backtracking):
+def sample_walks_mdlr(data, nw, l, s, non_backtracking, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -347,6 +393,13 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking):
     walk_emb = torch.empty((nw, l), dtype=torch.long)
     # walk_anonym will store the anonymized version of each walk.
     walk_anonym = torch.empty((nw, l), dtype=torch.long)
+
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, l, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -398,6 +451,11 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking):
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+            # Per-step edge feature: edge (current_node -> next_node) if it exists.
+            if walk_edge_feat is not None:
+                if (next_node in neighbor_dict.get(current_node, set())) or (current_node in neighbor_dict.get(next_node, set())):
+                    walk_edge_feat[i, j] = add_edge_feat[current_node, next_node]
+
             current_node = next_node
 
     # Attach the results to the data object.
@@ -405,10 +463,12 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking):
     data.walk_ids = walk_ids[None, :, :]
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
 
     return data
 
-def sample_walks_rum(data, nw, l, s, non_backtracking):
+def sample_walks_rum(data, nw, l, s, non_backtracking, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -458,6 +518,13 @@ def sample_walks_rum(data, nw, l, s, non_backtracking):
     walk_emb = torch.empty((nw, l), dtype=torch.long)
     # walk_anonym will store the anonymized version of each walk.
     walk_anonym = torch.empty((nw, l), dtype=torch.long)
+
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, l, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -523,6 +590,11 @@ def sample_walks_rum(data, nw, l, s, non_backtracking):
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+            # Per-step edge feature: edge (current_node -> next_node) if it exists.
+            if walk_edge_feat is not None:
+                if (next_node in neighbor_dict.get(current_node, set())) or (current_node in neighbor_dict.get(next_node, set())):
+                    walk_edge_feat[i, j] = add_edge_feat[current_node, next_node]
+
             current_node = next_node
 
     # Attach the results to the data object.
@@ -530,10 +602,12 @@ def sample_walks_rum(data, nw, l, s, non_backtracking):
     data.walk_ids = walk_ids[None, :, :]
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
 
     return data
 
-def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
+def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, add_edge_feat=None):
     """
     Performs DFS-based searches on the graph and computes the edge encoding on the fly.
     
@@ -584,10 +658,17 @@ def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
     encoding_edge = torch.zeros((nw, max_len, s), dtype=torch.float)
     lengths = []
 
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
+
     # For each DFS search:
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
-    
+
     for i in range(nw):
         current_node = start_nodes[i].item()
         walk_ids[i, 0] = current_node
@@ -611,7 +692,7 @@ def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
                 next_node = current_node
             walk_ids[i, j] = next_node
             walk_emb[i, j] = data.x_emb[next_node]
-            
+
             # Update encodings on the fly for offsets within the window (up to s)
             for d in range(1, min(s, j) + 1):
                 previous_node = walk_ids[i, j - d].item()
@@ -623,17 +704,24 @@ def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
                 if (next_node in neighbor_dict[previous_node]) or (previous_node in neighbor_dict[next_node]):
                     encoding_edge[i, j, d - 1] = 1
 
+            # Per-step edge feature: edge (current_node -> next_node) if it exists.
+            if walk_edge_feat is not None:
+                if (next_node in neighbor_dict.get(current_node, set())) or (current_node in neighbor_dict.get(next_node, set())):
+                    walk_edge_feat[i, j] = add_edge_feat[current_node, next_node]
+
             current_node = next_node
-                    
+
         lengths.append(l)
 
     data.walk_emb = walk_emb
     data.walk_ids = walk_ids[None, :, :]
     data.walk_pe = torch.cat([encoding_repeat, encoding_edge], dim=-1)
     data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
     return data
 
-def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
+def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -689,6 +777,13 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab)
     walk_emb = torch.full((nw, max_len), vocab['PAD'], dtype=torch.long)
     walk_anonym = torch.empty((nw, max_len), dtype=torch.long)
     lengths = []
+
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -740,6 +835,11 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab)
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+            # Per-step edge feature: edge (current_node -> next_node) if it exists.
+            if walk_edge_feat is not None:
+                if (next_node in neighbor_dict.get(current_node, set())) or (current_node in neighbor_dict.get(next_node, set())):
+                    walk_edge_feat[i, j] = add_edge_feat[current_node, next_node]
+
             current_node = next_node
 
         lengths.append(l)
@@ -750,10 +850,12 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab)
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
     data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
 
     return data
 
-def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
+def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -809,6 +911,13 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
     walk_emb = torch.full((nw, max_len), vocab['PAD'], dtype=torch.long)
     walk_anonym = torch.empty((nw, max_len), dtype=torch.long)
     lengths = []
+
+    # Optional per-step edge feature stream (variant B).
+    if add_edge_feat is not None:
+        d_edge = add_edge_feat.shape[-1]
+        walk_edge_feat = torch.zeros((nw, max_len, d_edge), dtype=torch.float)
+    else:
+        walk_edge_feat = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -874,8 +983,13 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+            # Per-step edge feature: edge (current_node -> next_node) if it exists.
+            if walk_edge_feat is not None:
+                if (next_node in neighbor_dict.get(current_node, set())) or (current_node in neighbor_dict.get(next_node, set())):
+                    walk_edge_feat[i, j] = add_edge_feat[current_node, next_node]
+
             current_node = next_node
-            
+
         lengths.append(l)
 
     # Attach the results to the data object.
@@ -884,6 +998,8 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
     data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_edge_feat is not None:
+        data.walk_edge_feat = walk_edge_feat
 
     return data
 

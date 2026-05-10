@@ -13,21 +13,33 @@ from torch_geometric.utils import scatter
 from torch_geometric.nn import GINConv
 
 class RWNN(torch.nn.Module):
-    def __init__(self, pe_in_dim, pe_out_dim, hid_dim, out_dim, num_layers, n_emb, reduce):
+    def __init__(self, pe_in_dim, pe_out_dim, hid_dim, out_dim, num_layers, n_emb, reduce,
+                 edge_in_dim: int = 0, edge_out_dim: int = 16):
         super().__init__()
-        self.rnn_layers = torch.nn.ModuleList()
-        self.rnn_layers.append(nn.GRU(hid_dim+pe_out_dim, hid_dim, 1, batch_first=True, bidirectional=True))
+        # When edge_in_dim > 0 we widen the per-step LSTM input to also carry
+        # the edge-feature stream produced by the sampler (variant B).
+        edge_proj_dim = edge_out_dim if edge_in_dim > 0 else 0
+        lstm_input_dim = hid_dim + pe_out_dim + edge_proj_dim
 
-        for nl in range(num_layers - 1): 
+        self.rnn_layers = torch.nn.ModuleList()
+        self.rnn_layers.append(nn.GRU(lstm_input_dim, hid_dim, 1, batch_first=True, bidirectional=True))
+
+        for nl in range(num_layers - 1):
             self.rnn_layers.append(nn.GRU(2*hid_dim, hid_dim, 1, batch_first=True, bidirectional=True))
-        
+
         self.readout = torch.nn.ModuleList()
         self.readout.append(torch.nn.Linear(2*hid_dim, 2*hid_dim))
         self.readout.append(torch.nn.Linear(2*hid_dim, out_dim))
 
         self.pe_encoding = torch.nn.Linear(pe_in_dim, pe_out_dim)
         self.embedding = nn.Embedding(n_emb, hid_dim, n_emb-1)
-        
+
+        # Optional dedicated edge-feature encoder (variant B).
+        self.edge_in_dim = edge_in_dim
+        self.edge_out_dim = edge_out_dim
+        if edge_in_dim > 0:
+            self.edge_encoding = nn.Linear(edge_in_dim, edge_out_dim)
+
         self.reduce = reduce
         self.num_layers = num_layers
 
@@ -36,25 +48,28 @@ class RWNN(torch.nn.Module):
         walk_emb = batch.walk_emb
         walk_ids = batch.walk_ids
         encoding = batch.walk_pe
-        
+
         graph_ns = [torch.max(walk_ids[i, :, :]) for i in range(walk_ids.shape[0])] # b length vector containing max number of nodes in each set of walks
         walk_ids_proc = []
 
         # compute added component to node_ids; we need to make each node_id unique due to flattening in scatter operation
-        for i in range(walk_ids.shape[0]): 
-            if i == 0: 
+        for i in range(walk_ids.shape[0]):
+            if i == 0:
                 # add 0 for first set in batch since these are already unique
                 walk_ids_proc.append(torch.zeros((1, walk_ids.shape[1], walk_ids.shape[2]), dtype=int).to(walk_emb.device))
-            else: 
+            else:
                 # add the sum of max nodes up to current set + the number of sets before current set to current node ids
-                mult = sum(graph_ns[:i]) + i 
+                mult = sum(graph_ns[:i]) + i
                 walk_ids_proc.append(torch.ones((1, walk_ids.shape[1], walk_ids.shape[2]), dtype=int).to(walk_emb.device) * mult)
 
         walk_ids_proc = torch.flatten(walk_ids + torch.cat(walk_ids_proc, dim=0), start_dim=0, end_dim=1) # add processed components to node_ids, b * n_set x n_seq
         walk_ids_proc_flat = torch.flatten(walk_ids_proc, start_dim=0, end_dim=1) # b * n_set x n_seq ---> b * n_set * n_seq
 
-        # construct x
-        x = torch.cat([self.embedding(walk_emb), self.pe_encoding(encoding)], dim=-1)
+        # construct x: [atom_emb | pe | optional edge_encoding(walk_edge_feat)]
+        x_parts = [self.embedding(walk_emb), self.pe_encoding(encoding)]
+        if self.edge_in_dim > 0 and hasattr(batch, 'walk_edge_feat') and batch.walk_edge_feat is not None:
+            x_parts.append(self.edge_encoding(batch.walk_edge_feat))
+        x = torch.cat(x_parts, dim=-1)
 
         for l in range(self.num_layers):
             if l == 0: 
