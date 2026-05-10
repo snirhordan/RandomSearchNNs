@@ -1,0 +1,8 @@
+[smoke] device=cuda:0
+[smoke] loaded 1480 graphs, vocab size=71, l_max=136
+[smoke] split 0: train=200 valid=80 test=80
+[smoke] split 0 epoch 0 train_loss=0.6342 valid_loss=0.5889 dt=4.3s
+[smoke] split 0 epoch 1 train_loss=0.5326 valid_loss=0.4518 dt=4.2s
+[smoke] split 0 valid_auc=0.531 test_auc=0.628
+[smoke] mean valid_auc=0.531 mean test_auc=0.628
+[smoke] DONE
