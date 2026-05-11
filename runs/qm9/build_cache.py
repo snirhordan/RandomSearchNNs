@@ -21,7 +21,14 @@ from generation.qm9 import build_qm9_vocab, load_qm9, qm9_to_data  # noqa
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--target", required=True, choices=["U0", "gap", "mu"])
+    p.add_argument(
+        "--target",
+        required=True,
+        choices=[
+            "mu", "alpha", "homo", "lumo", "gap", "R2", "zpve",
+            "U0", "U", "H", "G", "Cv",
+        ],
+    )
     p.add_argument("--data_root", default="./data/qm9")
     p.add_argument("--limit", type=int, default=0)
     args = p.parse_args()

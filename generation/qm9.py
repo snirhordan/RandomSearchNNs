@@ -191,6 +191,8 @@ def _build_x_ogb(z: torch.Tensor, x_qm9: torch.Tensor, edge_index: torch.Tensor)
 
 
 # Mapping between QM9 19-dim target tensor and the named targets we expose.
+# Includes case-insensitive aliases for the standard 12 properties so that
+# downstream callers can pass either ``R2``/``r2``, ``Cv``/``cv``, etc.
 QM9_TARGET_INDEX = {
     "mu": 0,
     "alpha": 1,
@@ -198,6 +200,7 @@ QM9_TARGET_INDEX = {
     "lumo": 3,
     "gap": 4,
     "r2": 5,
+    "R2": 5,
     "zpve": 6,
     "U0": 7,
     "U": 8,

@@ -265,7 +265,14 @@ class QM9WalkDataset(Dataset):
 
 def _build_argparser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="QM9 d-RWNN trainer (variant A).")
-    p.add_argument("--target", choices=["U0", "gap", "mu"], default="U0")
+    p.add_argument(
+        "--target",
+        choices=[
+            "mu", "alpha", "homo", "lumo", "gap", "R2", "zpve",
+            "U0", "U", "H", "G", "Cv",
+        ],
+        default="U0",
+    )
     p.add_argument("--distances", type=int, choices=[0, 1], default=0)
     p.add_argument("--mol_edge_feat", type=int, choices=[0, 1], default=0)
     p.add_argument("--rbf_K", type=int, default=16)

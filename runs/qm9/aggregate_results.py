@@ -11,8 +11,25 @@ REPO = Path(__file__).resolve().parent.parent.parent
 ROOT = REPO / "runs" / "qm9"
 
 CONFIGS = [(0, 0), (1, 0), (0, 1), (1, 1)]
-TARGETS = ["U0", "gap", "mu"]
-UNITS = {"U0": "eV", "gap": "eV", "mu": "Debye"}
+# Standard 12 QM9 regression targets, in canonical PyG order (idx 0..11).
+TARGETS = [
+    "mu", "alpha", "homo", "lumo", "gap", "R2", "zpve",
+    "U0", "U", "H", "G", "Cv",
+]
+UNITS = {
+    "mu": "Debye",
+    "alpha": "Bohr^3",
+    "homo": "eV",
+    "lumo": "eV",
+    "gap": "eV",
+    "R2": "Bohr^2",
+    "zpve": "eV",
+    "U0": "eV",
+    "U": "eV",
+    "H": "eV",
+    "G": "eV",
+    "Cv": "cal/(mol K)",
+}
 
 
 def fmt_wall(seconds: float) -> str:
@@ -125,8 +142,8 @@ def main() -> int:
     lines.append("")
     lines.append("All runs were capped at 15 epochs / patience 4 / "
                  "n_splits=1 to fit the 4-GPU parallel walltime envelope "
-                 "(1h05m per config × 4 configs in parallel × 3 targets = "
-                 "3h25m wall, plus a one-time 5min preprocess cache). "
+                 "(~1h05m per config x 4 configs in parallel x 12 targets, "
+                 "plus a one-time ~5min preprocess cache per target). "
                  "Validation curves were typically still trending downward "
                  "at the cap, so absolute MAEs are an upper bound on what "
                  "the same model could reach with longer training.")

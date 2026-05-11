@@ -1,0 +1,29 @@
+[d0_m1/R2] device=cuda:0 seed=42 cwd=/home/snirhordan/ito/RandomSearchNNs
+[d0_m1/R2] loading preprocessed cache from data/qm9/qm9_d_rwnn_cache/mols_R2.pt
+/home/snirhordan/ito/RandomSearchNNs/quickstart/train_qm9.py:336: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  mols = torch.load(cache_path)
+/home/snirhordan/ito/RandomSearchNNs/quickstart/train_qm9.py:337: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  vocab = torch.load(vocab_path)
+[d0_m1/R2] loaded cache (130831 mols, vocab={'C': 0, 'F': 1, 'H': 2, 'N': 3, 'O': 4, 'PAD': 5}), dt=49.8s
+[d0_m1/R2] max_len=29
+[d0_m1/R2] target stats: mean=1189.4105 std=280.4781
+[d0_m1/R2] pe_in_dim=19 pe_out_dim=16 vocab_size=6
+[d0_m1/R2] split 0: train=78498 valid=26166 test=26167
+[d0_m1/R2] split 0 epoch   0 train_mse=0.5349 valid_mae=123.5727 dt=254.5s *
+[d0_m1/R2] split 0 epoch   1 train_mse=0.3324 valid_mae=107.5457 dt=252.3s *
+[d0_m1/R2] split 0 epoch   2 train_mse=0.2815 valid_mae=107.2571 dt=250.5s *
+[d0_m1/R2] split 0 epoch   3 train_mse=0.2551 valid_mae=96.9101 dt=252.2s *
+[d0_m1/R2] split 0 epoch   4 train_mse=0.2335 valid_mae=97.0190 dt=251.1s  
+[d0_m1/R2] split 0 epoch   5 train_mse=0.2166 valid_mae=86.6416 dt=251.8s *
+[d0_m1/R2] split 0 epoch   6 train_mse=0.2055 valid_mae=87.5243 dt=251.8s  
+[d0_m1/R2] split 0 epoch   7 train_mse=0.1916 valid_mae=87.8871 dt=252.5s  
+[d0_m1/R2] split 0 epoch   8 train_mse=0.1787 valid_mae=86.3598 dt=250.9s *
+[d0_m1/R2] split 0 epoch   9 train_mse=0.1715 valid_mae=77.7275 dt=252.1s *
+[d0_m1/R2] split 0 epoch  10 train_mse=0.1628 valid_mae=80.0856 dt=250.8s  
+[d0_m1/R2] split 0 epoch  11 train_mse=0.1630 valid_mae=75.0766 dt=252.3s *
+[d0_m1/R2] split 0 epoch  12 train_mse=0.1579 valid_mae=86.5640 dt=251.1s  
+[d0_m1/R2] split 0 epoch  13 train_mse=0.1485 valid_mae=76.6487 dt=250.3s  
+[d0_m1/R2] split 0 epoch  14 train_mse=0.1485 valid_mae=74.1358 dt=250.0s *
+[d0_m1/R2] split 0 DONE best_valid_mae=74.1358 test_mae=72.7350 split_dt=3835.7s
+[d0_m1/R2] DONE mean_test_mae=72.7350 total=3835.7s peak_gpu_mem=477.4MB
+[d0_m1/R2] metrics saved -> runs/qm9/d0_m1/R2/metrics.json
