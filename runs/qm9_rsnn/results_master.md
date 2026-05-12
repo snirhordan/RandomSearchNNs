@@ -1,0 +1,18 @@
+# QM9 master results: all models × all 12 standard properties
+
+Test MAE (lower is better). RSNN cells are `median (min, max)` over 3 random splits (seeds 42/43/44, walk_type=search). d-RWNN cells are single-split test MAE (walk_type=walk_ada, seed=42).
+
+Hyperparams (all rows): RSNN_LSTM, h_dim=128, num_layers=2, w=8, batch=128, lr=1e-3, reduce=mean. d-RWNN: 15 epochs / patience 4. RSNN: 10 epochs / patience 3. Full QM9 (130k molecules).
+
+Best per column in **bold** (best RSNN m vs best d-RWNN config).
+
+| Model | mu<br>(D) | alpha<br>(Bohr^3) | homo<br>(eV) | lumo<br>(eV) | gap<br>(eV) | R2<br>(Bohr^2) | zpve<br>(eV) | U0<br>(eV) | U<br>(eV) | H<br>(eV) | G<br>(eV) | Cv<br>(cal/(mol K)) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| d-RWNN (d=0, b=0) | 0.7161 | 1.420 | 0.2057 | 0.3227 | 0.3706 | 85.475 | 0.0357 | 141.75 | 142.08 | 139.78 | 142.28 | 0.6387 |
+| d-RWNN (d=1, b=0) | 0.6528 | 1.098 | 0.1572 | 0.2226 | 0.2620 | 70.453 | 0.0326 | 145.76 | 141.83 | 144.35 | 143.18 | 0.5384 |
+| d-RWNN (d=0, b=1) | 0.6779 | 1.196 | 0.1718 | 0.2406 | 0.2966 | 72.735 | 0.0351 | 156.40 | 154.90 | 157.60 | 153.81 | 0.5451 |
+| d-RWNN (d=1, b=1) | 0.6507 | 1.064 | 0.1584 | 0.2154 | 0.2635 | 70.101 | 0.0304 | 140.15 | 137.25 | 135.42 | 151.81 | **0.5017** |
+| RSNN (m=1) | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| RSNN (m=4) | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| RSNN (m=8) | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| RSNN (m=16) | **0.5451 (0.5441, 0.5511)** | **0.8100 (0.8095, 1.027)** | **0.1390 (0.1386, 0.1419)** | **0.1561 (0.1495, 0.1637)** | **0.2150 (0.2117, 0.2205)** | **39.737 (36.966, 46.076)** | **0.0155 (0.0145, 0.0161)** | **17.441 (12.890, 22.329)** | **21.710 (20.835, 64.755)** | **8.618 (7.628, 9.608)** | **24.984** | -- |
