@@ -20,3 +20,4 @@
 [d0_m0/lumo] split 0 epoch   5 train_mse=0.1728 valid_mae=0.3695 dt=85.3s *
 [d0_m0/lumo] split 0 epoch   6 train_mse=0.1564 valid_mae=0.3571 dt=85.0s *
 [d0_m0/lumo] split 0 epoch   7 train_mse=0.1498 valid_mae=0.3526 dt=84.8s *
+[d0_m0/lumo] split 0 epoch   8 train_mse=0.1409 valid_mae=0.3355 dt=84.9s *
