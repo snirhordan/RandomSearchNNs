@@ -16,3 +16,7 @@
 [d0_m0/Cv] split 0 epoch   1 train_mse=0.1243 valid_mae=0.9705 dt=83.7s *
 [d0_m0/Cv] split 0 epoch   2 train_mse=0.0874 valid_mae=0.8508 dt=83.4s *
 [d0_m0/Cv] split 0 epoch   3 train_mse=0.0753 valid_mae=0.8313 dt=83.6s *
+[d0_m0/Cv] split 0 epoch   4 train_mse=0.0665 valid_mae=0.7895 dt=83.3s *
+[d0_m0/Cv] split 0 epoch   5 train_mse=0.0597 valid_mae=0.7215 dt=83.6s *
+[d0_m0/Cv] split 0 epoch   6 train_mse=0.0552 valid_mae=0.6803 dt=83.4s *
+[d0_m0/Cv] split 0 epoch   7 train_mse=0.0517 valid_mae=0.6883 dt=83.4s  
