@@ -17,3 +17,5 @@
 [d0_m0/G] split 0 epoch   2 train_mse=0.0045 valid_mae=58.6139 dt=83.6s  
 [d0_m0/G] split 0 epoch   3 train_mse=0.0037 valid_mae=22.6323 dt=83.7s *
 [d0_m0/G] split 0 epoch   4 train_mse=0.0016 valid_mae=28.7789 dt=83.4s  
+[d0_m0/G] split 0 epoch   5 train_mse=0.0042 valid_mae=15.1712 dt=83.5s *
+[d0_m0/G] split 0 epoch   6 train_mse=0.0014 valid_mae=174.3106 dt=83.9s  

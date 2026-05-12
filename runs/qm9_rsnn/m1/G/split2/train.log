@@ -12,3 +12,6 @@
 [d0_m0/G] target stats: mean=-11179.8770 std=1085.5924
 [d0_m0/G] pe_in_dim=8 pe_out_dim=16 vocab_size=6
 [d0_m0/G] split 0: train=78498 valid=26166 test=26167
+[d0_m0/G] split 0 epoch   0 train_mse=0.0712 valid_mae=65.8582 dt=80.7s *
+[d0_m0/G] split 0 epoch   1 train_mse=0.0058 valid_mae=29.8288 dt=78.6s *
+[d0_m0/G] split 0 epoch   2 train_mse=0.0038 valid_mae=82.4009 dt=78.6s  
