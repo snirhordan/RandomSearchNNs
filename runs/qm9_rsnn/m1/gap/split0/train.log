@@ -13,3 +13,4 @@
 [d0_m0/gap] pe_in_dim=8 pe_out_dim=16 vocab_size=6
 [d0_m0/gap] split 0: train=78498 valid=26166 test=26167
 [d0_m0/gap] split 0 epoch   0 train_mse=0.5290 valid_mae=0.6311 dt=80.1s *
+[d0_m0/gap] split 0 epoch   1 train_mse=0.3455 valid_mae=0.5306 dt=78.5s *
