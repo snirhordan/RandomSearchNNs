@@ -14,3 +14,8 @@
 [d0_m0/G] split 0: train=78498 valid=26166 test=26167
 [d0_m0/G] split 0 epoch   0 train_mse=0.0776 valid_mae=29.3683 dt=79.7s *
 [d0_m0/G] split 0 epoch   1 train_mse=0.0058 valid_mae=122.0546 dt=77.6s  
+[d0_m0/G] split 0 epoch   2 train_mse=0.0051 valid_mae=55.4714 dt=78.5s  
+[d0_m0/G] split 0 epoch   3 train_mse=0.0022 valid_mae=20.6355 dt=77.8s *
+[d0_m0/G] split 0 epoch   4 train_mse=0.0028 valid_mae=27.8170 dt=77.8s  
+[d0_m0/G] split 0 epoch   5 train_mse=0.0022 valid_mae=31.8524 dt=77.8s  
+[d0_m0/G] split 0 epoch   6 train_mse=0.0017 valid_mae=17.8485 dt=77.7s *
