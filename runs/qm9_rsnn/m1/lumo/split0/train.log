@@ -12,3 +12,13 @@
 [d0_m0/lumo] target stats: mean=0.3220 std=1.2749
 [d0_m0/lumo] pe_in_dim=8 pe_out_dim=16 vocab_size=6
 [d0_m0/lumo] split 0: train=78498 valid=26166 test=26167
+[d0_m0/lumo] split 0 epoch   0 train_mse=0.4464 valid_mae=0.5485 dt=82.4s *
+[d0_m0/lumo] split 0 epoch   1 train_mse=0.2746 valid_mae=0.4850 dt=80.0s *
+[d0_m0/lumo] split 0 epoch   2 train_mse=0.2388 valid_mae=0.4629 dt=79.8s *
+[d0_m0/lumo] split 0 epoch   3 train_mse=0.2088 valid_mae=0.4173 dt=79.4s *
+[d0_m0/lumo] split 0 epoch   4 train_mse=0.1892 valid_mae=0.3980 dt=79.5s *
+[d0_m0/lumo] split 0 epoch   5 train_mse=0.1715 valid_mae=0.3645 dt=79.7s *
+[d0_m0/lumo] split 0 epoch   6 train_mse=0.1572 valid_mae=0.3647 dt=79.8s  
+[d0_m0/lumo] split 0 epoch   7 train_mse=0.1492 valid_mae=0.3673 dt=79.5s  
+[d0_m0/lumo] split 0 epoch   8 train_mse=0.1415 valid_mae=0.3382 dt=79.8s *
+[d0_m0/lumo] split 0 epoch   9 train_mse=0.1358 valid_mae=0.3300 dt=79.5s *
