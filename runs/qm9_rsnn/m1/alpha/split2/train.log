@@ -12,3 +12,16 @@
 [d0_m0/alpha] target stats: mean=75.2812 std=8.1738
 [d0_m0/alpha] pe_in_dim=8 pe_out_dim=16 vocab_size=6
 [d0_m0/alpha] split 0: train=78498 valid=26166 test=26167
+[d0_m0/alpha] split 0 epoch   0 train_mse=0.1735 valid_mae=1.7422 dt=82.9s *
+[d0_m0/alpha] split 0 epoch   1 train_mse=0.0869 valid_mae=1.8553 dt=80.5s  
+[d0_m0/alpha] split 0 epoch   2 train_mse=0.0745 valid_mae=1.5576 dt=80.6s *
+[d0_m0/alpha] split 0 epoch   3 train_mse=0.0701 valid_mae=1.5226 dt=81.0s *
+[d0_m0/alpha] split 0 epoch   4 train_mse=0.0648 valid_mae=1.4691 dt=80.7s *
+[d0_m0/alpha] split 0 epoch   5 train_mse=0.0626 valid_mae=1.4256 dt=80.8s *
+[d0_m0/alpha] split 0 epoch   6 train_mse=0.0596 valid_mae=1.3712 dt=80.8s *
+[d0_m0/alpha] split 0 epoch   7 train_mse=0.0558 valid_mae=1.5530 dt=80.8s  
+[d0_m0/alpha] split 0 epoch   8 train_mse=0.0541 valid_mae=1.2968 dt=80.7s *
+[d0_m0/alpha] split 0 epoch   9 train_mse=0.0523 valid_mae=1.2854 dt=80.6s *
+[d0_m0/alpha] split 0 DONE best_valid_mae=1.2854 test_mae=1.2790 split_dt=828.5s
+[d0_m0/alpha] DONE mean_test_mae=1.2790 total=828.6s peak_gpu_mem=106.0MB
+[d0_m0/alpha] metrics saved -> /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rsnn/_stage/m1/alpha/split2/alpha/metrics.json
