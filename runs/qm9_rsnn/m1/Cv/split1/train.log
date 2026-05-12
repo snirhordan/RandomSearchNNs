@@ -20,3 +20,8 @@
 [d0_m0/Cv] split 0 epoch   5 train_mse=0.0599 valid_mae=0.8743 dt=78.8s  
 [d0_m0/Cv] split 0 epoch   6 train_mse=0.0579 valid_mae=0.7452 dt=78.3s *
 [d0_m0/Cv] split 0 epoch   7 train_mse=0.0515 valid_mae=0.6741 dt=78.7s *
+[d0_m0/Cv] split 0 epoch   8 train_mse=0.0482 valid_mae=0.6495 dt=79.0s *
+[d0_m0/Cv] split 0 epoch   9 train_mse=0.0457 valid_mae=0.7061 dt=79.3s  
+[d0_m0/Cv] split 0 DONE best_valid_mae=0.6495 test_mae=0.6514 split_dt=809.1s
+[d0_m0/Cv] DONE mean_test_mae=0.6514 total=809.2s peak_gpu_mem=106.4MB
+[d0_m0/Cv] metrics saved -> /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rsnn/_stage/m1/Cv/split1/Cv/metrics.json
