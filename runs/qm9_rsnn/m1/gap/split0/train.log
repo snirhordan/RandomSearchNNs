@@ -14,3 +14,14 @@
 [d0_m0/gap] split 0: train=78498 valid=26166 test=26167
 [d0_m0/gap] split 0 epoch   0 train_mse=0.5290 valid_mae=0.6311 dt=80.1s *
 [d0_m0/gap] split 0 epoch   1 train_mse=0.3455 valid_mae=0.5306 dt=78.5s *
+[d0_m0/gap] split 0 epoch   2 train_mse=0.2923 valid_mae=0.4993 dt=78.7s *
+[d0_m0/gap] split 0 epoch   3 train_mse=0.2554 valid_mae=0.4640 dt=78.1s *
+[d0_m0/gap] split 0 epoch   4 train_mse=0.2310 valid_mae=0.4414 dt=78.1s *
+[d0_m0/gap] split 0 epoch   5 train_mse=0.2122 valid_mae=0.4246 dt=78.1s *
+[d0_m0/gap] split 0 epoch   6 train_mse=0.1970 valid_mae=0.4008 dt=78.1s *
+[d0_m0/gap] split 0 epoch   7 train_mse=0.1845 valid_mae=0.4125 dt=77.9s  
+[d0_m0/gap] split 0 epoch   8 train_mse=0.1764 valid_mae=0.3856 dt=78.2s *
+[d0_m0/gap] split 0 epoch   9 train_mse=0.1705 valid_mae=0.3719 dt=78.4s *
+[d0_m0/gap] split 0 DONE best_valid_mae=0.3719 test_mae=0.3719 split_dt=802.9s
+[d0_m0/gap] DONE mean_test_mae=0.3719 total=802.9s peak_gpu_mem=105.0MB
+[d0_m0/gap] metrics saved -> /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rsnn/_stage/m1/gap/split0/gap/metrics.json
