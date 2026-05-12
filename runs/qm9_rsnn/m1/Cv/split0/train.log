@@ -14,3 +14,5 @@
 [d0_m0/Cv] split 0: train=78498 valid=26166 test=26167
 [d0_m0/Cv] split 0 epoch   0 train_mse=0.2519 valid_mae=1.2242 dt=85.7s *
 [d0_m0/Cv] split 0 epoch   1 train_mse=0.1243 valid_mae=0.9705 dt=83.7s *
+[d0_m0/Cv] split 0 epoch   2 train_mse=0.0874 valid_mae=0.8508 dt=83.4s *
+[d0_m0/Cv] split 0 epoch   3 train_mse=0.0753 valid_mae=0.8313 dt=83.6s *
