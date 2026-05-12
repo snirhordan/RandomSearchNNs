@@ -49,7 +49,7 @@ from generation.qm9 import (  # noqa: E402
 from generation.scaffold_split import random_split  # noqa: E402
 from torch_geometric.loader import DataLoader  # noqa: E402
 from torch_geometric.utils import scatter  # noqa: E402
-from utils.search import sample_walks_adaptive  # noqa: E402
+from utils.search import sample_walks_adaptive, sample_dfs  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -107,7 +107,9 @@ def compute_pe_in_dim(walk_type: str, w: int, distances: int,
     bonus = rbf_K * distances + 3 * mol_edge_feat
     if walk_type in ("walk", "walk_ada"):
         return 2 * w + bonus
-    if walk_type in ("dfs", "bfs"):
+    # RSNN DFS-based search (sample_dfs): produces only an edge encoding of
+    # width s (=w here).
+    if walk_type in ("dfs", "bfs", "search"):
         return w + bonus
     if walk_type in ("walk_mdlr", "walk_rum",
                      "walk_mdlr_ada", "walk_rum_ada"):
@@ -230,7 +232,7 @@ class QM9WalkDataset(Dataset):
                    "idx", "name", "y_orig")
 
     def __init__(self, mols, vocab, rbf, distances, mol_edge_feat,
-                 m, w, max_len):
+                 m, w, max_len, walk_type="walk_ada"):
         self.mols = mols
         self.vocab = vocab
         self.rbf = rbf
@@ -239,6 +241,7 @@ class QM9WalkDataset(Dataset):
         self.m = int(m)
         self.w = int(w)
         self.max_len = int(max_len)
+        self.walk_type = str(walk_type)
 
     def __len__(self):
         return len(self.mols)
@@ -250,8 +253,14 @@ class QM9WalkDataset(Dataset):
         add_ef = build_add_edge_feat(d, self.distances, self.mol_edge_feat,
                                      rbf=self.rbf)
         n = d.x.shape[0]
-        d = sample_walks_adaptive(d, self.m, n, self.w, False, self.max_len,
-                                  self.vocab, add_edge_feat=add_ef)
+        if self.walk_type == "search":
+            # RSNN DFS-based search: pad to ``max_len`` and record ``lengths``.
+            d = sample_dfs(d, self.m, self.w, self.max_len,
+                           self.vocab, add_edge_feat=add_ef)
+        else:
+            d = sample_walks_adaptive(d, self.m, n, self.w, False,
+                                      self.max_len, self.vocab,
+                                      add_edge_feat=add_ef)
         for k in self._STRIP_KEYS:
             if hasattr(d, k):
                 delattr(d, k)
@@ -295,6 +304,15 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--out_root", default="./runs/qm9")
     p.add_argument("--limit", type=int, default=0,
                    help="If > 0, limit dataset to first N molecules (debug).")
+    p.add_argument(
+        "--run_subdir",
+        default="",
+        help=(
+            "If non-empty, place outputs under <out_root>/<run_subdir>/<target> "
+            "instead of the default <out_root>/d<d>_m<m>/<target> layout. "
+            "Useful for the RSNN m-sweep where the cfg_tag does not encode m."
+        ),
+    )
     return p
 
 
@@ -312,7 +330,10 @@ def main() -> int:
         f"cuda:{args.device_idx}" if torch.cuda.is_available() else "cpu")
 
     cfg_tag = f"d{args.distances}_m{args.mol_edge_feat}"
-    run_dir = Path(args.out_root) / cfg_tag / args.target
+    if args.run_subdir:
+        run_dir = Path(args.out_root) / args.run_subdir / args.target
+    else:
+        run_dir = Path(args.out_root) / cfg_tag / args.target
     run_dir.mkdir(parents=True, exist_ok=True)
 
     def log(msg: str) -> None:
@@ -447,13 +468,16 @@ def main() -> int:
 
         train_ds = QM9WalkDataset(train_mols, vocab, rbf,
                                   args.distances, args.mol_edge_feat,
-                                  args.m, args.w, max_len)
+                                  args.m, args.w, max_len,
+                                  walk_type=args.walk_type)
         valid_ds = QM9WalkDataset(valid_mols, vocab, rbf,
                                   args.distances, args.mol_edge_feat,
-                                  args.m, args.w, max_len)
+                                  args.m, args.w, max_len,
+                                  walk_type=args.walk_type)
         test_ds = QM9WalkDataset(test_mols, vocab, rbf,
                                  args.distances, args.mol_edge_feat,
-                                 args.m, args.w, max_len)
+                                 args.m, args.w, max_len,
+                                 walk_type=args.walk_type)
 
         common = dict(batch_size=args.batch_size,
                       num_workers=args.num_workers,
