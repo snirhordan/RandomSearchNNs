@@ -2,6 +2,10 @@ __pycache__/
 *.pyc
 *.pyo
 runs/*.pt
+runs/**/*.pt
 runs/rwnn_full/*.pt
+data/qm9/qm9_d_rwnn_cache/
 *.log
+# Allow QM9 d-RWNN training logs (commit-worthy artefacts).
+!runs/qm9/**/*.log
 .ipynb_checkpoints/
