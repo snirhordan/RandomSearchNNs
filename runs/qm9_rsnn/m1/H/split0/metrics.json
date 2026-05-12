@@ -1,0 +1,102 @@
+{
+  "config": {
+    "target": "H",
+    "distances": 0,
+    "mol_edge_feat": 0,
+    "rbf_K": 16,
+    "rbf_cutoff": 5.0,
+    "seed": 42,
+    "epochs": 10,
+    "early_stopping": 3,
+    "batch_size": 128,
+    "h_dim": 128,
+    "num_layers": 2,
+    "lr": 0.001,
+    "m": 1,
+    "w": 8,
+    "reduce": "mean",
+    "walk_type": "search",
+    "n_splits": 1,
+    "max_len": 29,
+    "n_total": 130831,
+    "pe_in_dim": 8,
+    "pe_out_dim": 16,
+    "y_mean": -11178.7099609375,
+    "y_std": 1085.57275390625,
+    "vocab": {
+      "C": 0,
+      "F": 1,
+      "H": 2,
+      "N": 3,
+      "O": 4,
+      "PAD": 5
+    }
+  },
+  "splits": [
+    {
+      "split": 0,
+      "epochs_run": 7,
+      "best_valid_mae": 36.4990119934082,
+      "test_mae": 36.5204963684082,
+      "split_dt_sec": 614.1406118869781,
+      "epochs": [
+        {
+          "epoch": 0,
+          "train_mse": 0.07445495398445905,
+          "valid_mae": 38.49379348754883,
+          "dt_sec": 86.82626008987427,
+          "improved": true
+        },
+        {
+          "epoch": 1,
+          "train_mse": 0.005908024263456737,
+          "valid_mae": 79.8311538696289,
+          "dt_sec": 84.81906604766846,
+          "improved": false
+        },
+        {
+          "epoch": 2,
+          "train_mse": 0.004737489177721798,
+          "valid_mae": 46.151981353759766,
+          "dt_sec": 84.10982203483582,
+          "improved": false
+        },
+        {
+          "epoch": 3,
+          "train_mse": 0.002635584538622383,
+          "valid_mae": 36.4990119934082,
+          "dt_sec": 84.8226261138916,
+          "improved": true
+        },
+        {
+          "epoch": 4,
+          "train_mse": 0.0028057503806452147,
+          "valid_mae": 47.02785873413086,
+          "dt_sec": 84.52284502983093,
+          "improved": false
+        },
+        {
+          "epoch": 5,
+          "train_mse": 0.0023155116437202855,
+          "valid_mae": 65.05748748779297,
+          "dt_sec": 84.51060652732849,
+          "improved": false
+        },
+        {
+          "epoch": 6,
+          "train_mse": 0.0021009493057106217,
+          "valid_mae": 62.020774841308594,
+          "dt_sec": 84.16054606437683,
+          "improved": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "mean_test_mae": 36.5204963684082,
+    "std_test_mae": 0.0,
+    "mean_valid_mae": 36.4990119934082,
+    "total_wall_sec": 614.1944575309753,
+    "peak_gpu_mem_mb": 105.1728515625
+  }
+}
