@@ -14,3 +14,9 @@
 [d0_m0/R2] split 0: train=78498 valid=26166 test=26167
 [d0_m0/R2] split 0 epoch   0 train_mse=0.5915 valid_mae=140.8928 dt=81.5s *
 [d0_m0/R2] split 0 epoch   1 train_mse=0.4348 valid_mae=125.2421 dt=79.3s *
+[d0_m0/R2] split 0 epoch   2 train_mse=0.3751 valid_mae=123.0928 dt=79.6s *
+[d0_m0/R2] split 0 epoch   3 train_mse=0.3224 valid_mae=106.4241 dt=79.2s *
+[d0_m0/R2] split 0 epoch   4 train_mse=0.2652 valid_mae=99.5169 dt=79.5s *
+[d0_m0/R2] split 0 epoch   5 train_mse=0.2309 valid_mae=91.6068 dt=79.5s *
+[d0_m0/R2] split 0 epoch   6 train_mse=0.2095 valid_mae=85.6393 dt=79.2s *
+[d0_m0/R2] split 0 epoch   7 train_mse=0.1930 valid_mae=83.4915 dt=79.0s *

@@ -13,3 +13,10 @@
 [d0_m0/R2] pe_in_dim=8 pe_out_dim=16 vocab_size=6
 [d0_m0/R2] split 0: train=78498 valid=26166 test=26167
 [d0_m0/R2] split 0 epoch   0 train_mse=0.5895 valid_mae=130.8310 dt=79.8s *
+[d0_m0/R2] split 0 epoch   1 train_mse=0.4248 valid_mae=123.6114 dt=77.6s *
+[d0_m0/R2] split 0 epoch   2 train_mse=0.3673 valid_mae=114.1620 dt=77.5s *
+[d0_m0/R2] split 0 epoch   3 train_mse=0.3155 valid_mae=106.4995 dt=77.5s *
+[d0_m0/R2] split 0 epoch   4 train_mse=0.2605 valid_mae=98.9615 dt=78.0s *
+[d0_m0/R2] split 0 epoch   5 train_mse=0.2284 valid_mae=94.1392 dt=77.3s *
+[d0_m0/R2] split 0 epoch   6 train_mse=0.2065 valid_mae=96.2125 dt=77.5s  
+[d0_m0/R2] split 0 epoch   7 train_mse=0.1836 valid_mae=85.6146 dt=77.7s *
