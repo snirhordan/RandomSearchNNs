@@ -19,3 +19,9 @@
 [d0_m0/zpve] split 0 epoch   4 train_mse=0.0027 valid_mae=0.0326 dt=85.2s *
 [d0_m0/zpve] split 0 epoch   5 train_mse=0.0022 valid_mae=0.0386 dt=85.7s  
 [d0_m0/zpve] split 0 epoch   6 train_mse=0.0024 valid_mae=0.0321 dt=85.4s *
+[d0_m0/zpve] split 0 epoch   7 train_mse=0.0021 valid_mae=0.0589 dt=85.0s  
+[d0_m0/zpve] split 0 epoch   8 train_mse=0.0020 valid_mae=0.0295 dt=85.7s *
+[d0_m0/zpve] split 0 epoch   9 train_mse=0.0016 valid_mae=0.0246 dt=85.2s *
+[d0_m0/zpve] split 0 DONE best_valid_mae=0.0246 test_mae=0.0245 split_dt=875.8s
+[d0_m0/zpve] DONE mean_test_mae=0.0245 total=875.8s peak_gpu_mem=105.0MB
+[d0_m0/zpve] metrics saved -> /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rsnn/_stage/m1/zpve/split0/zpve/metrics.json
