@@ -80,7 +80,12 @@ def main():
         "--seed", str(args.seed),
     ]
     env = os.environ.copy()
-    env["CUDA_VISIBLE_DEVICES"] = str(args.device_idx)
+    # If the dispatcher already pinned CUDA_VISIBLE_DEVICES, inherit it
+    # (every job gets the physical GPU set by the dispatcher's
+    # CUDA_VISIBLE_DEVICES=N env). Only fall back to --device_idx when the
+    # caller didn't pin anything, e.g. when running this script standalone.
+    if "CUDA_VISIBLE_DEVICES" not in env:
+        env["CUDA_VISIBLE_DEVICES"] = str(args.device_idx)
 
     t0 = time.time()
     print(f"[run_one] launching {args.target}/seed{args.seed} on GPU {args.device_idx}")
