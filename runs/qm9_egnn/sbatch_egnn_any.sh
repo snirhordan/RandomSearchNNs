@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=8
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=newton1,nlp-2080-1,nlp-2080-2,ran-mashawsha
+#SBATCH --exclude=newton1,nlp-2080-1,nlp-2080-2,ran-mashawsha,bruno5,nlp-pro6000-1
 #SBATCH --mail-user=snirhordan@cs.technion.ac.il
 #SBATCH --mail-type=FAIL
 #SBATCH --job-name="egnn-any"
