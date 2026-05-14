@@ -121,7 +121,9 @@ def main():
         return 0
 
     available = list(gpus)
-    running: dict[int, subprocess.Popen] = {}
+    # List of procs (not dict keyed by gpu) so packed configurations like
+    # --gpus 0,0,0,1,1,1 don't overwrite earlier procs on the same GPU.
+    running: list[subprocess.Popen] = []
     idx = 0
     done = 0
     fail = 0
@@ -133,17 +135,18 @@ def main():
             idx += 1
             g = available.pop(0)
             proc = launch(t, s, g, args)
-            running[g] = proc
+            running.append(proc)
             print(f"[dispatch-egnn] [{idx}/{len(jobs)}] launch tgt={t} "
                   f"seed={s} -> gpu={g} pid={proc.pid}")
 
         if not running:
             break
         time.sleep(30)
-        finished = []
-        for g, proc in list(running.items()):
+        still: list[subprocess.Popen] = []
+        for proc in running:
             rc = proc.poll()
             if rc is None:
+                still.append(proc)
                 continue
             meta = proc._meta
             try:
@@ -155,15 +158,14 @@ def main():
             ok = (rc == 0) and metrics_complete(mp)
             tag = "OK" if ok else f"FAIL(rc={rc})"
             print(f"[dispatch-egnn] {tag} tgt={meta['target']:5s} "
-                  f"seed={meta['seed']} gpu={g} dt={dt/60:.1f}min")
-            finished.append(g)
+                  f"seed={meta['seed']} gpu={meta['gpu']} "
+                  f"dt={dt/60:.1f}min")
             if ok:
                 done += 1
             else:
                 fail += 1
-        for g in finished:
-            del running[g]
-            available.append(g)
+            available.append(meta["gpu"])
+        running = still
 
     total = time.time() - t0
     print(f"[dispatch-egnn] DONE completed={done} failed={fail} "

@@ -162,7 +162,10 @@ def main():
         return 0
 
     available = list(gpus)
-    running: dict[int, subprocess.Popen] = {}
+    # Use a list of procs (not dict keyed by gpu) so packed configurations
+    # like --gpus 2,2,2,3,3,3 don't overwrite earlier procs on the same GPU.
+    # When a proc finishes we put its gpu (from meta) back on available.
+    running: list[subprocess.Popen] = []
     idx = 0
     done = 0
     fail = 0
@@ -174,32 +177,32 @@ def main():
             idx += 1
             g = available.pop(0)
             proc = launch(m, t, s, g, args)
-            running[g] = proc
+            running.append(proc)
             print(f"[dispatch-rwnn] [{idx}/{len(jobs)}] launch m={m} "
                   f"tgt={t:5s} split={s} -> gpu={g} pid={proc.pid}")
 
         if not running:
             break
         time.sleep(15)
-        finished = []
-        for g, proc in list(running.items()):
+        still: list[subprocess.Popen] = []
+        for proc in running:
             rc = proc.poll()
             if rc is None:
+                still.append(proc)
                 continue
             meta = proc._meta
             dt = time.time() - meta["started"]
             ok = (rc == 0) and finalize(proc)
             tag = "OK" if ok else f"FAIL(rc={rc})"
             print(f"[dispatch-rwnn] {tag} m={meta['m']} tgt={meta['tgt']:5s} "
-                  f"split={meta['split']} gpu={g} dt={dt/60:.1f}min")
-            finished.append(g)
+                  f"split={meta['split']} gpu={meta['gpu']} "
+                  f"dt={dt/60:.1f}min")
             if ok:
                 done += 1
             else:
                 fail += 1
-        for g in finished:
-            del running[g]
-            available.append(g)
+            available.append(meta["gpu"])
+        running = still
 
     total = time.time() - t0
     print(f"[dispatch-rwnn] DONE completed={done} failed={fail} "
