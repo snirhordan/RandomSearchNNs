@@ -69,10 +69,15 @@ def launch(target: str, seed: int, gpu: int, args) -> subprocess.Popen:
         "--device_idx", "0",  # remapped via CUDA_VISIBLE_DEVICES below
     ]
     env = os.environ.copy()
-    env["CUDA_VISIBLE_DEVICES"] = str(gpu)
+    # When running under Slurm, CUDA_VISIBLE_DEVICES is already pinned by
+    # the cgroup to the allocated device(s); do NOT override it (that would
+    # target a different physical GPU and trip the cgroup denial).
+    # Outside Slurm, pin children to the requested local GPU index.
+    if "SLURM_JOB_ID" not in env:
+        env["CUDA_VISIBLE_DEVICES"] = str(gpu)
     log_f = open(log_path, "wb")
     log_f.write(f"# cmd: {' '.join(shlex.quote(c) for c in cmd)}\n".encode())
-    log_f.write(f"# gpu: {gpu} seed: {seed}\n".encode())
+    log_f.write(f"# gpu: {gpu} seed: {seed} (CVD={env.get('CUDA_VISIBLE_DEVICES', 'unset')})\n".encode())
     log_f.flush()
     proc = subprocess.Popen(cmd, cwd=str(REPO), env=env,
                             stdout=log_f, stderr=subprocess.STDOUT)
