@@ -40,6 +40,8 @@ def main():
     p.add_argument("--target", required=True, choices=list(TARGET_MAP.keys()))
     p.add_argument("--seed", type=int, required=True)
     p.add_argument("--epochs", type=int, default=300)
+    p.add_argument("--patience", type=int, default=0,
+                   help="early-stopping patience on val loss; 0 disables")
     p.add_argument("--batch_size", type=int, default=96)
     p.add_argument("--nf", type=int, default=128)
     p.add_argument("--n_layers", type=int, default=7)
@@ -78,6 +80,7 @@ def main():
         "--node_attr", str(args.node_attr),
         "--property", egnn_prop,
         "--seed", str(args.seed),
+        "--patience", str(args.patience),
     ]
     env = os.environ.copy()
     # If the dispatcher already pinned CUDA_VISIBLE_DEVICES, inherit it

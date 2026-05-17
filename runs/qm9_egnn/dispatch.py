@@ -59,6 +59,7 @@ def launch(target: str, seed: int, gpu: int, args) -> subprocess.Popen:
         "--target", target,
         "--seed", str(seed),
         "--epochs", str(args.epochs),
+        "--patience", str(args.patience),
         "--batch_size", str(args.batch_size),
         "--nf", str(args.nf),
         "--n_layers", str(args.n_layers),
@@ -69,12 +70,16 @@ def launch(target: str, seed: int, gpu: int, args) -> subprocess.Popen:
         "--device_idx", "0",  # remapped via CUDA_VISIBLE_DEVICES below
     ]
     env = os.environ.copy()
-    # When running under Slurm, CUDA_VISIBLE_DEVICES is already pinned by
-    # the cgroup to the allocated device(s); do NOT override it (that would
-    # target a different physical GPU and trip the cgroup denial).
-    # Outside Slurm, pin children to the requested local GPU index.
-    if "SLURM_JOB_ID" not in env:
-        env["CUDA_VISIBLE_DEVICES"] = str(gpu)
+    # Always pin children to the requested local GPU index. Under Slurm,
+    # CUDA_VISIBLE_DEVICES is a subset (the allocated cgroup GPUs); setting
+    # it to a single relative index further restricts the child to one of
+    # those allowed devices, which is exactly what we want for packing.
+    env["CUDA_VISIBLE_DEVICES"] = str(gpu)
+    # Cap PyTorch intra-op threads so packed procs don't oversubscribe the CPU.
+    env["OMP_NUM_THREADS"] = "4"
+    env["MKL_NUM_THREADS"] = "4"
+    env["OPENBLAS_NUM_THREADS"] = "4"
+    env["NUMEXPR_NUM_THREADS"] = "4"
     log_f = open(log_path, "wb")
     log_f.write(f"# cmd: {' '.join(shlex.quote(c) for c in cmd)}\n".encode())
     log_f.write(f"# gpu: {gpu} seed: {seed} (CVD={env.get('CUDA_VISIBLE_DEVICES', 'unset')})\n".encode())
@@ -95,6 +100,8 @@ def main():
     ap.add_argument("--gpus", default="0,1",
                     help="comma-separated GPU indices")
     ap.add_argument("--epochs", type=int, default=300)
+    ap.add_argument("--patience", type=int, default=0,
+                    help="early-stopping patience on val loss; 0 disables")
     ap.add_argument("--batch_size", type=int, default=96)
     ap.add_argument("--nf", type=int, default=128)
     ap.add_argument("--n_layers", type=int, default=7)

@@ -1,0 +1,40 @@
+[dispatch-rwnn] 96 jobs (gpus=[2, 2, 2, 3, 3, 3], epochs=15, patience=4)
+  preview: m=16 tgt=gap split=0
+  preview: m=16 tgt=gap split=1
+  preview: m=16 tgt=gap split=2
+  preview: m=16 tgt=R2 split=0
+  preview: m=16 tgt=R2 split=1
+[dispatch-rwnn] [1/96] launch m=16 tgt=gap   split=0 -> gpu=2 pid=23720
+[dispatch-rwnn] [2/96] launch m=16 tgt=gap   split=1 -> gpu=2 pid=23721
+[dispatch-rwnn] [3/96] launch m=16 tgt=gap   split=2 -> gpu=2 pid=23723
+[dispatch-rwnn] [4/96] launch m=16 tgt=R2    split=0 -> gpu=3 pid=23725
+[dispatch-rwnn] [5/96] launch m=16 tgt=R2    split=1 -> gpu=3 pid=23726
+[dispatch-rwnn] [6/96] launch m=16 tgt=R2    split=2 -> gpu=3 pid=23727
+[dispatch-rwnn] OK m=16 tgt=R2    split=2 gpu=3 dt=409.8min
+[dispatch-rwnn] [7/96] launch m=16 tgt=zpve  split=0 -> gpu=3 pid=53594
+[dispatch-rwnn] OK m=16 tgt=gap   split=2 gpu=2 dt=418.5min
+[dispatch-rwnn] [8/96] launch m=16 tgt=zpve  split=1 -> gpu=2 pid=54813
+[dispatch-rwnn] OK m=16 tgt=zpve  split=0 gpu=3 dt=198.8min
+[dispatch-rwnn] [9/96] launch m=16 tgt=zpve  split=2 -> gpu=3 pid=67728
+[dispatch-rwnn] OK m=16 tgt=zpve  split=1 gpu=2 dt=286.8min
+[dispatch-rwnn] [10/96] launch m=16 tgt=U0    split=0 -> gpu=2 pid=74099
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=zpve  split=2 gpu=3 dt=215.3min
+[dispatch-rwnn] [11/96] launch m=16 tgt=U0    split=1 -> gpu=3 pid=82089
+[dispatch-rwnn] OK m=16 tgt=U0    split=0 gpu=2 dt=192.5min
+[dispatch-rwnn] [12/96] launch m=16 tgt=U0    split=2 -> gpu=2 pid=87061
+[dispatch-rwnn] OK m=16 tgt=U0    split=2 gpu=2 dt=135.3min
+[dispatch-rwnn] [13/96] launch m=16 tgt=U     split=0 -> gpu=2 pid=96133
+[dispatch-rwnn] OK m=16 tgt=U0    split=1 gpu=3 dt=289.3min
+[dispatch-rwnn] [14/96] launch m=16 tgt=U     split=1 -> gpu=3 pid=101823
+[dispatch-rwnn] OK m=16 tgt=U     split=0 gpu=2 dt=284.5min
+[dispatch-rwnn] [15/96] launch m=16 tgt=U     split=2 -> gpu=2 pid=115401
+[dispatch-rwnn] OK m=16 tgt=U     split=1 gpu=3 dt=228.5min
+[dispatch-rwnn] [16/96] launch m=16 tgt=H     split=0 -> gpu=3 pid=117408
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=U     split=2 gpu=2 dt=215.0min
+[dispatch-rwnn] [17/96] launch m=16 tgt=H     split=1 -> gpu=2 pid=129861
+[dispatch-rwnn] OK m=16 tgt=H     split=0 gpu=3 dt=194.0min
+[dispatch-rwnn] [18/96] launch m=16 tgt=H     split=2 -> gpu=3 pid=130490
+[dispatch-rwnn] OK m=16 tgt=H     split=1 gpu=2 dt=191.5min
+[dispatch-rwnn] [19/96] launch m=16 tgt=G     split=0 -> gpu=2 pid=142927
+[dispatch-rwnn] OK m=16 tgt=H     split=2 gpu=3 dt=188.8min
+[dispatch-rwnn] [20/96] launch m=16 tgt=G     split=1 -> gpu=3 pid=143003

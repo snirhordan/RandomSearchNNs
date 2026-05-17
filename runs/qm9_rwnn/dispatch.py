@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-PYTHON = sys.executable
+PYTHON = "/home/snirhordan/miniconda3/envs/rwnn/bin/python3"
 
 TARGETS = ["mu", "alpha", "homo", "lumo", "gap", "R2", "zpve",
            "U0", "U", "H", "G", "Cv"]
@@ -83,11 +83,18 @@ def launch(m: int, tgt: str, split: int, gpu: int, args) -> subprocess.Popen:
         "--limit", str(args.limit),
     ]
     env = os.environ.copy()
-    # When running under Slurm, CUDA_VISIBLE_DEVICES is already pinned by
-    # the cgroup to the allocated device(s); do NOT override it.
-    # Outside Slurm, pin children to the requested local GPU index.
-    if "SLURM_JOB_ID" not in env:
-        env["CUDA_VISIBLE_DEVICES"] = str(gpu)
+    # Always pin children to the requested local GPU index. Under Slurm,
+    # CUDA_VISIBLE_DEVICES is a subset (the allocated cgroup GPUs); setting
+    # it to a single relative index further restricts the child to one of
+    # those allowed devices, which is exactly what we want for packing.
+    env["CUDA_VISIBLE_DEVICES"] = str(gpu)
+    # Cap PyTorch intra-op threads so packed procs don't oversubscribe the CPU.
+    # Each RWNN run also spawns --num_workers DataLoader workers, so keep the
+    # main thread count low to leave room for them within the per-proc budget.
+    env["OMP_NUM_THREADS"] = "2"
+    env["MKL_NUM_THREADS"] = "2"
+    env["OPENBLAS_NUM_THREADS"] = "2"
+    env["NUMEXPR_NUM_THREADS"] = "2"
     log_f = open(log_path, "wb")
     log_f.write(f"# cmd: {' '.join(shlex.quote(c) for c in cmd)}\n".encode())
     log_f.write(f"# gpu: {gpu} seed: {seed} (CVD={env.get('CUDA_VISIBLE_DEVICES', 'unset')})\n".encode())

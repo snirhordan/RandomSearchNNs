@@ -1,0 +1,4 @@
+# cmd: /home/snirhordan/miniconda3/envs/rwnn/bin/python3 -u /home/snirhordan/ito/RandomSearchNNs/runs/qm9_egnn/run_one.py --target mu --seed 42 --epochs 300 --batch_size 96 --nf 128 --n_layers 7 --attention 1 --node_attr 0 --lr 0.001 --out_root /home/snirhordan/ito/RandomSearchNNs/runs/qm9_egnn --device_idx 0
+# gpu: 0 seed: 42
+[run_one] launching mu/seed42 on GPU 0
+[run_one] mu/seed42 done: test_mae=0.0317783 dt=1243.9min
