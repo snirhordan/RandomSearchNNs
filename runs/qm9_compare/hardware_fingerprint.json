@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "timestamp_utc": "2026-05-17T18:29:08Z",
+  "host": "dym-lab3",
+  "platform": "Linux-5.15.0-151-generic-x86_64-with-glibc2.35",
+  "cpu": {
+    "logical_cores": 128,
+    "model": "Intel(R) Xeon(R) 6710E",
+    "load_avg_at_start": [
+      1.11865234375,
+      1.4873046875,
+      1.27734375
+    ]
+  },
+  "ram_gb_total": 1007.64,
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA L40S",
+      "uuid": "GPU-38f7df1e-3136-8519-0fa3-77fd2ffb58dc",
+      "memory_total_mib": 49140,
+      "driver_version": "575.57.08"
+    },
+    {
+      "index": 1,
+      "name": "NVIDIA L40S",
+      "uuid": "GPU-fcf8c21c-e5e3-87bd-0443-43335faddff9",
+      "memory_total_mib": 49140,
+      "driver_version": "575.57.08"
+    },
+    {
+      "index": 2,
+      "name": "NVIDIA L40S",
+      "uuid": "GPU-b4837167-269e-9708-513f-a952ca764b56",
+      "memory_total_mib": 49140,
+      "driver_version": "575.57.08"
+    },
+    {
+      "index": 3,
+      "name": "NVIDIA L40S",
+      "uuid": "GPU-f28fa398-c6c3-dcf8-553f-0bf42a9e055f",
+      "memory_total_mib": 49140,
+      "driver_version": "575.57.08"
+    }
+  ],
+  "slurm": {
+    "SLURM_JOB_ID": "68204367",
+    "SLURM_STEP_GPUS": "2,3,6,7",
+    "SLURM_JOB_USER": "snirhordan",
+    "SLURM_TASKS_PER_NODE": "1",
+    "SLURM_CPU_BIND": "quiet,mask_cpu:0xFFFFFFFF00000000FFFFFFFF00010000"
+  },
+  "python": {
+    "version": "3.11.15",
+    "executable": "/home/snirhordan/miniconda3/envs/rwnn/bin/python3"
+  },
+  "torch": {
+    "version": "2.4.0+cu121",
+    "cuda_runtime": "12.1",
+    "cudnn_version": 90100,
+    "tf32_matmul": false,
+    "tf32_cudnn": true,
+    "cudnn_benchmark": false,
+    "deterministic_algorithms": false
+  },
+  "env": {
+    "OMP_NUM_THREADS": "",
+    "MKL_NUM_THREADS": "",
+    "OPENBLAS_NUM_THREADS": "",
+    "NUMEXPR_NUM_THREADS": "",
+    "CUBLAS_WORKSPACE_CONFIG": "",
+    "PYTORCH_CUDA_ALLOC_CONF": "",
+    "CUDA_VISIBLE_DEVICES": "0,1,2,3"
+  },
+  "git": {
+    "branch": "feat/rsnn-m-sweep",
+    "commit": "be33f6153b70b7f7c84eb42a64cfe9a7c594c537",
+    "dirty": true
+  }
+}

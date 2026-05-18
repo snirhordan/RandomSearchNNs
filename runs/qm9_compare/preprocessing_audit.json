@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "target": "gap",
+  "units": "eV (Cormorant Hartree \u00d7 27.2114)",
+  "split_counts": {
+    "train": 100000,
+    "valid": 17748,
+    "test": 13083
+  },
+  "split_hash_pyg_indices": {
+    "train": "c7fba7cb427a12ca8ed7cf859555568ba11b7807e739966dd420fc34068ec062",
+    "valid": "88da98f542d5f7b2ca6048b8a25d04e77794080e37d194ce6e470832cf96d14d",
+    "test": "57cb7e37acad0bf8795922bd22bf786a404ef1083874c8b77cd6bb8f0abceb2c"
+  },
+  "pyg_cormorant": {
+    "pyg_to_cormorant_offset": 1,
+    "pyg_total": 130831,
+    "cormorant_total": 130831,
+    "bijection_verified": true
+  },
+  "normalization": {
+    "gap": {
+      "meann": 6.857935860100032,
+      "MAD": 1.0757301639301389,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    }
+  },
+  "egnn_baseline_runs": {
+    "seed42": {
+      "test_mae": 0.05152053890821994,
+      "epochs_run": 93,
+      "config": {
+        "nf": 128,
+        "n_layers": 7,
+        "attention": 1,
+        "epochs": 300
+      }
+    },
+    "seed43": {
+      "test_mae": 0.05177109533307121,
+      "epochs_run": 95,
+      "config": {
+        "nf": 128,
+        "n_layers": 7,
+        "attention": 1,
+        "epochs": 300
+      }
+    },
+    "seed44": {
+      "test_mae": 0.048039061902955815,
+      "epochs_run": 295,
+      "config": {
+        "nf": 128,
+        "n_layers": 7,
+        "attention": 1,
+        "epochs": 300
+      }
+    }
+  }
+}

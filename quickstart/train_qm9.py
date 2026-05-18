@@ -313,6 +313,39 @@ def _build_argparser() -> argparse.ArgumentParser:
             "Useful for the RSNN m-sweep where the cfg_tag does not encode m."
         ),
     )
+    p.add_argument(
+        "--split",
+        choices=["random", "cormorant"],
+        default="random",
+        help="Split protocol. 'random' = sklearn-style 60/20/20 (legacy). "
+             "'cormorant' = fixed 100k/17748/13083 from EGNN's Anderson tarball.",
+    )
+    p.add_argument(
+        "--cormorant_data_dir",
+        default="./external/egnn/qm9/temp/qm9",
+        help="Directory holding Cormorant's train.npz/valid.npz/test.npz "
+             "(used only when --split cormorant).",
+    )
+    p.add_argument(
+        "--lr_scheduler",
+        choices=["none", "cosine"],
+        default="none",
+        help="LR schedule. 'cosine' = CosineAnnealingLR(T_max=epochs), "
+             "stepped once per epoch.",
+    )
+    p.add_argument(
+        "--use_egnn_normalization",
+        type=int, choices=[0, 1], default=0,
+        help="If 1, load meann/MAD from --norm_constants_json and use EGNN's "
+             "(label - meann) / MAD normalization with L1Loss. If 0, fall back "
+             "to legacy z-score on combined targets with MSELoss.",
+    )
+    p.add_argument(
+        "--norm_constants_json",
+        default="",
+        help="JSON file with normalization.<target>.{meann,MAD} keys. "
+             "Required when --use_egnn_normalization 1.",
+    )
     return p
 
 
@@ -393,17 +426,62 @@ def main() -> int:
     max_len = int(max(d.x.shape[0] for d in mols))
     log(f"max_len={max_len}")
 
-    # --- target standardisation: stabilise MSE; report MAE in original units.
-    ys = torch.stack([d.y for d in mols]).view(-1).float()
-    y_mean = float(ys.mean().item())
-    y_std = float(ys.std().item())
-    log(f"target stats: mean={y_mean:.4f} std={y_std:.4f}")
+    # --- splits ---
+    if args.split == "cormorant":
+        # Fixed 100k / 17748 / 13083 Anderson split from EGNN's npz tarball.
+        # PyG Data.idx is 0-indexed gdb_idx; Cormorant npz['index'] is 1-indexed.
+        cdir = Path(args.cormorant_data_dir)
+        ctrain = {int(i) - 1 for i in np.load(cdir / "train.npz")["index"]}
+        cval   = {int(i) - 1 for i in np.load(cdir / "valid.npz")["index"]}
+        ctest  = {int(i) - 1 for i in np.load(cdir / "test.npz")["index"]}
+        # If cache pre-dates the .idx-preservation patch in qm9_to_data,
+        # recover idx positionally from a fresh PyG QM9 load. qm9_to_data
+        # iterates PyG in order so cache mols[i] corresponds to PyG QM9[i].
+        if not hasattr(mols[0], "idx") or mols[0].idx is None:
+            log("cache mols lack .idx; recovering positionally from PyG QM9")
+            from torch_geometric.datasets import QM9 as PyGQM9
+            pyg = PyGQM9(root=args.data_root)
+            assert len(pyg) == len(mols), (
+                f"PyG QM9 len={len(pyg)} != cache len={len(mols)}; "
+                "cache and PyG dataset are out of sync, please rebuild cache.")
+            for k, d in enumerate(mols):
+                d.idx = pyg[k].idx.clone()
+            del pyg
+        idx_lookup = {int(d.idx.item()): k for k, d in enumerate(mols)}
+        train_idxs = [idx_lookup[g] for g in ctrain if g in idx_lookup]
+        valid_idxs = [idx_lookup[g] for g in cval   if g in idx_lookup]
+        test_idxs  = [idx_lookup[g] for g in ctest  if g in idx_lookup]
+        log(f"cormorant split: train={len(train_idxs)} "
+            f"valid={len(valid_idxs)} test={len(test_idxs)}")
+        assert len(train_idxs) == 100000, f"train != 100000 ({len(train_idxs)})"
+        assert len(valid_idxs) == 17748,  f"valid != 17748 ({len(valid_idxs)})"
+        assert len(test_idxs)  == 13083,  f"test != 13083 ({len(test_idxs)})"
+        # Pack into the same structure produced by random_split (n_splits=1).
+        splits = {"train": [train_idxs], "valid": [valid_idxs],
+                  "test":  [test_idxs]}
+    else:
+        # --- splits (random, 60/20/20) ---
+        splits = random_split(len(mols), test_size=0.2, val_size=0.2,
+                              n_splits=max(1, args.n_splits), random_state=0)
+
+    # --- target standardisation: stabilise loss; report MAE in original units.
+    if args.use_egnn_normalization:
+        if not args.norm_constants_json:
+            raise SystemExit(
+                "--use_egnn_normalization 1 requires --norm_constants_json")
+        with open(args.norm_constants_json) as f:
+            norm = json.load(f)["normalization"][args.target]
+        y_mean = float(norm["meann"])
+        y_std  = float(norm["MAD"])
+        log(f"loaded EGNN normalization: meann={y_mean:.6f} MAD={y_std:.6f}")
+    else:
+        # Legacy: z-score over the combined target set.
+        ys = torch.stack([d.y for d in mols]).view(-1).float()
+        y_mean = float(ys.mean().item())
+        y_std  = float(ys.std().item())
+        log(f"legacy target stats: mean={y_mean:.4f} std={y_std:.4f}")
     for d in mols:
         d.y = ((d.y - y_mean) / max(y_std, 1e-8)).float()
-
-    # --- splits (random, 60/20/20) ---
-    splits = random_split(len(mols), test_size=0.2, val_size=0.2,
-                          n_splits=max(1, args.n_splits), random_state=0)
 
     # --- RBF (CPU-side; pickled by DataLoader workers) ---
     rbf = RBFExpansion(K=args.rbf_K, cutoff=args.rbf_cutoff)
@@ -491,7 +569,13 @@ def main() -> int:
                               args.num_layers, len(vocab),
                               args.reduce).to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-        criterion = nn.MSELoss()
+        # L1 (MAE) loss matches EGNN when training in z-scored target space.
+        criterion = nn.L1Loss() if args.use_egnn_normalization else nn.MSELoss()
+        if args.lr_scheduler == "cosine":
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer, T_max=max(1, args.epochs))
+        else:
+            scheduler = None
 
         best_valid_mae = float("inf")
         best_state = None
@@ -514,6 +598,9 @@ def main() -> int:
                 optimizer.step()
                 train_losses.append(float(loss.item()))
             train_mse = float(np.mean(train_losses))
+            current_lr = optimizer.param_groups[0]["lr"]
+            if scheduler is not None:
+                scheduler.step()
 
             # Compute valid MAE in ORIGINAL units (un-standardise).
             model.eval()
@@ -536,11 +623,12 @@ def main() -> int:
                 stop_counter = 0
             else:
                 stop_counter += 1
-            log(f"split {s} epoch {epoch:3d} train_mse={train_mse:.4f} "
-                f"valid_mae={valid_mae:.4f} dt={dt:.1f}s "
-                f"{'*' if improved else ' '}")
+            log(f"split {s} epoch {epoch:3d} lr={current_lr:.2e} "
+                f"train_mse={train_mse:.4f} valid_mae={valid_mae:.4f} "
+                f"dt={dt:.1f}s {'*' if improved else ' '}")
             epoch_log.append({
                 "epoch": epoch,
+                "lr": current_lr,
                 "train_mse": train_mse,
                 "valid_mae": valid_mae,
                 "dt_sec": dt,

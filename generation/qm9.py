@@ -300,6 +300,10 @@ def qm9_to_data(
     data = Data(x=x, edge_index=edge_index, edge_attr=ogb_edge_attr)
     data.pos = pos
     data.z = z
+    # Preserve PyG's gdb_idx (0-indexed) so downstream Cormorant-split
+    # alignment can do `pyg_data.idx == cormorant_index - 1`.
+    if hasattr(pyg_data, "idx") and pyg_data.idx is not None:
+        data.idx = pyg_data.idx.clone()
 
     if vocab is not None:
         x_emb = torch.empty((n,), dtype=torch.long)
