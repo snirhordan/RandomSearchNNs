@@ -34,9 +34,28 @@ PYTHON = "/home/snirhordan/miniconda3/envs/rwnn/bin/python3"
 TARGET = "gap"
 SEEDS = [42, 43, 44]
 MODELS = ["rsnn", "d_rwnn"]
+# Per-model flag overrides. "m"/"w"/"reduce" are optional; if absent, the
+# corresponding args.* default is used.
 MODEL_FLAGS = {
-    "rsnn":   {"walk_type": "search",   "distances": 0, "mol_edge_feat": 0},
-    "d_rwnn": {"walk_type": "walk_ada", "distances": 1, "mol_edge_feat": 0},
+    "rsnn":         {"walk_type": "search",   "distances": 0, "mol_edge_feat": 0},
+    "d_rwnn":       {"walk_type": "walk_ada", "distances": 1, "mol_edge_feat": 0},
+    "rsnn_d1_m8":   {"walk_type": "search",   "distances": 1, "mol_edge_feat": 0, "m": 8},
+    "rsnn_d1_m16":  {"walk_type": "search",   "distances": 1, "mol_edge_feat": 0, "m": 16},
+    # Variant matrix exploring (m, w, mol_edge_feat, reduce) at fixed
+    # h_dim=128 / num_layers=2 (same ~743k params, same 300 epochs).
+    # Goal: outperform EGNN on gap (test_mae < 0.050 eV).
+    "V1":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 16, "w": 8,  "reduce": "sum"},
+    "V2":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 32, "w": 8,  "reduce": "sum"},
+    "V3":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 64, "w": 8,  "reduce": "sum"},
+    "V4":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 16, "w": 16, "reduce": "sum"},
+    "V5":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 16, "w": 24, "reduce": "sum"},
+    "V6":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 32, "w": 16, "reduce": "sum"},
+    "V7":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 16, "w": 8,  "reduce": "mean"},
+    "V8":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 0, "m": 16, "w": 8,  "reduce": "sum"},
+    "V9":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8,  "w": 16, "reduce": "sum"},
+    "V10": {"walk_type": "search", "distances": 1, "mol_edge_feat": 0, "m": 32, "w": 8,  "reduce": "sum"},
+    "V11": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 16, "w": 8,  "reduce": "max"},
+    "V12": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 64, "w": 16, "reduce": "sum"},
 }
 
 
@@ -95,9 +114,9 @@ def launch(model: str, seed: int, gpu: int, args) -> subprocess.Popen:
         "--batch_size", str(args.batch_size),
         "--h_dim", "128",
         "--num_layers", "2",
-        "--m", str(args.m),
-        "--w", "8",
-        "--reduce", "mean",
+        "--m", str(flags.get("m", args.m)),
+        "--w", str(flags.get("w", 8)),
+        "--reduce", flags.get("reduce", "mean"),
         "--lr", str(args.lr),
         "--seed", str(seed),
         "--num_workers", str(args.num_workers),
