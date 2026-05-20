@@ -56,6 +56,31 @@ MODEL_FLAGS = {
     "V10": {"walk_type": "search", "distances": 1, "mol_edge_feat": 0, "m": 32, "w": 8,  "reduce": "sum"},
     "V11": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 16, "w": 8,  "reduce": "max"},
     "V12": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 64, "w": 16, "reduce": "sum"},
+    # ---- Optimization sweep (O-series) ----
+    # Base config from V9 (best 300-epoch completion at 0.0926 eV):
+    # walk_type=search, distances=1, mol_edge_feat=1, m=8, w=16, reduce=sum.
+    # All bidirectional (RSNN_LSTM_Reg is hardcoded bi). grad_clip=1.0 universal.
+    # Width/depth combos verified at ~743k +/-5% params by count_params.py.
+    # Group A: width/depth tradeoff (5 variants at constant ~743k params).
+    "O_A1_h188_L1": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 188, "num_layers": 1, "lstm_init": "orthogonal"},
+    "O_A2_h128_L2": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 128, "num_layers": 2},
+    "O_A3_h104_L3": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 104, "num_layers": 3, "lstm_init": "orthogonal"},
+    "O_A4_h88_L4":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 88,  "num_layers": 4, "lstm_init": "orthogonal"},
+    "O_A5_h72_L6":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 72,  "num_layers": 6, "lstm_init": "orthogonal"},
+    # Group B: training-trick ablations at baseline (h=128, L=2).
+    "O_B1_adamw":   {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 128, "num_layers": 2,
+                     "optimizer": "adamw", "weight_decay": 1e-4},
+    "O_B2_dropout": {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 128, "num_layers": 2, "dropout": 0.15},
+    "O_B3_warmup":  {"walk_type": "search", "distances": 1, "mol_edge_feat": 1, "m": 8, "w": 16, "reduce": "sum",
+                     "grad_clip": 1.0, "h_dim": 128, "num_layers": 2,
+                     "warmup_epochs": 10, "optimizer": "adamw", "weight_decay": 1e-4},
 }
 
 
@@ -112,14 +137,21 @@ def launch(model: str, seed: int, gpu: int, args) -> subprocess.Popen:
         "--early_stopping", str(args.patience),
         "--n_splits", "1",
         "--batch_size", str(args.batch_size),
-        "--h_dim", "128",
-        "--num_layers", "2",
+        "--h_dim", str(flags.get("h_dim", 128)),
+        "--num_layers", str(flags.get("num_layers", 2)),
         "--m", str(flags.get("m", args.m)),
         "--w", str(flags.get("w", 8)),
         "--reduce", flags.get("reduce", "mean"),
         "--lr", str(args.lr),
         "--seed", str(seed),
         "--num_workers", str(args.num_workers),
+        # Training-optimization flags (defaults match legacy behavior).
+        "--grad_clip", str(flags.get("grad_clip", 0.0)),
+        "--weight_decay", str(flags.get("weight_decay", 0.0)),
+        "--optimizer", str(flags.get("optimizer", "adam")),
+        "--lstm_init", str(flags.get("lstm_init", "default")),
+        "--dropout", str(flags.get("dropout", 0.0)),
+        "--warmup_epochs", str(flags.get("warmup_epochs", 0)),
         "--device_idx", "0",  # remapped via CUDA_VISIBLE_DEVICES below
         "--out_root", str(stage_out_root),
         "--run_subdir", stage_subdir,

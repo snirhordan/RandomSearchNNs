@@ -126,7 +126,7 @@ class RSNN_LSTM_Reg(nn.Module):
     """Bidirectional LSTM-based RSNN with a linear regression readout."""
 
     def __init__(self, pe_in_dim, pe_out_dim, hid_dim, out_dim, num_layers,
-                 n_emb, reduce):
+                 n_emb, reduce, dropout=0.0):
         super().__init__()
         self.rnn_layers = nn.ModuleList()
         self.rnn_layers.append(
@@ -145,6 +145,9 @@ class RSNN_LSTM_Reg(nn.Module):
 
         self.reduce = reduce
         self.num_layers = num_layers
+        # Dropout applied to graph-level features before readout MLP. Param-
+        # count-neutral training-time regularization (nn.Dropout has no params).
+        self.dropout = nn.Dropout(p=float(dropout)) if dropout > 0 else nn.Identity()
 
     def forward(self, batch):
         walk_emb = batch.walk_emb
@@ -205,6 +208,7 @@ class RSNN_LSTM_Reg(nn.Module):
         ]).to(x.device)
         x = scatter(node_agg, graph_ids, dim=0, reduce=self.reduce)
 
+        x = self.dropout(x)
         x = torch.relu(self.readout[0](x))
         x = self.readout[1](x)
         # NO sigmoid -- regression head.
@@ -345,6 +349,44 @@ def _build_argparser() -> argparse.ArgumentParser:
         default="",
         help="JSON file with normalization.<target>.{meann,MAD} keys. "
              "Required when --use_egnn_normalization 1.",
+    )
+    # --- Training-optimization flags (CS230 RNN cheatsheet) ---
+    p.add_argument(
+        "--grad_clip",
+        type=float, default=0.0,
+        help="L2-norm gradient clipping max value (0=off). Mitigates exploding "
+             "gradients in deep/recurrent stacks.",
+    )
+    p.add_argument(
+        "--weight_decay",
+        type=float, default=0.0,
+        help="L2 regularization (passed to optimizer as weight_decay).",
+    )
+    p.add_argument(
+        "--optimizer",
+        choices=["adam", "adamw", "rmsprop"],
+        default="adam",
+        help="Optimizer choice. 'adamw' decouples weight-decay from the gradient "
+             "update; 'rmsprop' is the classic RNN optimizer.",
+    )
+    p.add_argument(
+        "--lstm_init",
+        choices=["default", "orthogonal"],
+        default="default",
+        help="LSTM weight init. 'orthogonal' initializes all weight_hh_* with "
+             "orthogonal matrices and sets forget-gate biases to 1.0 "
+             "(Jozefowicz et al. trick) — mitigates vanishing gradients.",
+    )
+    p.add_argument(
+        "--dropout",
+        type=float, default=0.0,
+        help="LSTM hidden-state dropout (only effective when num_layers >= 2 "
+             "via PyTorch's native LSTM dropout between stacked blocks).",
+    )
+    p.add_argument(
+        "--warmup_epochs",
+        type=int, default=0,
+        help="Linear LR warmup for this many epochs before --lr_scheduler kicks in.",
     )
     return p
 
@@ -539,6 +581,13 @@ def main() -> int:
             "normalization_recipe": (
                 "egnn_meann_mad" if args.use_egnn_normalization
                 else "combined_z_score"),
+            # Training-optimization knobs (CS230 RNN cheatsheet).
+            "grad_clip": args.grad_clip,
+            "weight_decay": args.weight_decay,
+            "optimizer": args.optimizer,
+            "lstm_init": args.lstm_init,
+            "dropout": args.dropout,
+            "warmup_epochs": args.warmup_epochs,
         },
         "splits": [],
     }
@@ -587,15 +636,47 @@ def main() -> int:
 
         model = RSNN_LSTM_Reg(pe_in_dim, pe_out_dim, args.h_dim, 1,
                               args.num_layers, len(vocab),
-                              args.reduce).to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+                              args.reduce, dropout=args.dropout).to(device)
+        # Optional orthogonal LSTM init + forget-gate bias = 1.0 (Jozefowicz trick).
+        if args.lstm_init == "orthogonal":
+            for lstm in model.rnn_layers:
+                for name, p in lstm.named_parameters():
+                    if "weight_hh" in name:
+                        nn.init.orthogonal_(p)
+                    elif "bias_ih" in name or "bias_hh" in name:
+                        n = p.numel() // 4
+                        p.data[n:2*n].fill_(1.0)  # forget-gate chunk
+            log(f"applied orthogonal init + forget-gate bias=1 to "
+                f"{len(model.rnn_layers)} LSTM layers")
+
+        # Optimizer factory.
+        opt_kwargs = dict(lr=args.lr, weight_decay=args.weight_decay)
+        if args.optimizer == "adam":
+            optimizer = torch.optim.Adam(model.parameters(), **opt_kwargs)
+        elif args.optimizer == "adamw":
+            optimizer = torch.optim.AdamW(model.parameters(), **opt_kwargs)
+        elif args.optimizer == "rmsprop":
+            optimizer = torch.optim.RMSprop(model.parameters(), **opt_kwargs)
         # L1 (MAE) loss matches EGNN when training in z-scored target space.
         criterion = nn.L1Loss() if args.use_egnn_normalization else nn.MSELoss()
+        # LR schedule: optional linear warmup, then optional cosine decay.
+        sub_schedulers = []
+        if args.warmup_epochs > 0:
+            sub_schedulers.append(torch.optim.lr_scheduler.LinearLR(
+                optimizer, start_factor=1e-3, end_factor=1.0,
+                total_iters=args.warmup_epochs))
         if args.lr_scheduler == "cosine":
-            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-                optimizer, T_max=max(1, args.epochs))
-        else:
+            t_cos = max(1, args.epochs - args.warmup_epochs)
+            sub_schedulers.append(torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer, T_max=t_cos))
+        if len(sub_schedulers) == 0:
             scheduler = None
+        elif len(sub_schedulers) == 1:
+            scheduler = sub_schedulers[0]
+        else:
+            scheduler = torch.optim.lr_scheduler.SequentialLR(
+                optimizer, schedulers=sub_schedulers,
+                milestones=[args.warmup_epochs])
 
         best_valid_mae = float("inf")
         best_state = None
@@ -615,6 +696,9 @@ def main() -> int:
                 loss = criterion(out, batch.y.view(-1))
                 optimizer.zero_grad()
                 loss.backward()
+                if args.grad_clip > 0:
+                    torch.nn.utils.clip_grad_norm_(
+                        model.parameters(), max_norm=args.grad_clip)
                 optimizer.step()
                 train_losses.append(float(loss.item()))
             train_mse = float(np.mean(train_losses))
