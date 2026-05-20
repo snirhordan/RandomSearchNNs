@@ -519,6 +519,26 @@ def main() -> int:
             "y_mean": y_mean,
             "y_std": y_std,
             "vocab": vocab,
+            # Apples-to-apples protocol recap (added for qm9_compare sweep):
+            "split": args.split,
+            "cormorant_data_dir": (
+                args.cormorant_data_dir if args.split == "cormorant" else None),
+            "lr_scheduler": args.lr_scheduler,
+            "use_egnn_normalization": bool(args.use_egnn_normalization),
+            "norm_constants_json": (
+                args.norm_constants_json if args.use_egnn_normalization else None),
+            # Loss is L1 when EGNN normalization is on (matches EGNN's main_qm9.py),
+            # otherwise legacy MSE.
+            "loss": ("L1" if args.use_egnn_normalization else "MSE"),
+            # Normalization formula records *which* recipe produced y_mean/y_std:
+            #   - "egnn_meann_mad": train-fold meann + Mean Absolute Deviation,
+            #     loaded from norm_constants_json (single source of truth).
+            #   - "combined_z_score": legacy z-score over combined train+val+test
+            #     targets (in-distribution scaling only, not strict apples-to-apples
+            #     with EGNN).
+            "normalization_recipe": (
+                "egnn_meann_mad" if args.use_egnn_normalization
+                else "combined_z_score"),
         },
         "splits": [],
     }
