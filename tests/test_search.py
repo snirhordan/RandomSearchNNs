@@ -254,3 +254,178 @@ def test_dfs_edges_returns_tree(tiny_graph):
     g_edges = _edges_set(tiny_graph)
     for u, v in edges:
         assert (u, v) in g_edges or (v, u) in g_edges
+
+
+# ---------------------------------------------------------------------------
+# Dense distance fix for sample_dfs
+#
+# Before the fix: when DFS pops a node off the stack that is NOT graph-adjacent
+# to the previous-in-order node (a "stack-jump"), the per-step edge feature
+# (RBF-expanded Euclidean distance + bond type) was left zero. After the fix,
+# the distance slice is always populated; bond-type slice remains zero for
+# non-bonded pairs (edge_attr_to_dense yields zeros there, by construction).
+# ---------------------------------------------------------------------------
+
+
+def _build_branched_graph_with_distances():
+    """Y-shaped 5-node graph that forces DFS stack-jumps.
+
+    Topology:
+        0 -- 1
+        0 -- 2
+        0 -- 3
+        3 -- 4
+
+    DFS from 0 pushes [1, 2, 3] in some order. After visiting 3 (and its
+    subtree containing 4), the stack still holds 1 and 2. Popping one of
+    them produces a step where `prev_in_order` (deep inside the 3-subtree)
+    is NOT bonded to the new node. That's the jump path the fix addresses.
+    """
+    from torch_geometric.data import Data
+    edge_index = torch.tensor([
+        [0, 1, 0, 2, 0, 3, 3, 4],
+        [1, 0, 2, 0, 3, 0, 4, 3],
+    ], dtype=torch.long)
+    x_emb = torch.tensor([0, 1, 2, 3, 4], dtype=torch.long)
+    pos = torch.tensor([
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [-1.0, 0.0, 0.0],
+        [-2.0, 0.0, 0.0],
+    ])
+    diff = pos.unsqueeze(0) - pos.unsqueeze(1)
+    distances = diff.norm(dim=-1)
+    # x is a dummy float tensor — matches QM9WalkDataset.__getitem__ usage of d.x
+    data = Data(
+        x=x_emb.float().unsqueeze(1),
+        edge_index=edge_index,
+        x_emb=x_emb,
+    )
+    data.pos = pos
+    data.distances = distances
+    return data
+
+
+def test_dfs_dense_distances_synthetic_branched(rng_seed):
+    """Synthetic Y-graph: every non-first DFS step has non-zero distance dims.
+
+    Before the fix, DFS stack-jumps left the distance slice as zeros. After
+    the fix, the RBF-expanded Euclidean distance is always populated.
+    """
+    from quickstart.train_qm9 import build_add_edge_feat
+    from generation.qm9 import RBFExpansion
+
+    data = _build_branched_graph_with_distances()
+    rbf = RBFExpansion(K=16, cutoff=5.0)
+    add_ef = build_add_edge_feat(data, distances=1, mol_edge_feat=0, rbf=rbf)
+    assert add_ef.shape == (5, 5, 16)
+
+    nw, s, max_len = 8, 2, 5
+    vocab = {'PAD': int(data.x_emb.max().item()) + 1}
+    random.seed(rng_seed); torch.manual_seed(rng_seed); np.random.seed(rng_seed)
+    result = sample_dfs(data.clone(), nw, s, max_len, vocab, add_edge_feat=add_ef)
+
+    # walk_pe shape: (nw, max_len, s + 16) — edge_encoding(s) + RBF_dist(16)
+    walk_pe = result.walk_pe
+    assert walk_pe.shape == (nw, max_len, s + 16)
+    dist_part = walk_pe[..., s:]  # (nw, max_len, 16)
+
+    # Sanity: this DFS layout should yield at least one walk with a jump
+    # (some walk of length >= 3 visits a node whose predecessor in DFS order
+    # is not graph-adjacent). We don't assert which walk has the jump; we
+    # assert the distance signal is populated everywhere it should be.
+    for i in range(nw):
+        length = int(result.lengths[i])
+        for j in range(1, length):
+            assert dist_part[i, j].abs().sum() > 0, (
+                f"walk {i} step {j}: distance dims are all-zero; "
+                f"DFS jump should populate them after the fix"
+            )
+
+
+def test_dfs_dense_distances_qm9_integration(rng_seed):
+    """Real QM9 molecule: every non-first DFS step has non-zero distance dims."""
+    cache_path = REPO_ROOT / "data/qm9/qm9_d_rwnn_cache/mols_gap.pt"
+    if not cache_path.exists():
+        pytest.skip(f"QM9 preprocessed cache not found at {cache_path}")
+    mols = torch.load(str(cache_path), weights_only=False)
+    # Pick a moderately complex molecule (>= 8 atoms) to ensure DFS branching
+    chosen = next((m for m in mols if m.x.shape[0] >= 8), None)
+    if chosen is None:
+        pytest.skip("no QM9 molecule with >=8 atoms found in cache")
+    data = chosen.clone()
+
+    from quickstart.train_qm9 import build_add_edge_feat
+    from generation.qm9 import RBFExpansion
+
+    rbf = RBFExpansion(K=16, cutoff=5.0)
+    add_ef = build_add_edge_feat(data, distances=1, mol_edge_feat=1, rbf=rbf)
+    # 16 (RBF) + 3 (bond) = 19
+    assert add_ef.shape[-1] == 19
+
+    nw, s, max_len = 8, 2, int(data.x.shape[0]) + 2
+    vocab = {'PAD': int(data.x_emb.max().item()) + 1}
+    random.seed(rng_seed); torch.manual_seed(rng_seed); np.random.seed(rng_seed)
+    result = sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=add_ef)
+
+    walk_pe = result.walk_pe
+    assert walk_pe.shape == (nw, max_len, s + 19)
+    # First s dims = edge encoding; next 16 = RBF distances; last 3 = bond type
+    dist_part = walk_pe[..., s:s + 16]
+
+    for i in range(nw):
+        length = int(result.lengths[i])
+        for j in range(1, length):
+            assert dist_part[i, j].abs().sum() > 0, (
+                f"walk {i} step {j} on real QM9 mol has all-zero distance dims; "
+                f"every DFS step should carry Euclidean distance signal"
+            )
+
+
+def test_dfs_dense_distances_backward_nonvanishing_grads(rng_seed):
+    """Forward + backward + non-vanishing gradient check (||grad|| > 1e-6).
+
+    Uses two synthetic Y-graphs to force DFS jumps, runs RSNN_LSTM_Reg, and
+    verifies every learnable parameter receives gradient signal above 1e-6.
+    """
+    from quickstart.train_qm9 import build_add_edge_feat, RSNN_LSTM_Reg
+    from generation.qm9 import RBFExpansion
+    from torch_geometric.data import Batch
+
+    random.seed(rng_seed); torch.manual_seed(rng_seed); np.random.seed(rng_seed)
+    rbf = RBFExpansion(K=16, cutoff=5.0)
+    nw, s, max_len = 4, 2, 5
+    vocab = {'PAD': 5}
+
+    samples = []
+    for _ in range(2):
+        m = _build_branched_graph_with_distances()
+        add_ef = build_add_edge_feat(m, distances=1, mol_edge_feat=0, rbf=rbf)
+        out = sample_dfs(m.clone(), nw, s, max_len, vocab, add_edge_feat=add_ef)
+        for k in ("distances", "pos"):
+            if hasattr(out, k):
+                delattr(out, k)
+        samples.append(out)
+
+    batch = Batch.from_data_list(samples)
+
+    pe_in_dim = s + 16  # edge encoding + RBF distance
+    model = RSNN_LSTM_Reg(
+        pe_in_dim=pe_in_dim, pe_out_dim=16, hid_dim=32, out_dim=1,
+        num_layers=2, n_emb=6, reduce="sum", dropout=0.0,
+    )
+    pred = model(batch).squeeze(-1)
+    target = torch.tensor([1.0, 1.5])
+    loss = torch.nn.functional.l1_loss(pred, target)
+    loss.backward()
+
+    vanishing = []
+    for name, p in model.named_parameters():
+        if p.grad is None:
+            vanishing.append((name, "grad=None"))
+        elif p.grad.norm().item() < 1e-6:
+            vanishing.append((name, f"||grad||={p.grad.norm().item():.2e}"))
+    assert not vanishing, (
+        f"Parameters with vanishing gradients (<1e-6): {vanishing}"
+    )

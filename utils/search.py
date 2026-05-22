@@ -227,12 +227,17 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
                     encoding_edge[i, pos, d - 1] = 1
 
 
-            # Per-step edge feature (DFS): incoming edge is from prev node
-            # in DFS order; if not adjacent in graph, leave zeros.
+            # Per-step edge feature (DFS): always populate from the (prev,
+            # node) entry of add_edge_feat regardless of graph-adjacency.
+            # When prev and node are not bonded, edge_attr_to_dense yields
+            # zeros for the bond-type slice, so the bond-type semantics
+            # remain "zero unless bonded" — but the distance slice (RBF of
+            # the pairwise Euclidean distance) is always populated. This
+            # ensures DFS stack-jumps still carry the geometric distance
+            # signal to the LSTM.
             if walk_pe_extra is not None and pos > 0:
                 prev_in_order = order[pos - 1]
-                if (node in neighbor_dict.get(prev_in_order, set())) or (prev_in_order in neighbor_dict.get(node, set())):
-                    walk_pe_extra[i, pos] = add_edge_feat[prev_in_order, node]
+                walk_pe_extra[i, pos] = add_edge_feat[prev_in_order, node]
             pos += 1
 
             # Push unvisited neighbors onto the stack in randomized order.
