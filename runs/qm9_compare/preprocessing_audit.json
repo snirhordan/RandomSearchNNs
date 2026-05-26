@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "target": "gap",
-  "units": "eV (Cormorant Hartree \u00d7 27.2114)",
+  "target": "multi (gap + 11 others)",
+  "units": "PyG QM9 native units (energies in eV via HARTREE_TO_EV)",
   "split_counts": {
     "train": 100000,
     "valid": 17748,
@@ -22,6 +22,78 @@
     "gap": {
       "meann": 6.857935860100032,
       "MAD": 1.0757301639301389,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "mu": {
+      "meann": 2.6746809756855017,
+      "MAD": 1.1681162153933742,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "alpha": {
+      "meann": 75.26605450292587,
+      "MAD": 6.288199328145316,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "homo": {
+      "meann": -6.536926620745659,
+      "MAD": 0.44053983199025015,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "lumo": {
+      "meann": 0.32101348014637593,
+      "MAD": 1.0524941866204958,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "R2": {
+      "meann": 1189.050585766182,
+      "MAD": 202.33370686202665,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "r2": {
+      "meann": 1189.050585766182,
+      "MAD": 202.33370686202665,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "zpve": {
+      "meann": 4.056452866283953,
+      "MAD": 0.7166876015020643,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "U0": {
+      "meann": -11181.258620844726,
+      "MAD": 842.2398877052952,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "U": {
+      "meann": -11181.028121925048,
+      "MAD": 842.2363643303248,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "H": {
+      "meann": -11181.00243097412,
+      "MAD": 842.2363647555713,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "G": {
+      "meann": -11182.167564250489,
+      "MAD": 842.2492783374059,
+      "n_train": 100000,
+      "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
+    },
+    "Cv": {
+      "meann": 31.61868286962509,
+      "MAD": 3.204343169032919,
       "n_train": 100000,
       "formula": "meann = train.mean(); MAD = mean(|train - meann|)"
     }

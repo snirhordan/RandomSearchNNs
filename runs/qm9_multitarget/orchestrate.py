@@ -36,8 +36,8 @@ STATE_PATH = ROOT / ".state.json"
 SLURM_SCRIPTS = ROOT / "slurm_scripts"
 PYTHON = "/home/snirhordan/miniconda3/envs/rwnn/bin/python3"
 
-TARGETS = ["mu", "alpha", "homo", "lumo", "gap", "r2", "zpve",
-           "U0", "U", "H", "G", "Cv"]
+TARGETS = ["mu", "alpha", "homo", "lumo", "gap", "R2", "zpve",
+           "U0", "U", "H", "G", "Cv"]  # R2 uppercase matches cache file mols_R2.pt
 SEEDS = [42, 43, 44]
 
 # RSNN winner config (selected from A/B after gap seed=42 result).
@@ -52,12 +52,14 @@ RSNN_FLAGS_BASE = dict(
     lstm_init="default", dropout=0.0, warmup_epochs=0,
 )
 
-# RWNN best config (user-chosen earlier: m=16 from prior m-sweep, AdamW).
+# RWNN best config: m=4 (was 16; reduced 2026-05-24 for speed).
+# pe_in_dim = 2*w + 19 = 35 (same as RSNN search w=16 → w+19=35), so model
+# params are unchanged.
 RWNN_FLAGS = dict(
     walk_type="walk_ada",  # random walk with adaptive non-backtracking
     distances=1, mol_edge_feat=1,
     batch_size=96, h_dim=128, num_layers=2,
-    m=16, w=8, reduce="sum", lr=0.00075,
+    m=4, w=8, reduce="sum", lr=0.00075,
     grad_clip=1.0, weight_decay=0.0001, optimizer="adamw",
     lstm_init="default", dropout=0.0, warmup_epochs=0,
 )
@@ -79,7 +81,7 @@ AB_OLD_METRICS = REPO / "runs/qm9_compare/O_B1_adamw/seed42/metrics.json"
 MAX_SBATCH_SLOTS = 8  # dym-lab2 has 8 A40 GPUs
 MAX_LOCAL_SLOTS = 4   # dym-lab3 has 4 L40S GPUs
 MAX_RETRIES = 1
-STALE_LOG_MIN = 15  # train.log not updated in N minutes => stale
+STALE_LOG_MIN = 30  # train.log not updated in N minutes => stale (was 15; bumped to handle slurm queue latency on dym-lab2)
 
 
 # ---------------------------------------------------------------------------
@@ -223,6 +225,11 @@ def is_slurm_alive(jid):
             ["squeue", "-h", "-j", str(jid), "-o", "%T"],
             capture_output=True, text=True, timeout=10,
         )
+        if r.returncode != 0:
+            # squeue errored (DB unreachable, etc) — return None for "unknown"
+            # so the caller can treat the job as "possibly still queued" rather
+            # than dead. Without this, slurm DB flakiness false-positives jobs.
+            return None
         state = r.stdout.strip()
         return state in ("RUNNING", "PENDING", "CONFIGURING")
     except Exception:
@@ -448,12 +455,18 @@ def tick():
         if metrics_path(job).exists():
             done_jobs.append(job)
             continue
-        # Is this job currently running?
         key = job["key"]
+        # Permanent skip if exceeded retries (no resubmit)
+        if state["retries"].get(key, 0) > MAX_RETRIES:
+            continue
+        # Is this job currently running?
         local_pid = state["local_pids"].get(key)
         slurm_jid = state["slurm_jids"].get(key)
         local_run = local_pid is not None and is_local_alive(local_pid)
-        slurm_run = slurm_jid is not None and is_slurm_alive(slurm_jid)
+        slurm_alive_check = is_slurm_alive(slurm_jid) if slurm_jid is not None else False
+        # If slurm DB is flaky (returns None), assume the jid is still queued.
+        # Otherwise we false-positive mark jobs as dead and exhaust retries.
+        slurm_run = slurm_jid is not None and (slurm_alive_check is True or slurm_alive_check is None)
         if local_run or slurm_run:
             running_jobs.append(job)
             continue
@@ -472,7 +485,7 @@ def tick():
             if slurm_jid is not None:
                 state["slurm_jids"].pop(key, None)
             if state["retries"][key] > MAX_RETRIES:
-                print(f"[orch] job {key} EXCEEDED RETRIES ({state['retries'][key]}); skipping")
+                print(f"[orch] job {key} EXCEEDED RETRIES ({state['retries'][key]}); skipping permanently")
                 continue
         pending_jobs.append(job)
     save_state(state)
