@@ -2,6 +2,65 @@ import torch
 import random
 from collections import deque
 
+
+# ---------------------------------------------------------------------------
+# Quadruplet geometric features (bond angle, dihedral) for sample_dfs.
+# ---------------------------------------------------------------------------
+
+def _bond_angle(p_prev2, p_prev1, p_curr):
+    """Bond angle θ at p_prev1 between (p_prev2, p_prev1, p_curr).
+
+    Returns θ ∈ [0, π] as a scalar tensor. Clamps cosine to [-1, 1] to
+    suppress floating-point noise without biasing the answer at endpoints
+    (torch.acos handles exact ±1 correctly).
+    """
+    a = p_prev2 - p_prev1
+    b = p_curr - p_prev1
+    a_norm = a.norm()
+    b_norm = b.norm()
+    eps = 1e-8
+    cos_t = (a * b).sum() / (a_norm * b_norm + eps)
+    cos_t = cos_t.clamp(-1.0, 1.0)
+    return torch.acos(cos_t)
+
+
+def _dihedral(p0, p1, p2, p3):
+    """Dihedral φ ∈ [-π, π] for the four points (p0, p1, p2, p3).
+
+    Uses the standard atan2-based formula to avoid arccos sign loss:
+        b1 = p1 - p0;  b2 = p2 - p1;  b3 = p3 - p2
+        n1 = b1 × b2;  n2 = b2 × b3
+        m1 = n1 × (b2 / ‖b2‖)
+        x = n1 · n2;  y = m1 · n2
+        φ = atan2(y, x)
+    Degenerate (collinear three-of-four) returns 0.
+    """
+    b1 = p1 - p0
+    b2 = p2 - p1
+    b3 = p3 - p2
+    n1 = torch.cross(b1, b2, dim=-1)
+    n2 = torch.cross(b2, b3, dim=-1)
+    b2_norm = b2.norm()
+    if b2_norm < 1e-8:
+        return torch.zeros((), dtype=p0.dtype, device=p0.device)
+    b2_hat = b2 / b2_norm
+    m1 = torch.cross(n1, b2_hat, dim=-1)
+    x = (n1 * n2).sum()
+    y = (m1 * n2).sum()
+    return torch.atan2(y, x)
+
+
+def _angle_basis(theta, K):
+    """Bond-angle Fourier basis: cos(l θ) for l = 1..K, returns (K,) tensor."""
+    ls = torch.arange(1, K + 1, dtype=theta.dtype, device=theta.device)
+    return torch.cos(ls * theta)
+
+
+def _dihedral_basis(phi, K):
+    """Dihedral Fourier basis: (sin(l φ), cos(l φ)) for l = 1..K, returns (2K,)."""
+    ls = torch.arange(1, K + 1, dtype=phi.dtype, device=phi.device)
+    return torch.cat([torch.sin(ls * phi), torch.cos(ls * phi)])
+
 def get_neighbor_dict(data):
     """
     Computes and returns the neighbor dictionary for a graph represented by data.edge_index.
@@ -142,10 +201,28 @@ def sample_bfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     
     return data
 
-def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
+def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
+               max_search_len=None, angles=False, dihedrals=False,
+               angle_K=8, dihedral_K=4):
     """
     Performs DFS-based searches on the graph and computes the edge encoding on the fly.
-    
+
+    New optional features (default off, fully backward-compatible):
+      max_search_len : int or None
+        If set, terminates each DFS at this position instead of max_len.
+        Effective cap is min(max_len, max_search_len).
+      angles : bool
+        If True, append bond-angle Fourier features (cos(l θ), l=1..angle_K)
+        at each step pos >= 2. Steps with pos < 2 are zero-filled.
+      dihedrals : bool
+        If True, append dihedral Fourier features (sin/cos(l φ), l=1..dihedral_K)
+        at each step pos >= 3. Steps with pos < 3 are zero-filled.
+      angle_K, dihedral_K : int
+        Basis sizes (default 8 / 4 per Gasteiger et al. DimeNet defaults).
+
+    Requires data.pos (N, 3) for angle/dihedral features. Without those flags,
+    behaviour is byte-for-byte identical to the original function.
+
     For each DFS search:
       - A random starting node is chosen.
       - A DFS is performed (without revisiting nodes) to obtain an ordering of nodes.
@@ -157,14 +234,14 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
       - The DFS order is stored in a tensor of shape (nw, max_len), where unfilled positions
         remain padded with vocab['PAD'].
       - The actual length (number of nodes visited) is recorded.
-    
+
     Parameters:
         data (torch_geometric.data.Data): Graph data object with 'edge_index' and 'x_emb' attributes.
         nw (int): Number of DFS searches to perform.
         max_len (int): Maximum length of each DFS search order; shorter searches are padded with vocab['PAD'].
         s (int): Window size for the edge encoding.
         vocab (dict): Mapping from tokens to embedding ids; must include an entry for 'PAD'.
-    
+
     Returns:
         data (torch_geometric.data.Data): The input data object with three new attributes:
             - walk_emb: A tensor of shape (nw, max_len) with the DFS search order in embedding ids.
@@ -201,6 +278,24 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     else:
         walk_pe_extra = None
 
+    # Quadruplet geometric features (per Gasteiger et al. DimeNet). Allocated
+    # only when requested; require data.pos.
+    if angles or dihedrals:
+        if not hasattr(data, "pos") or data.pos is None:
+            raise ValueError("angles/dihedrals=True requires data.pos (N, 3) coordinates.")
+        pos_xyz = data.pos
+    walk_pe_angle = (
+        torch.zeros((nw, max_len, angle_K), dtype=torch.float)
+        if angles else None
+    )
+    walk_pe_dihedral = (
+        torch.zeros((nw, max_len, 2 * dihedral_K), dtype=torch.float)
+        if dihedrals else None
+    )
+
+    # Effective per-walk length cap (search-length, separate from max_len padding).
+    cap = max_len if max_search_len is None else min(int(max_search_len), max_len)
+
     # For each DFS search:
     for i in range(nw):
         start_node = random.randint(0, num_nodes - 1)
@@ -208,8 +303,8 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
         stack = [start_node]
         order = []  # To store the raw node indices in the DFS order.
         pos = 0     # Current position in the DFS order.
-        
-        while stack and pos < max_len:
+
+        while stack and pos < cap:
             node = stack.pop()
             if node in visited:
                 continue
@@ -238,6 +333,22 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
             if walk_pe_extra is not None and pos > 0:
                 prev_in_order = order[pos - 1]
                 walk_pe_extra[i, pos] = add_edge_feat[prev_in_order, node]
+
+            # Quadruplet geometric features. DFS guarantees four distinct
+            # nodes at pos >= 3 (no revisits), so bond angle / dihedral are
+            # well-defined by construction (modulo collinearity, handled
+            # inside _bond_angle / _dihedral with eps safeguards).
+            if walk_pe_angle is not None and pos >= 2:
+                v0 = order[pos - 2]
+                v1 = order[pos - 1]
+                theta = _bond_angle(pos_xyz[v0], pos_xyz[v1], pos_xyz[node])
+                walk_pe_angle[i, pos] = _angle_basis(theta, angle_K)
+            if walk_pe_dihedral is not None and pos >= 3:
+                u0 = order[pos - 3]
+                u1 = order[pos - 2]
+                u2 = order[pos - 1]
+                phi = _dihedral(pos_xyz[u0], pos_xyz[u1], pos_xyz[u2], pos_xyz[node])
+                walk_pe_dihedral[i, pos] = _dihedral_basis(phi, dihedral_K)
             pos += 1
 
             # Push unvisited neighbors onto the stack in randomized order.
@@ -251,10 +362,14 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None):
 
     data.walk_emb = searches_emb
     data.walk_ids = searches[None, :, :]
+    parts = [encoding_edge]
     if walk_pe_extra is not None:
-        data.walk_pe = torch.cat([encoding_edge, walk_pe_extra], dim=-1)
-    else:
-        data.walk_pe = encoding_edge
+        parts.append(walk_pe_extra)
+    if walk_pe_angle is not None:
+        parts.append(walk_pe_angle)
+    if walk_pe_dihedral is not None:
+        parts.append(walk_pe_dihedral)
+    data.walk_pe = parts[0] if len(parts) == 1 else torch.cat(parts, dim=-1)
     data.lengths = torch.tensor(lengths, dtype=torch.long)
     return data
 

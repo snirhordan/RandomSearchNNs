@@ -102,9 +102,19 @@ def build_add_edge_feat(
 
 
 def compute_pe_in_dim(walk_type: str, w: int, distances: int,
-                      mol_edge_feat: int, rbf_K: int = 16) -> int:
-    """Return the model's ``pe_in_dim`` for the given config."""
+                      mol_edge_feat: int, rbf_K: int = 16,
+                      angles: int = 0, dihedrals: int = 0,
+                      angle_K: int = 8, dihedral_K: int = 4) -> int:
+    """Return the model's ``pe_in_dim`` for the given config.
+
+    Angle features contribute ``angle_K`` per step (cos l*theta basis).
+    Dihedral features contribute ``2*dihedral_K`` per step (sin+cos l*phi).
+    Both are only active for DFS search walks (sample_dfs); other samplers
+    ignore the flags. See utils/search.py docstring.
+    """
     bonus = rbf_K * distances + 3 * mol_edge_feat
+    if walk_type in ("dfs", "bfs", "search"):
+        bonus += angle_K * int(angles) + 2 * dihedral_K * int(dihedrals)
     if walk_type in ("walk", "walk_ada"):
         return 2 * w + bonus
     # RSNN DFS-based search (sample_dfs): produces only an edge encoding of
@@ -236,7 +246,9 @@ class QM9WalkDataset(Dataset):
                    "idx", "name", "y_orig")
 
     def __init__(self, mols, vocab, rbf, distances, mol_edge_feat,
-                 m, w, max_len, walk_type="walk_ada"):
+                 m, w, max_len, walk_type="walk_ada",
+                 max_search_len=None, angles=0, dihedrals=0,
+                 angle_K=8, dihedral_K=4):
         self.mols = mols
         self.vocab = vocab
         self.rbf = rbf
@@ -246,6 +258,11 @@ class QM9WalkDataset(Dataset):
         self.w = int(w)
         self.max_len = int(max_len)
         self.walk_type = str(walk_type)
+        self.max_search_len = (int(max_search_len) if max_search_len else None)
+        self.angles = int(angles)
+        self.dihedrals = int(dihedrals)
+        self.angle_K = int(angle_K)
+        self.dihedral_K = int(dihedral_K)
 
     def __len__(self):
         return len(self.mols)
@@ -260,7 +277,12 @@ class QM9WalkDataset(Dataset):
         if self.walk_type == "search":
             # RSNN DFS-based search: pad to ``max_len`` and record ``lengths``.
             d = sample_dfs(d, self.m, self.w, self.max_len,
-                           self.vocab, add_edge_feat=add_ef)
+                           self.vocab, add_edge_feat=add_ef,
+                           max_search_len=self.max_search_len,
+                           angles=bool(self.angles),
+                           dihedrals=bool(self.dihedrals),
+                           angle_K=self.angle_K,
+                           dihedral_K=self.dihedral_K)
         else:
             d = sample_walks_adaptive(d, self.m, n, self.w, False,
                                       self.max_len, self.vocab,
@@ -288,6 +310,23 @@ def _build_argparser() -> argparse.ArgumentParser:
     )
     p.add_argument("--distances", type=int, choices=[0, 1], default=0)
     p.add_argument("--mol_edge_feat", type=int, choices=[0, 1], default=0)
+    # Search-walk quadruplet features (sample_dfs only). Off by default so
+    # existing checkpoints + the 72-job sweep results remain valid.
+    p.add_argument("--max_search_len", type=int, default=None,
+                   help="If set, cap DFS search length at this many steps. "
+                        "Default None = no cap (DFS visits all reachable atoms, "
+                        "bounded by max_len padding).")
+    p.add_argument("--angles", type=int, choices=[0, 1], default=0,
+                   help="Add bond-angle Fourier features (cos(l*theta), l=1..angle_K) "
+                        "per DFS step (sample_dfs only). Requires data.pos.")
+    p.add_argument("--dihedrals", type=int, choices=[0, 1], default=0,
+                   help="Add dihedral Fourier features (sin/cos(l*phi), l=1..dihedral_K) "
+                        "per DFS step (sample_dfs only). Requires data.pos.")
+    p.add_argument("--angle_K", type=int, default=8,
+                   help="Bond-angle Fourier basis size (default 8, per DimeNet).")
+    p.add_argument("--dihedral_K", type=int, default=4,
+                   help="Dihedral Fourier basis size (default 4, per DimeNet); "
+                        "doubled (sin+cos) so per-step adds 2*dihedral_K features.")
     p.add_argument("--rbf_K", type=int, default=16)
     p.add_argument("--rbf_cutoff", type=float, default=5.0)
     p.add_argument("--seed", type=int, default=42)
@@ -530,7 +569,11 @@ def main() -> int:
 
     pe_in_dim = compute_pe_in_dim(args.walk_type, args.w,
                                   args.distances, args.mol_edge_feat,
-                                  rbf_K=args.rbf_K)
+                                  rbf_K=args.rbf_K,
+                                  angles=args.angles,
+                                  dihedrals=args.dihedrals,
+                                  angle_K=args.angle_K,
+                                  dihedral_K=args.dihedral_K)
     pe_out_dim = 16
     log(f"pe_in_dim={pe_in_dim} pe_out_dim={pe_out_dim} "
         f"vocab_size={len(vocab)}")
@@ -553,6 +596,11 @@ def main() -> int:
             "w": args.w,
             "reduce": args.reduce,
             "walk_type": args.walk_type,
+            "max_search_len": args.max_search_len,
+            "angles": args.angles,
+            "dihedrals": args.dihedrals,
+            "angle_K": args.angle_K,
+            "dihedral_K": args.dihedral_K,
             "n_splits": args.n_splits,
             "max_len": max_len,
             "n_total": n_total,
@@ -613,18 +661,23 @@ def main() -> int:
         valid_mols = [mols[i] for i in valid_idx]
         test_mols = [mols[i] for i in test_idx]
 
+        _ds_kw = dict(
+            walk_type=args.walk_type,
+            max_search_len=args.max_search_len,
+            angles=args.angles,
+            dihedrals=args.dihedrals,
+            angle_K=args.angle_K,
+            dihedral_K=args.dihedral_K,
+        )
         train_ds = QM9WalkDataset(train_mols, vocab, rbf,
                                   args.distances, args.mol_edge_feat,
-                                  args.m, args.w, max_len,
-                                  walk_type=args.walk_type)
+                                  args.m, args.w, max_len, **_ds_kw)
         valid_ds = QM9WalkDataset(valid_mols, vocab, rbf,
                                   args.distances, args.mol_edge_feat,
-                                  args.m, args.w, max_len,
-                                  walk_type=args.walk_type)
+                                  args.m, args.w, max_len, **_ds_kw)
         test_ds = QM9WalkDataset(test_mols, vocab, rbf,
                                  args.distances, args.mol_edge_feat,
-                                 args.m, args.w, max_len,
-                                 walk_type=args.walk_type)
+                                 args.m, args.w, max_len, **_ds_kw)
 
         common = dict(batch_size=args.batch_size,
                       num_workers=args.num_workers,
