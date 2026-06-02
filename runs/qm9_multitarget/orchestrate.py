@@ -377,9 +377,14 @@ def hoist_local_metrics(job):
 # ---------------------------------------------------------------------------
 EGNN_GAP_TARGETS = {
     "mu": 0.029, "alpha": 0.071, "homo": 0.029, "lumo": 0.025,
-    "gap": 0.0504, "r2": 0.106, "zpve": 1.55e-3, "U0": 0.011,
+    "gap": 0.048, "r2": 0.106, "zpve": 1.55e-3, "U0": 0.011,
     "U": 0.012, "H": 0.012, "G": 0.012, "Cv": 0.031,
-}  # From EGNN paper Table 1 (approximate units vary)
+}  # EGNN paper values (Satorras 2021 Table 2), in pipeline native units (eV / D / Bohr^k / cal mol^-1 K^-1).
+# Note: our internal EGNN rerun for `gap` produced 0.0504 eV (~5% higher than the paper's 0.048),
+# within seed variance. Ratios use the paper value to stay consistent with the literature.
+# Note: "R2" target key in TARGETS uses uppercase; the lowercase "r2" entry below is intentionally
+# not looked up by aggregate() (case mismatch) -> EGNN ratio shown as "?" / "-" per the convention
+# that we do not cite a single per-target EGNN R^2 number.
 
 
 def aggregate(jobs):
@@ -413,9 +418,37 @@ def aggregate(jobs):
 
     # Markdown summary
     md = ["# qm9_multitarget results", ""]
-    md.append(f"Configs:")
-    md.append(f"- RSNN winner (from A/B): pe_in_dim depends; gap seed=42 reused from O-series winner.")
-    md.append(f"- RWNN: walk_type=walk_ada, m=16, w=8, h=128, L=2, AdamW+wd=1e-4")
+    md.append("Configs (verified from per-cell metrics.json):")
+    md.append(
+        "- RSNN: walk_type=search, m=8, w=16 (encoding window s), h=128, L=2, AdamW, "
+        "lr=7.5e-4, wd=1e-4, 300ep/patience=50, EGNN-norm meann/MAD + L1 loss, "
+        "Cormorant fixed split. Winner of A/B is O_B1_densedist (DFS-jump dense-distance "
+        "fix in sample_dfs). gap seed=42 reused from A/B."
+    )
+    md.append(
+        "- RWNN: walk_type=walk_ada, m=4, w=8 (encoding window s), h=128, L=2, AdamW, "
+        "lr=7.5e-4, wd=1e-4, 300ep/patience=50. Mid-sweep switched from m=16 -> m=4 for "
+        "speed; all 36 RWNN cells reran with m=4."
+    )
+    md.append(
+        "- Walk length is per-molecule n (atom count), padded to max_len=29 for batching; "
+        "`--w` is the encoding window, not the walk length."
+    )
+    md.append("")
+    md.append("Notes:")
+    md.append(
+        "- EGNN reference for gap is the paper-published 0.048 eV; our internal rerun gave "
+        "0.0504 eV (~5% higher, within seed variance). Ratios use the paper value."
+    )
+    md.append(
+        "- R2 EGNN reference not cited per-target (atomization-energy task; <R^2> spatial "
+        "extent in Bohr^2) -- shown as `-` / `?`."
+    )
+    md.append(
+        "- Energy targets (U0/U/H/G) RWNN ratios are ~17000-19000x -- the walk-pool readout "
+        "is bounded budget so cannot in principle aggregate size-extensive quantities; "
+        "structural ceiling discussed in `~/vault/reflections/ito/2026-05-22-o-series-ceiling.md`."
+    )
     md.append("")
     md.append("| Model | Target | mean ± std (n) | EGNN | Ratio |")
     md.append("|-------|--------|----------------|------|-------|")
