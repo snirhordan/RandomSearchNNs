@@ -47,6 +47,10 @@ from generation.qm9 import (  # noqa: E402
     qm9_to_data,
 )
 from generation.scaffold_split import random_split  # noqa: E402
+from models.seq_encoder import (  # noqa: E402
+    TransformerSeqLayer,
+    sinusoidal_positional_encoding,
+)
 from torch_geometric.loader import DataLoader  # noqa: E402
 from torch_geometric.utils import scatter  # noqa: E402
 from utils.search import sample_walks_adaptive, sample_dfs  # noqa: E402
@@ -200,6 +204,121 @@ class RSNN_LSTM_Reg(nn.Module):
             else:
                 x, h = self.rnn_layers[l](x, h)
             x, _ = pad_packed_sequence(x, batch_first=True)
+
+            node_agg = torch.flatten(x, start_dim=0, end_dim=1)
+            node_agg = node_agg[walk_ids_flat != -1, :]
+            node_agg = scatter(node_agg, walk_ids_proc_flat_masked,
+                               dim=0, reduce='mean')
+
+            x_flat = torch.flatten(x, start_dim=0, end_dim=1)
+            if l != self.num_layers - 1:
+                x_flat[walk_ids_flat != -1, :] = node_agg[
+                    walk_ids_proc_flat_masked, :]
+                x = x_flat.reshape(x.shape)
+
+        graph_ids = torch.cat([
+            torch.ones((graph_ns[i] + 1, ), dtype=int) * i
+            for i in range(walk_ids.shape[0])
+        ]).to(x.device)
+        x = scatter(node_agg, graph_ids, dim=0, reduce=self.reduce)
+
+        x = self.dropout(x)
+        x = torch.relu(self.readout[0](x))
+        x = self.readout[1](x)
+        # NO sigmoid -- regression head.
+        return x
+
+
+# ---------------------------------------------------------------------------
+# Transformer regression head: same scatter skeleton, attention base.
+# ---------------------------------------------------------------------------
+
+
+class RSNN_TRSF_Reg(nn.Module):
+    """Transformer-based RSNN with a linear regression readout.
+
+    Mirrors ``RSNN_LSTM_Reg``'s walk-id processing, per-layer node
+    aggregation (scatter-mean over walk positions of the same node, written
+    back into the sequences between layers), pooling, and readout. Only the
+    sequence base differs: ``TransformerSeqLayer`` stacks instead of LSTMs,
+    operating at d_model = hid_dim + pe_out_dim (no bidirectional doubling).
+
+    ``attn_mode='full'`` lets every walk step attend to every step;
+    ``'causal'`` restricts each step to itself + preceding steps (LM-style).
+    ``pos_enc`` selects additive sinusoidal (added once before layer 0, as in
+    ``models.rwnn.RSNN_TRSF``), rotary (inside attention, RoFormer), or none.
+    """
+
+    def __init__(self, pe_in_dim, pe_out_dim, hid_dim, out_dim, num_layers,
+                 n_emb, reduce, dropout=0.0, nhead=8, ffn_mult=4,
+                 attn_mode="full", pos_enc="sinusoidal"):
+        super().__init__()
+        self.d_model = hid_dim + pe_out_dim
+        self.layers = nn.ModuleList([
+            TransformerSeqLayer(self.d_model, nhead, ffn_mult=ffn_mult,
+                                attn_mode=attn_mode, pos_enc=pos_enc,
+                                dropout=dropout)
+            for _ in range(num_layers)
+        ])
+        self.readout = nn.ModuleList()
+        self.readout.append(nn.Linear(self.d_model, self.d_model))
+        self.readout.append(nn.Linear(self.d_model, out_dim))
+
+        self.pe_encoding = nn.Linear(pe_in_dim, pe_out_dim)
+        self.embedding = nn.Embedding(n_emb, hid_dim, n_emb - 1)
+
+        self.reduce = reduce
+        self.num_layers = num_layers
+        self.pos_enc = pos_enc
+        self.dropout = nn.Dropout(p=float(dropout)) if dropout > 0 \
+            else nn.Identity()
+
+    def forward(self, batch):
+        walk_emb = batch.walk_emb
+        walk_ids = batch.walk_ids
+        encoding = batch.walk_pe
+        lengths = batch.lengths
+
+        max_l = int(torch.max(lengths))
+        graph_ns = [torch.max(walk_ids[i, :, :])
+                    for i in range(walk_ids.shape[0])]
+        walk_ids = walk_ids[:, :, :max_l]
+        walk_ids_proc = []
+        for i in range(walk_ids.shape[0]):
+            if i == 0:
+                walk_ids_proc.append(
+                    torch.zeros((1, walk_ids.shape[1], walk_ids.shape[2]),
+                                dtype=int).to(walk_emb.device))
+            else:
+                mult = sum(graph_ns[:i]) + i
+                walk_ids_proc.append(
+                    torch.ones((1, walk_ids.shape[1], walk_ids.shape[2]),
+                               dtype=int).to(walk_emb.device) * mult)
+
+        walk_ids_flat = torch.flatten(walk_ids, start_dim=0, end_dim=2)
+        walk_ids_proc = torch.flatten(
+            walk_ids + torch.cat(walk_ids_proc, dim=0),
+            start_dim=0, end_dim=1)
+        walk_ids_proc_flat = torch.flatten(walk_ids_proc,
+                                            start_dim=0, end_dim=1)
+        walk_ids_proc_flat_masked = walk_ids_proc_flat[walk_ids_flat != -1]
+
+        # Truncate sequences to the longest real length in the batch (the
+        # LSTM path gets this for free from pack/pad_packed_sequence).
+        walk_emb = walk_emb[:, :max_l]
+        encoding = encoding[:, :max_l, :]
+        x = torch.cat([self.embedding(walk_emb),
+                       self.pe_encoding(encoding)], dim=-1)
+
+        if self.pos_enc == "sinusoidal":
+            x = x + sinusoidal_positional_encoding(
+                max_l, self.d_model, device=x.device)
+
+        seq_range = torch.arange(max_l, device=x.device)
+        pad_mask = seq_range[None, :] >= lengths[:, None]   # True = PAD
+
+        for l in range(self.num_layers):
+            x = self.layers[l](x, pad_mask=pad_mask)
 
             node_agg = torch.flatten(x, start_dim=0, end_dim=1)
             node_agg = node_agg[walk_ids_flat != -1, :]
@@ -434,6 +553,41 @@ def _build_argparser() -> argparse.ArgumentParser:
         type=int, default=0,
         help="Linear LR warmup for this many epochs before --lr_scheduler kicks in.",
     )
+    # --- Sequence-base selection (RNN -> Transformer switch) ---
+    p.add_argument(
+        "--base",
+        choices=["lstm", "transformer"],
+        default="lstm",
+        help="Sequence base model. 'lstm' = RSNN_LSTM_Reg (legacy, default; "
+             "prior runs unaffected). 'transformer' = RSNN_TRSF_Reg with "
+             "pre-LN TransformerSeqLayer stacks (models/seq_encoder.py).",
+    )
+    p.add_argument(
+        "--nhead",
+        type=int, default=8,
+        help="Attention heads (transformer base only). Must divide "
+             "h_dim + pe_out_dim (=h_dim+16).",
+    )
+    p.add_argument(
+        "--ffn_mult",
+        type=int, default=4,
+        help="Transformer FFN width multiplier (dim_ff = ffn_mult * d_model).",
+    )
+    p.add_argument(
+        "--attn_mode",
+        choices=["full", "causal"],
+        default="full",
+        help="'full' = every walk step attends to every step. 'causal' = "
+             "LM-style mask, each step attends to itself + preceding steps.",
+    )
+    p.add_argument(
+        "--pos_enc",
+        choices=["sinusoidal", "rope", "none"],
+        default="sinusoidal",
+        help="Positional encoding for the transformer base: additive "
+             "sinusoidal before layer 0, rotary (RoFormer) inside attention, "
+             "or none.",
+    )
     return p
 
 
@@ -644,6 +798,12 @@ def main() -> int:
             "lstm_init": args.lstm_init,
             "dropout": args.dropout,
             "warmup_epochs": args.warmup_epochs,
+            # Sequence-base selection (RNN -> Transformer switch).
+            "base": args.base,
+            "nhead": args.nhead if args.base == "transformer" else None,
+            "ffn_mult": args.ffn_mult if args.base == "transformer" else None,
+            "attn_mode": args.attn_mode if args.base == "transformer" else None,
+            "pos_enc": args.pos_enc if args.base == "transformer" else None,
         },
         "splits": [],
     }
@@ -696,11 +856,24 @@ def main() -> int:
         valid_loader = DataLoader(valid_ds, shuffle=False, **common)
         test_loader = DataLoader(test_ds, shuffle=False, **common)
 
-        model = RSNN_LSTM_Reg(pe_in_dim, pe_out_dim, args.h_dim, 1,
-                              args.num_layers, len(vocab),
-                              args.reduce, dropout=args.dropout).to(device)
+        if args.base == "transformer":
+            model = RSNN_TRSF_Reg(pe_in_dim, pe_out_dim, args.h_dim, 1,
+                                  args.num_layers, len(vocab),
+                                  args.reduce, dropout=args.dropout,
+                                  nhead=args.nhead, ffn_mult=args.ffn_mult,
+                                  attn_mode=args.attn_mode,
+                                  pos_enc=args.pos_enc).to(device)
+        else:
+            model = RSNN_LSTM_Reg(pe_in_dim, pe_out_dim, args.h_dim, 1,
+                                  args.num_layers, len(vocab),
+                                  args.reduce, dropout=args.dropout).to(device)
+        if s == 0:
+            n_params = sum(p_.numel() for p_ in model.parameters())
+            run_metrics["config"]["n_params"] = n_params
+            log(f"model={type(model).__name__} n_params={n_params:,} "
+                f"(EGNN reference: 745,224)")
         # Optional orthogonal LSTM init + forget-gate bias = 1.0 (Jozefowicz trick).
-        if args.lstm_init == "orthogonal":
+        if args.lstm_init == "orthogonal" and args.base == "lstm":
             for lstm in model.rnn_layers:
                 for name, p in lstm.named_parameters():
                     if "weight_hh" in name:
@@ -871,6 +1044,7 @@ __all__ = [
     "edge_attr_to_dense",
     "QM9WalkDataset",
     "RSNN_LSTM_Reg",
+    "RSNN_TRSF_Reg",
     "main",
 ]
 
