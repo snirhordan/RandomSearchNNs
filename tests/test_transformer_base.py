@@ -20,6 +20,7 @@ from models.seq_encoder import (
     TransformerSeqLayer,
     apply_rope,
     rope_cos_sin,
+    sinusoidal_positional_encoding,
 )
 from quickstart.train_qm9 import RSNN_TRSF_Reg
 from utils.search import sample_walks_adaptive
@@ -250,6 +251,52 @@ def test_model_extra_padding_invariance():
     with torch.no_grad():
         out_ext = model(ext)
     assert torch.allclose(out, out_ext, atol=1e-5)
+
+
+def test_sinusoidal_pe_odd_d_model():
+    """Odd d_model must not crash (cosine half has floor(d/2) columns)."""
+    pe = sinusoidal_positional_encoding(10, 143)
+    assert pe.shape == (10, 143)
+    assert torch.isfinite(pe).all()
+
+
+def _permute_walk_steps(batch, walk_idx, perm):
+    """Permute the step order of one walk consistently across all attrs."""
+    L = len(perm)
+    batch.walk_emb[walk_idx, :L] = batch.walk_emb[walk_idx, perm]
+    batch.walk_pe[walk_idx, :L] = batch.walk_pe[walk_idx, perm]
+    g, s = divmod(walk_idx, batch.walk_ids.shape[1])
+    batch.walk_ids[g, s, :L] = batch.walk_ids[g, s, perm]
+    return batch
+
+
+def test_positional_signal_reaches_upper_layers():
+    """The node-state write-back between layers erases additive positional
+    info, so sinusoidal PE must be re-injected before every layer: with
+    pos_enc='none' a 2-layer full-attention model is invariant to permuting
+    a walk's step order, while 'sinusoidal' and 'rope' must NOT be."""
+    L = 10
+    perm = torch.randperm(L)
+    while torch.equal(perm, torch.arange(L)):
+        perm = torch.randperm(L)
+
+    outs = {}
+    for pe in ["none", "sinusoidal", "rope"]:
+        torch.manual_seed(3)
+        model = RSNN_TRSF_Reg(PE_IN_DIM, PE_OUT_DIM, HID_DIM, OUT_DIM, 2, 6,
+                              "sum", nhead=NHEAD, attn_mode="full",
+                              pos_enc=pe).eval()
+        with torch.no_grad():
+            base = model(_synthetic_batch(seed=7))
+            permuted = model(
+                _permute_walk_steps(_synthetic_batch(seed=7), 0, perm))
+        outs[pe] = (base, permuted)
+
+    assert torch.allclose(*outs["none"], atol=1e-5), \
+        "pos_enc='none' should be step-order invariant (sanity check)"
+    assert not torch.allclose(*outs["sinusoidal"], atol=1e-6), \
+        "sinusoidal PE not reaching upper layers (write-back erased it)"
+    assert not torch.allclose(*outs["rope"], atol=1e-6)
 
 
 def test_model_cuda(tiny_graph, tiny_vocab, device):

@@ -33,7 +33,8 @@ def sinusoidal_positional_encoding(max_len: int, d_model: int,
         * -(math.log(10000.0) / d_model))
     pe = torch.zeros(max_len, d_model, device=device)
     pe[:, 0::2] = torch.sin(positions * div_term)
-    pe[:, 1::2] = torch.cos(positions * div_term)
+    # odd d_model: cosine half has floor(d_model/2) columns
+    pe[:, 1::2] = torch.cos(positions * div_term[:d_model // 2])
     return pe
 
 

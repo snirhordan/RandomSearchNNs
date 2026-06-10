@@ -245,8 +245,13 @@ class RSNN_TRSF_Reg(nn.Module):
 
     ``attn_mode='full'`` lets every walk step attend to every step;
     ``'causal'`` restricts each step to itself + preceding steps (LM-style).
-    ``pos_enc`` selects additive sinusoidal (added once before layer 0, as in
-    ``models.rwnn.RSNN_TRSF``), rotary (inside attention, RoFormer), or none.
+    ``pos_enc`` selects additive sinusoidal, rotary (inside attention,
+    RoFormer), or none. Sinusoidal is re-added before EVERY layer (not just
+    layer 0 as in ``models.rwnn.RSNN_TRSF``): the inter-layer node-aggregation
+    write-back replaces each token with its scatter-mean node state, which
+    erases additive positional signal, so without re-injection every layer
+    after the first would be order-invariant (RoPE is immune because it
+    rotates q/k afresh inside each attention call).
     """
 
     def __init__(self, pe_in_dim, pe_out_dim, hid_dim, out_dim, num_layers,
@@ -310,14 +315,19 @@ class RSNN_TRSF_Reg(nn.Module):
         x = torch.cat([self.embedding(walk_emb),
                        self.pe_encoding(encoding)], dim=-1)
 
+        sin_pe = None
         if self.pos_enc == "sinusoidal":
-            x = x + sinusoidal_positional_encoding(
+            sin_pe = sinusoidal_positional_encoding(
                 max_l, self.d_model, device=x.device)
 
         seq_range = torch.arange(max_l, device=x.device)
         pad_mask = seq_range[None, :] >= lengths[:, None]   # True = PAD
 
         for l in range(self.num_layers):
+            if sin_pe is not None:
+                # re-inject each layer: the node-state write-back below wipes
+                # additive positional info (see class docstring)
+                x = x + sin_pe
             x = self.layers[l](x, pad_mask=pad_mask)
 
             node_agg = torch.flatten(x, start_dim=0, end_dim=1)
@@ -545,8 +555,10 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument(
         "--dropout",
         type=float, default=0.0,
-        help="LSTM hidden-state dropout (only effective when num_layers >= 2 "
-             "via PyTorch's native LSTM dropout between stacked blocks).",
+        help="Dropout rate. base=lstm: applied to pooled graph features "
+             "before the readout MLP only. base=transformer: additionally "
+             "applied inside every TransformerSeqLayer (attention output + "
+             "FFN hidden), i.e. materially stronger at the same value.",
     )
     p.add_argument(
         "--warmup_epochs",
@@ -795,7 +807,7 @@ def main() -> int:
             "grad_clip": args.grad_clip,
             "weight_decay": args.weight_decay,
             "optimizer": args.optimizer,
-            "lstm_init": args.lstm_init,
+            "lstm_init": args.lstm_init if args.base == "lstm" else None,
             "dropout": args.dropout,
             "warmup_epochs": args.warmup_epochs,
             # Sequence-base selection (RNN -> Transformer switch).
