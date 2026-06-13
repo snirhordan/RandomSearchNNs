@@ -39,18 +39,24 @@ def sinusoidal_positional_encoding(max_len: int, d_model: int,
 
 
 def rope_cos_sin(seq_len: int, head_dim: int, device=None,
-                 base: float = 10000.0):
+                 base: float = 10000.0, positions: torch.Tensor = None):
     """Rotary embedding tables ``cos, sin`` of shape ``(seq_len, head_dim//2)``.
 
-    Position index is the walk-step number 0..seq_len-1, so attention scores
-    depend on the relative offset between sequence positions (RoFormer eq. 16).
+    By default the position index is the step number 0..seq_len-1, so attention
+    scores depend on the relative offset between sequence positions (RoFormer
+    eq. 16). Pass ``positions`` (1-D, length ``seq_len``) to override — used by
+    cross-path attention to reset the position index at each walk boundary so
+    independently-sampled walks are not given a spurious global ordering.
     """
     if head_dim % 2 != 0:
         raise ValueError(f"RoPE requires even head_dim, got {head_dim}")
     inv_freq = base ** (
         -torch.arange(0, head_dim, 2, dtype=torch.float32, device=device)
         / head_dim)
-    t = torch.arange(seq_len, dtype=torch.float32, device=device)
+    if positions is None:
+        t = torch.arange(seq_len, dtype=torch.float32, device=device)
+    else:
+        t = positions.to(dtype=torch.float32, device=device)
     freqs = torch.outer(t, inv_freq)              # (seq_len, head_dim/2)
     return freqs.cos(), freqs.sin()
 
@@ -123,15 +129,22 @@ class TransformerSeqLayer(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor,
-                pad_mask: torch.Tensor = None) -> torch.Tensor:
-        """``x``: (B, L, d_model); ``pad_mask``: (B, L) bool, True = PAD."""
+                pad_mask: torch.Tensor = None,
+                rope_pos_ids: torch.Tensor = None) -> torch.Tensor:
+        """``x``: (B, L, d_model); ``pad_mask``: (B, L) bool, True = PAD.
+
+        ``rope_pos_ids`` (1-D, length L) overrides the default 0..L-1 RoPE
+        position index — used by cross-path attention to reset positions at
+        each concatenated-walk boundary.
+        """
         B, L, _ = x.shape
         h = self.norm1(x)
         qkv = self.qkv(h).reshape(B, L, 3, self.nhead, self.head_dim)
         q, k, v = qkv.permute(2, 0, 3, 1, 4)      # each (B, nhead, L, hd)
 
         if self.pos_enc == "rope":
-            cos, sin = rope_cos_sin(L, self.head_dim, device=x.device)
+            cos, sin = rope_cos_sin(L, self.head_dim, device=x.device,
+                                    positions=rope_pos_ids)
             q = apply_rope(q, cos, sin)
             k = apply_rope(k, cos, sin)
 
