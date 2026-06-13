@@ -72,17 +72,25 @@ def main():
         egnn = collect(EGNN_ROOT / t)
         rows.append((t, UNITS.get(t, ""), fmt(full), fmt(causal), fmt(egnn)))
 
+    # ratio of best transformer (full attn) mean to EGNN mean
+    def ratio(target):
+        full = trsf_maes("full", target)
+        egnn = collect(EGNN_ROOT / target)
+        if not full or not egnn:
+            return "—"
+        return f"{np.mean(full) / np.mean(egnn):.2f}x"
+
     if args.markdown:
-        print("| Target | Units | TRSF full attn | TRSF causal attn | EGNN (745K) |")
-        print("|---|---|---|---|---|")
-        for r in rows:
-            print("| " + " | ".join(r) + " |")
+        print("| Target | Units | TRSF full attn | TRSF causal attn | EGNN (745K) | full/EGNN |")
+        print("|---|---|---|---|---|---|")
+        for t, r in zip(TARGETS, rows):
+            print("| " + " | ".join(r) + f" | {ratio(t)} |")
     else:
-        w = [8, 10, 24, 24, 24]
-        hdr = ["target", "units", "TRSF full", "TRSF causal", "EGNN"]
+        w = [8, 10, 24, 24, 24, 10]
+        hdr = ["target", "units", "TRSF full", "TRSF causal", "EGNN", "full/EGNN"]
         print("".join(h.ljust(x) for h, x in zip(hdr, w)))
-        for r in rows:
-            print("".join(c.ljust(x) for c, x in zip(r, w)))
+        for t, r in zip(TARGETS, rows):
+            print("".join(c.ljust(x) for c, x in zip(r + (ratio(t),), w)))
 
 
 if __name__ == "__main__":
