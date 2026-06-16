@@ -42,7 +42,7 @@ def rope_cos_sin(seq_len: int, head_dim: int, device=None,
                  base: float = 10000.0):
     """Rotary embedding tables ``cos, sin`` of shape ``(seq_len, head_dim//2)``.
 
-    Position index is the walk-step number 0..seq_len-1, so attention scores
+    The position index is the step number 0..seq_len-1, so attention scores
     depend on the relative offset between sequence positions (RoFormer eq. 16).
     """
     if head_dim % 2 != 0:

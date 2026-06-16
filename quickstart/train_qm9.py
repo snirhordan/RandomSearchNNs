@@ -243,8 +243,9 @@ class RSNN_TRSF_Reg(nn.Module):
     sequence base differs: ``TransformerSeqLayer`` stacks instead of LSTMs,
     operating at d_model = hid_dim + pe_out_dim (no bidirectional doubling).
 
-    ``attn_mode='full'`` lets every walk step attend to every step;
-    ``'causal'`` restricts each step to itself + preceding steps (LM-style).
+    ``attn_mode='full'`` lets every walk step attend to every step within its
+    own walk; ``'causal'`` restricts each step to itself + preceding steps
+    (LM-style).
     ``pos_enc`` selects additive sinusoidal, rotary (inside attention,
     RoFormer), or none. Sinusoidal is re-added before EVERY layer (not just
     layer 0 as in ``models.rwnn.RSNN_TRSF``): the inter-layer node-aggregation
@@ -589,8 +590,9 @@ def _build_argparser() -> argparse.ArgumentParser:
         "--attn_mode",
         choices=["full", "causal"],
         default="full",
-        help="'full' = every walk step attends to every step. 'causal' = "
-             "LM-style mask, each step attends to itself + preceding steps.",
+        help="'full' = every walk step attends to every step within its walk. "
+             "'causal' = LM-style mask, each step attends to itself + "
+             "preceding steps.",
     )
     p.add_argument(
         "--pos_enc",
