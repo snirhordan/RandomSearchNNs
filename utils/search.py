@@ -250,8 +250,7 @@ def sample_bfs(data, nw, s, max_len, vocab, add_edge_feat=None):
 
 def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
                max_search_len=None, angles=False, dihedrals=False,
-               angle_K=8, dihedral_K=4, vectorize=False,
-               bonded_only=False):
+               angle_K=8, dihedral_K=4, vectorize=False):
     """
     Performs DFS-based searches on the graph and computes the edge encoding on the fly.
 
@@ -306,11 +305,6 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
 
     # Use the precomputed neighbor dictionary (or compute & store it if not present).
     neighbor_dict = get_neighbor_dict(data)  # get_neighbor_dict returns a dict with sets.
-
-    # Adjacency test for bonded_only angle/dihedral gating (checks both
-    # directions to be robust to any asymmetry in neighbor_dict).
-    def _bonded(a, b):
-        return (b in neighbor_dict[a]) or (a in neighbor_dict[b])
 
     # Pre-allocate tensors for DFS searches.
     searches_emb = torch.full((nw, max_len), vocab['PAD'], dtype=torch.long)
@@ -400,31 +394,23 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
             # inside _bond_angle / _dihedral with eps safeguards).
             # Two paths: scalar (default, one tensor op per step) or vectorize
             # (collect indices, batched compute after the loop).
-            # When bonded_only, emit a quadruplet feature only if the
-            # consecutive walk-order atoms are actually bonded (a real
-            # angle/dihedral path); DFS stack-jumps produce non-physical
-            # angles between unbonded atoms, which are then zero-filled.
             if walk_pe_angle is not None and pos >= 2:
                 v0 = order[pos - 2]
                 v1 = order[pos - 1]
-                if (not bonded_only) or (_bonded(v0, v1) and _bonded(v1, node)):
-                    if vectorize:
-                        angle_idx.append((i, pos, v0, v1, node))
-                    else:
-                        theta = _bond_angle(pos_xyz[v0], pos_xyz[v1], pos_xyz[node])
-                        walk_pe_angle[i, pos] = _angle_basis(theta, angle_K)
+                if vectorize:
+                    angle_idx.append((i, pos, v0, v1, node))
+                else:
+                    theta = _bond_angle(pos_xyz[v0], pos_xyz[v1], pos_xyz[node])
+                    walk_pe_angle[i, pos] = _angle_basis(theta, angle_K)
             if walk_pe_dihedral is not None and pos >= 3:
                 u0 = order[pos - 3]
                 u1 = order[pos - 2]
                 u2 = order[pos - 1]
-                if (not bonded_only) or (
-                        _bonded(u0, u1) and _bonded(u1, u2)
-                        and _bonded(u2, node)):
-                    if vectorize:
-                        dihedral_idx.append((i, pos, u0, u1, u2, node))
-                    else:
-                        phi = _dihedral(pos_xyz[u0], pos_xyz[u1], pos_xyz[u2], pos_xyz[node])
-                        walk_pe_dihedral[i, pos] = _dihedral_basis(phi, dihedral_K)
+                if vectorize:
+                    dihedral_idx.append((i, pos, u0, u1, u2, node))
+                else:
+                    phi = _dihedral(pos_xyz[u0], pos_xyz[u1], pos_xyz[u2], pos_xyz[node])
+                    walk_pe_dihedral[i, pos] = _dihedral_basis(phi, dihedral_K)
             pos += 1
 
             # Push unvisited neighbors onto the stack in randomized order.

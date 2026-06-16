@@ -245,20 +245,14 @@ class RSNN_TRSF_Reg(nn.Module):
 
     ``attn_mode='full'`` lets every walk step attend to every step within its
     own walk; ``'causal'`` restricts each step to itself + preceding steps
-    (LM-style); ``'full_xpath'`` (cross-path) concatenates a molecule's ``m``
-    walks into one attention sequence so every token attends to every token
-    across ALL the molecule's walks (cross-molecule attention is blocked by
-    the batch dimension). full_xpath is parameter-count-identical to full —
-    same weights, only a wider attention field.
+    (LM-style).
     ``pos_enc`` selects additive sinusoidal, rotary (inside attention,
     RoFormer), or none. Sinusoidal is re-added before EVERY layer (not just
     layer 0 as in ``models.rwnn.RSNN_TRSF``): the inter-layer node-aggregation
     write-back replaces each token with its scatter-mean node state, which
     erases additive positional signal, so without re-injection every layer
     after the first would be order-invariant (RoPE is immune because it
-    rotates q/k afresh inside each attention call). Under full_xpath the RoPE
-    position index resets at each walk boundary (per-walk reset), so the m
-    independently-sampled walks are not given a spurious global ordering.
+    rotates q/k afresh inside each attention call).
     """
 
     def __init__(self, pe_in_dim, pe_out_dim, hid_dim, out_dim, num_layers,
@@ -266,12 +260,9 @@ class RSNN_TRSF_Reg(nn.Module):
                  attn_mode="full", pos_enc="sinusoidal"):
         super().__init__()
         self.d_model = hid_dim + pe_out_dim
-        # full_xpath = full attention over a molecule's concatenated walks.
-        self.cross_path = (attn_mode == "full_xpath")
-        layer_attn = "full" if self.cross_path else attn_mode
         self.layers = nn.ModuleList([
             TransformerSeqLayer(self.d_model, nhead, ffn_mult=ffn_mult,
-                                attn_mode=layer_attn, pos_enc=pos_enc,
+                                attn_mode=attn_mode, pos_enc=pos_enc,
                                 dropout=dropout)
             for _ in range(num_layers)
         ])
@@ -333,32 +324,12 @@ class RSNN_TRSF_Reg(nn.Module):
         seq_range = torch.arange(max_l, device=x.device)
         pad_mask = seq_range[None, :] >= lengths[:, None]   # True = PAD
 
-        # Cross-path: reshape a molecule's nw walks into one attention
-        # sequence of length nw*max_l. Rows of x are molecule-major
-        # ([mol0_w0, mol0_w1, ..., mol1_w0, ...]) from PyG collation, so the
-        # view groups walks by molecule correctly. RoPE positions reset per
-        # walk so the independently-sampled walks get no global ordering.
-        if self.cross_path:
-            B = walk_ids.shape[0]
-            nw = walk_ids.shape[1]
-            xpath_pos = seq_range.repeat(nw)             # (nw*max_l,) per-walk reset
-        else:
-            B = nw = None
-            xpath_pos = None
-
         for l in range(self.num_layers):
             if sin_pe is not None:
                 # re-inject each layer: the node-state write-back below wipes
                 # additive positional info (see class docstring)
                 x = x + sin_pe
-            if self.cross_path:
-                d = x.shape[-1]
-                xr = x.view(B, nw * max_l, d)
-                pm = pad_mask.view(B, nw * max_l)
-                xr = self.layers[l](xr, pad_mask=pm, rope_pos_ids=xpath_pos)
-                x = xr.view(B * nw, max_l, d)
-            else:
-                x = self.layers[l](x, pad_mask=pad_mask)
+            x = self.layers[l](x, pad_mask=pad_mask)
 
             node_agg = torch.flatten(x, start_dim=0, end_dim=1)
             node_agg = node_agg[walk_ids_flat != -1, :]
@@ -407,8 +378,7 @@ class QM9WalkDataset(Dataset):
     def __init__(self, mols, vocab, rbf, distances, mol_edge_feat,
                  m, w, max_len, walk_type="walk_ada",
                  max_search_len=None, angles=0, dihedrals=0,
-                 angle_K=8, dihedral_K=4, vectorize_quadruplet=0,
-                 bonded_only=0):
+                 angle_K=8, dihedral_K=4, vectorize_quadruplet=0):
         self.mols = mols
         self.vocab = vocab
         self.rbf = rbf
@@ -424,7 +394,6 @@ class QM9WalkDataset(Dataset):
         self.angle_K = int(angle_K)
         self.dihedral_K = int(dihedral_K)
         self.vectorize_quadruplet = int(vectorize_quadruplet)
-        self.bonded_only = int(bonded_only)
 
     def __len__(self):
         return len(self.mols)
@@ -445,8 +414,7 @@ class QM9WalkDataset(Dataset):
                            dihedrals=bool(self.dihedrals),
                            angle_K=self.angle_K,
                            dihedral_K=self.dihedral_K,
-                           vectorize=bool(self.vectorize_quadruplet),
-                           bonded_only=bool(self.bonded_only))
+                           vectorize=bool(self.vectorize_quadruplet))
         else:
             d = sample_walks_adaptive(d, self.m, n, self.w, False,
                                       self.max_len, self.vocab,
@@ -620,13 +588,11 @@ def _build_argparser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--attn_mode",
-        choices=["full", "causal", "full_xpath"],
+        choices=["full", "causal"],
         default="full",
         help="'full' = every walk step attends to every step within its walk. "
              "'causal' = LM-style mask, each step attends to itself + "
-             "preceding steps. 'full_xpath' = cross-path: a molecule's m walks "
-             "are concatenated so every token attends across all the "
-             "molecule's walks (param-count-identical to full).",
+             "preceding steps.",
     )
     p.add_argument(
         "--pos_enc",
@@ -635,14 +601,6 @@ def _build_argparser() -> argparse.ArgumentParser:
         help="Positional encoding for the transformer base: additive "
              "sinusoidal before layer 0, rotary (RoFormer) inside attention, "
              "or none.",
-    )
-    p.add_argument(
-        "--bonded_angles_only",
-        type=int, choices=[0, 1], default=0,
-        help="If 1, emit bond-angle/dihedral features only at DFS steps where "
-             "the consecutive walk-order atoms are actually bonded (zero-fill "
-             "stack-jump pseudo-angles between non-bonded atoms). Default 0 "
-             "keeps the path-order angles used by prior runs.",
     )
     return p
 
@@ -819,7 +777,6 @@ def main() -> int:
             "angle_K": args.angle_K,
             "dihedral_K": args.dihedral_K,
             "vectorize_quadruplet": args.vectorize_quadruplet,
-            "bonded_angles_only": args.bonded_angles_only,
             "n_splits": args.n_splits,
             "max_len": max_len,
             "n_total": n_total,
@@ -894,7 +851,6 @@ def main() -> int:
             angle_K=args.angle_K,
             dihedral_K=args.dihedral_K,
             vectorize_quadruplet=args.vectorize_quadruplet,
-            bonded_only=args.bonded_angles_only,
         )
         train_ds = QM9WalkDataset(train_mols, vocab, rbf,
                                   args.distances, args.mol_edge_feat,
