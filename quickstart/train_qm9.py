@@ -48,6 +48,7 @@ from generation.qm9 import (  # noqa: E402
 )
 from generation.scaffold_split import random_split  # noqa: E402
 from models.seq_encoder import (  # noqa: E402
+    GeometricAttentionBias,
     TransformerSeqLayer,
     sinusoidal_positional_encoding,
 )
@@ -257,7 +258,9 @@ class RSNN_TRSF_Reg(nn.Module):
 
     def __init__(self, pe_in_dim, pe_out_dim, hid_dim, out_dim, num_layers,
                  n_emb, reduce, dropout=0.0, nhead=8, ffn_mult=4,
-                 attn_mode="full", pos_enc="sinusoidal"):
+                 attn_mode="full", pos_enc="sinusoidal",
+                 geom_bias=False, geom_rbf_K=16, geom_rbf_cutoff=5.0,
+                 geom_angle_K=8, geom_dihedral_K=4, geom_hidden=32):
         super().__init__()
         self.d_model = hid_dim + pe_out_dim
         self.layers = nn.ModuleList([
@@ -266,6 +269,16 @@ class RSNN_TRSF_Reg(nn.Module):
                                 dropout=dropout)
             for _ in range(num_layers)
         ])
+        # Optional E(3)-invariant geometric attention bias (gated, default off
+        # so existing checkpoints/sweep stay valid with 0 extra params).
+        self.geom_bias = bool(geom_bias)
+        self.geom_bias_mod = (
+            GeometricAttentionBias(nhead, rbf_K=geom_rbf_K,
+                                   rbf_cutoff=geom_rbf_cutoff,
+                                   angle_K=geom_angle_K,
+                                   dihedral_K=geom_dihedral_K,
+                                   hidden=geom_hidden)
+            if geom_bias else None)
         self.readout = nn.ModuleList()
         self.readout.append(nn.Linear(self.d_model, self.d_model))
         self.readout.append(nn.Linear(self.d_model, out_dim))
@@ -324,12 +337,19 @@ class RSNN_TRSF_Reg(nn.Module):
         seq_range = torch.arange(max_l, device=x.device)
         pad_mask = seq_range[None, :] >= lengths[:, None]   # True = PAD
 
+        # Geometry is layer-invariant: compute the pairwise bias once and reuse
+        # it across all layers (the node-state write-back changes x, not coords).
+        attn_bias = None
+        if self.geom_bias_mod is not None:
+            walk_xyz = batch.walk_xyz[:, :max_l, :]         # (BN, max_l, 3)
+            attn_bias = self.geom_bias_mod(walk_xyz, pad_mask)
+
         for l in range(self.num_layers):
             if sin_pe is not None:
                 # re-inject each layer: the node-state write-back below wipes
                 # additive positional info (see class docstring)
                 x = x + sin_pe
-            x = self.layers[l](x, pad_mask=pad_mask)
+            x = self.layers[l](x, pad_mask=pad_mask, attn_bias=attn_bias)
 
             node_agg = torch.flatten(x, start_dim=0, end_dim=1)
             node_agg = node_agg[walk_ids_flat != -1, :]
@@ -369,7 +389,9 @@ class QM9WalkDataset(Dataset):
 
     Collation-incompatible attrs (``distances``, ``pos``, ``y_full``, ``z``,
     ``_neighbor_dict``) are stripped before return so PyG ``Batch`` can
-    collate cleanly.
+    collate cleanly. ``walk_xyz`` (emitted under ``emit_xyz``) is intentionally
+    NOT stripped: it must survive collation like ``walk_pe``/``walk_emb`` so the
+    model forward can build the geometric attention bias on-GPU.
     """
 
     _STRIP_KEYS = ("distances", "pos", "y_full", "z", "_neighbor_dict",
@@ -378,7 +400,8 @@ class QM9WalkDataset(Dataset):
     def __init__(self, mols, vocab, rbf, distances, mol_edge_feat,
                  m, w, max_len, walk_type="walk_ada",
                  max_search_len=None, angles=0, dihedrals=0,
-                 angle_K=8, dihedral_K=4, vectorize_quadruplet=0):
+                 angle_K=8, dihedral_K=4, vectorize_quadruplet=0,
+                 canonical=0, emit_xyz=0, wl_iters=3):
         self.mols = mols
         self.vocab = vocab
         self.rbf = rbf
@@ -394,6 +417,9 @@ class QM9WalkDataset(Dataset):
         self.angle_K = int(angle_K)
         self.dihedral_K = int(dihedral_K)
         self.vectorize_quadruplet = int(vectorize_quadruplet)
+        self.canonical = int(canonical)
+        self.emit_xyz = int(emit_xyz)
+        self.wl_iters = int(wl_iters)
 
     def __len__(self):
         return len(self.mols)
@@ -407,14 +433,19 @@ class QM9WalkDataset(Dataset):
         n = d.x.shape[0]
         if self.walk_type == "search":
             # RSNN DFS-based search: pad to ``max_len`` and record ``lengths``.
-            d = sample_dfs(d, self.m, self.w, self.max_len,
+            # canonical DFS is deterministic; m>1 yields identical walks, force m=1
+            m_eff = 1 if self.canonical else self.m
+            d = sample_dfs(d, m_eff, self.w, self.max_len,
                            self.vocab, add_edge_feat=add_ef,
                            max_search_len=self.max_search_len,
                            angles=bool(self.angles),
                            dihedrals=bool(self.dihedrals),
                            angle_K=self.angle_K,
                            dihedral_K=self.dihedral_K,
-                           vectorize=bool(self.vectorize_quadruplet))
+                           vectorize=bool(self.vectorize_quadruplet),
+                           canonical=bool(self.canonical),
+                           emit_xyz=bool(self.emit_xyz),
+                           wl_iters=self.wl_iters)
         else:
             d = sample_walks_adaptive(d, self.m, n, self.w, False,
                                       self.max_len, self.vocab,
@@ -464,6 +495,21 @@ def _build_argparser() -> argparse.ArgumentParser:
                         "sample_dfs instead of per-step. Numerically equivalent to the "
                         "scalar path; ~5-10x faster on the angle/dihedral term. Default "
                         "0 keeps the slow path for byte-equivalence with prior runs.")
+    p.add_argument("--canonical", type=int, choices=[0, 1], default=0,
+                   help="If 1, replace the random-start/random-shuffle DFS with a "
+                        "deterministic canonical traversal: WL/Morgan per-atom rank "
+                        "(seeded by atomic number z and degree), start at the rank-"
+                        "minimum atom, push neighbors in canonical order, ties broken "
+                        "by original atom index. Forces m=1 (one walk covers the "
+                        "connected molecule). sample_dfs / walk_type=search only. "
+                        "Default 0 keeps the random DFS (existing sweep behavior).")
+    p.add_argument("--emit_xyz", type=int, choices=[0, 1], default=0,
+                   help="If 1, sample_dfs emits walk_xyz (nw,max_len,3): xyz of the "
+                        "atom at each walk position (zeros at padding) for the "
+                        "geometric attention bias. Requires data.pos. Default 0.")
+    p.add_argument("--wl_iters", type=int, default=3,
+                   help="Weisfeiler-Lehman refinement rounds for the canonical rank "
+                        "(only used when --canonical 1). Default 3.")
     p.add_argument("--rbf_K", type=int, default=16)
     p.add_argument("--rbf_cutoff", type=float, default=5.0)
     p.add_argument("--seed", type=int, default=42)
@@ -602,11 +648,47 @@ def _build_argparser() -> argparse.ArgumentParser:
              "sinusoidal before layer 0, rotary (RoFormer) inside attention, "
              "or none.",
     )
+    # --- Geometric pairwise attention bias (transformer base only) ---
+    p.add_argument(
+        "--geom_bias",
+        type=int, choices=[0, 1], default=0,
+        help="Transformer base only. If 1, add an E(3)-invariant pairwise "
+             "geometric attention bias (distance RBF + flanking bond angles "
+             "+ dihedral) to every attention layer. Requires --base "
+             "transformer and sample_dfs walk_xyz (--walk_type search). "
+             "Auto-enables walk_xyz emission. Leave --max_search_len at its "
+             "default (None) so the single canonical walk covers every atom; "
+             "a smaller cap truncates the walk and the bias misses atoms. "
+             "Default 0 keeps prior behavior; existing checkpoints/sweep "
+             "unaffected.",
+    )
+    p.add_argument("--geom_rbf_K", type=int, default=16,
+                   help="Geometric-bias distance RBF channels (default 16).")
+    p.add_argument("--geom_rbf_cutoff", type=float, default=5.0,
+                   help="Geometric-bias RBF cutoff in Angstrom (default 5.0).")
+    p.add_argument("--geom_angle_K", type=int, default=8,
+                   help="Geometric-bias bond-angle cos-basis size (default 8).")
+    p.add_argument("--geom_dihedral_K", type=int, default=4,
+                   help="Geometric-bias dihedral basis size (default 4; "
+                        "doubled sin+cos).")
+    p.add_argument("--geom_hidden", type=int, default=32,
+                   help="Geometric-bias MLP hidden width (default 32).")
     return p
 
 
 def main() -> int:
     args = _build_argparser().parse_args()
+
+    # The geometric attention bias needs the transformer base over DFS-search
+    # walks carrying per-position coordinates (walk_xyz). Fail fast otherwise.
+    if args.geom_bias:
+        if args.base != "transformer":
+            raise ValueError(
+                "--geom_bias 1 requires --base transformer.")
+        if args.walk_type != "search":
+            raise ValueError(
+                "--geom_bias 1 requires --walk_type search (sample_dfs emits "
+                "the walk_xyz coordinates the geometric bias consumes).")
 
     # --- seeds ---
     SEED = args.seed
@@ -777,6 +859,9 @@ def main() -> int:
             "angle_K": args.angle_K,
             "dihedral_K": args.dihedral_K,
             "vectorize_quadruplet": args.vectorize_quadruplet,
+            "canonical": args.canonical,
+            "emit_xyz": args.emit_xyz,
+            "wl_iters": args.wl_iters,
             "n_splits": args.n_splits,
             "max_len": max_len,
             "n_total": n_total,
@@ -818,6 +903,17 @@ def main() -> int:
             "ffn_mult": args.ffn_mult if args.base == "transformer" else None,
             "attn_mode": args.attn_mode if args.base == "transformer" else None,
             "pos_enc": args.pos_enc if args.base == "transformer" else None,
+            # Geometric pairwise attention bias (transformer base only).
+            "geom_bias": args.geom_bias if args.base == "transformer" else None,
+            "geom_rbf_K": args.geom_rbf_K if args.base == "transformer" else None,
+            "geom_rbf_cutoff": (
+                args.geom_rbf_cutoff if args.base == "transformer" else None),
+            "geom_angle_K": (
+                args.geom_angle_K if args.base == "transformer" else None),
+            "geom_dihedral_K": (
+                args.geom_dihedral_K if args.base == "transformer" else None),
+            "geom_hidden": (
+                args.geom_hidden if args.base == "transformer" else None),
         },
         "splits": [],
     }
@@ -851,6 +947,12 @@ def main() -> int:
             angle_K=args.angle_K,
             dihedral_K=args.dihedral_K,
             vectorize_quadruplet=args.vectorize_quadruplet,
+            canonical=args.canonical,
+            # walk_xyz is required by the geometric bias; auto-enable it there
+            # (still honors an explicit --emit_xyz 1).
+            emit_xyz=int(args.emit_xyz
+                         or (args.geom_bias and args.walk_type == "search")),
+            wl_iters=args.wl_iters,
         )
         train_ds = QM9WalkDataset(train_mols, vocab, rbf,
                                   args.distances, args.mol_edge_feat,
@@ -876,7 +978,13 @@ def main() -> int:
                                   args.reduce, dropout=args.dropout,
                                   nhead=args.nhead, ffn_mult=args.ffn_mult,
                                   attn_mode=args.attn_mode,
-                                  pos_enc=args.pos_enc).to(device)
+                                  pos_enc=args.pos_enc,
+                                  geom_bias=bool(args.geom_bias),
+                                  geom_rbf_K=args.geom_rbf_K,
+                                  geom_rbf_cutoff=args.geom_rbf_cutoff,
+                                  geom_angle_K=args.geom_angle_K,
+                                  geom_dihedral_K=args.geom_dihedral_K,
+                                  geom_hidden=args.geom_hidden).to(device)
         else:
             model = RSNN_LSTM_Reg(pe_in_dim, pe_out_dim, args.h_dim, 1,
                                   args.num_layers, len(vocab),
