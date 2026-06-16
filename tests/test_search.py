@@ -23,7 +23,9 @@ from utils.search import (
     sample_walks_rum_adaptive,
     dfs_edges,
     get_neighbor_dict,
+    _canonical_ranks,
 )
+from torch_geometric.data import Data
 
 
 # ---------------------------------------------------------------------------
@@ -429,3 +431,214 @@ def test_dfs_dense_distances_backward_nonvanishing_grads(rng_seed):
     assert not vanishing, (
         f"Parameters with vanishing gradients (<1e-6): {vanishing}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Phase 1: canonical deterministic DFS (--canonical 1) + emit_xyz
+# ---------------------------------------------------------------------------
+
+
+def _labeled_graph(edges, z, pos=None):
+    """Build an undirected ``Data`` from an edge list + per-node atomic numbers.
+
+    ``z`` is the atomic-number tensor; ``x_emb`` mirrors a per-atom token id.
+    ``pos`` (optional) attaches 3D coordinates for emit_xyz / angle tests.
+    """
+    n = len(z)
+    src = [u for u, v in edges] + [v for u, v in edges]
+    dst = [v for u, v in edges] + [u for u, v in edges]
+    edge_index = torch.tensor([src, dst], dtype=torch.long)
+    z = torch.tensor(z, dtype=torch.long)
+    data = Data(
+        x=torch.zeros((n, 1), dtype=torch.float),
+        edge_index=edge_index,
+        x_emb=z.clone(),
+    )
+    data.z = z
+    if pos is not None:
+        data.pos = torch.as_tensor(pos, dtype=torch.float)
+    return data
+
+
+def _vocab_for_z(data):
+    return {"PAD": int(data.x_emb.max().item()) + 1}
+
+
+def _permute_graph(data, perm):
+    """Relabel atoms by ``perm`` (new index i holds old atom perm[i])."""
+    perm = list(perm)
+    inv = [0] * len(perm)
+    for new_i, old_i in enumerate(perm):
+        inv[old_i] = new_i
+    ei = data.edge_index
+    new_ei = torch.stack([
+        torch.tensor([inv[int(v)] for v in ei[0]], dtype=torch.long),
+        torch.tensor([inv[int(v)] for v in ei[1]], dtype=torch.long),
+    ])
+    z = data.z
+    new_z = torch.tensor([int(z[old]) for old in perm], dtype=torch.long)
+    g = Data(
+        x=torch.zeros((len(perm), 1), dtype=torch.float),
+        edge_index=new_ei,
+        x_emb=new_z.clone(),
+    )
+    g.z = new_z
+    if hasattr(data, "pos") and data.pos is not None:
+        g.pos = torch.stack([data.pos[old] for old in perm])
+    return g
+
+
+def test_sample_dfs_canonical_deterministic_across_calls(random_graph_50):
+    """Canonical DFS consumes NO randomness: identical output under any seed."""
+    data = random_graph_50
+    data.pos = torch.randn(data.x.shape[0], 3)
+    vocab = _vocab_for(data)
+    random.seed(1); torch.manual_seed(1); np.random.seed(1)
+    a = sample_dfs(data.clone(), nw=1, s=2, max_len=50, vocab=vocab, canonical=True)
+    random.seed(999); torch.manual_seed(999); np.random.seed(999)
+    b = sample_dfs(data.clone(), nw=1, s=2, max_len=50, vocab=vocab, canonical=True)
+    assert torch.equal(a.walk_emb, b.walk_emb)
+    assert torch.equal(a.walk_ids, b.walk_ids)
+    assert torch.equal(a.walk_pe, b.walk_pe)
+    assert torch.equal(a.lengths, b.lengths)
+
+
+def test_sample_dfs_canonical_full_coverage(random_graph_50):
+    """A single canonical DFS visits every atom of a connected graph once."""
+    data = random_graph_50
+    n = data.x.shape[0]
+    vocab = _vocab_for(data)
+    out = sample_dfs(data.clone(), nw=1, s=2, max_len=n, vocab=vocab, canonical=True)
+    assert int(out.lengths[0]) == n
+    visited = [int(v) for v in out.walk_ids[0, 0] if int(v) != -1]
+    assert set(visited) == set(range(n))
+    assert len(visited) == n  # each atom exactly once
+
+
+def test_sample_dfs_canonical_isomorphism_invariant():
+    """Relabeling atoms permutes the walk consistently: the atomic-number
+    sequence and the angle/dihedral geometry along the canonical walk match."""
+    # Structurally asymmetric tree so WL distinguishes every atom (no ties).
+    #   0-1-2-3, with 4 hanging off 1 and 5 hanging off 2; distinct z's.
+    edges = [(0, 1), (1, 2), (2, 3), (1, 4), (2, 5)]
+    z = [6, 7, 8, 9, 1, 16]
+    pos = [
+        [0.0, 0.0, 0.0],
+        [1.0, 0.2, 0.0],
+        [2.0, -0.1, 0.3],
+        [3.0, 0.4, -0.2],
+        [1.1, 1.3, 0.5],
+        [2.2, -1.2, -0.4],
+    ]
+    g = _labeled_graph(edges, z, pos)
+    perm = [3, 0, 5, 1, 4, 2]  # arbitrary relabeling
+    gp = _permute_graph(g, perm)
+
+    vocab = {"PAD": int(max(z)) + 1}
+    kw = dict(nw=1, s=2, max_len=10, vocab=vocab, canonical=True,
+              angles=True, dihedrals=True)
+    a = sample_dfs(g.clone(), **kw)
+    b = sample_dfs(gp.clone(), **kw)
+
+    assert int(a.lengths[0]) == int(b.lengths[0]) == len(z)
+    ids_a = [int(v) for v in a.walk_ids[0, 0] if int(v) != -1]
+    ids_b = [int(v) for v in b.walk_ids[0, 0] if int(v) != -1]
+    # atomic-number sequence along the walk must be identical
+    seq_a = [int(g.z[v]) for v in ids_a]
+    seq_b = [int(gp.z[v]) for v in ids_b]
+    assert seq_a == seq_b
+    # geometry (angle + dihedral walk_pe) is permutation-covariant -> equal
+    assert torch.allclose(a.walk_pe, b.walk_pe, atol=1e-5)
+
+
+def test_sample_dfs_canonical_tie_break_by_index():
+    """A symmetric graph with a true automorphism resolves ties by original
+    index and stays deterministic."""
+    # Star K_{1,3}: center 0, identical leaves 1,2,3 (same z) => leaves tie.
+    edges = [(0, 1), (0, 2), (0, 3)]
+    z = [6, 1, 1, 1]
+    g = _labeled_graph(edges, z)
+    vocab = {"PAD": int(max(z)) + 1}
+    random.seed(7)
+    a = sample_dfs(g.clone(), nw=1, s=2, max_len=10, vocab=vocab, canonical=True)
+    random.seed(123)
+    b = sample_dfs(g.clone(), nw=1, s=2, max_len=10, vocab=vocab, canonical=True)
+    assert torch.equal(a.walk_ids, b.walk_ids)
+    ids = [int(v) for v in a.walk_ids[0, 0] if int(v) != -1]
+    # leaves (z=H, degree 1) rank below the center (z=C, degree 3); the three
+    # leaves tie, so start at the lowest-index leaf, then the center, then the
+    # remaining tied leaves in ascending original index.
+    assert ids == [1, 0, 2, 3]
+
+
+def test_sample_dfs_default_random_byte_identical(random_graph_50):
+    """New params at their defaults must not perturb RNG stream or output."""
+    data = random_graph_50
+    vocab = _vocab_for(data)
+    random.seed(42); torch.manual_seed(42); np.random.seed(42)
+    base = sample_dfs(data.clone(), nw=2, s=2, max_len=20, vocab=vocab)
+    random.seed(42); torch.manual_seed(42); np.random.seed(42)
+    new = sample_dfs(data.clone(), nw=2, s=2, max_len=20, vocab=vocab,
+                     canonical=False, emit_xyz=False, wl_iters=3)
+    assert torch.equal(base.walk_emb, new.walk_emb)
+    assert torch.equal(base.walk_ids, new.walk_ids)
+    assert torch.equal(base.walk_pe, new.walk_pe)
+    assert torch.equal(base.lengths, new.lengths)
+
+
+def test_sample_dfs_emit_xyz_shape_and_padding(random_graph_50):
+    """emit_xyz=True attaches walk_xyz; filled positions match pos[node],
+    padded positions are exactly zero; absent when emit_xyz=False."""
+    data = random_graph_50
+    n = data.x.shape[0]
+    data.pos = torch.randn(n, 3)
+    vocab = _vocab_for(data)
+    max_len = n
+    out = sample_dfs(data.clone(), nw=1, s=2, max_len=max_len, vocab=vocab,
+                     canonical=True, emit_xyz=True)
+    assert out.walk_xyz.shape == (1, max_len, 3)
+    length = int(out.lengths[0])
+    for j in range(length):
+        node = int(out.walk_ids[0, 0, j])
+        assert torch.equal(out.walk_xyz[0, j], data.pos[node])
+    for j in range(length, max_len):
+        assert torch.all(out.walk_xyz[0, j] == 0)
+    # absent when emit_xyz=False
+    out2 = sample_dfs(data.clone(), nw=1, s=2, max_len=max_len, vocab=vocab,
+                      canonical=True, emit_xyz=False)
+    assert not hasattr(out2, "walk_xyz")
+
+
+def test_sample_dfs_emit_xyz_requires_pos():
+    """emit_xyz=True on a Data lacking pos raises ValueError."""
+    edges = [(0, 1), (1, 2)]
+    z = [6, 6, 8]
+    g = _labeled_graph(edges, z)  # no pos
+    vocab = {"PAD": int(max(z)) + 1}
+    with pytest.raises(ValueError):
+        sample_dfs(g.clone(), nw=1, s=2, max_len=10, vocab=vocab,
+                   canonical=True, emit_xyz=True)
+
+
+def test_canonical_ranks_relabeling_invariant():
+    """_canonical_ranks is isomorphism-invariant, deterministic, and
+    PYTHONHASHSEED-independent."""
+    edges = [(0, 1), (1, 2), (2, 3), (1, 4), (2, 5)]
+    z = [6, 7, 8, 9, 1, 16]
+    g = _labeled_graph(edges, z)
+    perm = [3, 0, 5, 1, 4, 2]
+    gp = _permute_graph(g, perm)
+
+    nd_g = get_neighbor_dict(g)
+    nd_gp = get_neighbor_dict(gp)
+    ranks_g = _canonical_ranks(nd_g, 6, z=g.z)
+    ranks_gp = _canonical_ranks(nd_gp, 6, z=gp.z)
+
+    # inv[i] = new index holding old atom i; rank must transfer under perm
+    inv = [0] * len(perm)
+    for new_i, old_i in enumerate(perm):
+        inv[old_i] = new_i
+    for v in range(6):
+        assert ranks_g[v] == ranks_gp[inv[v]]
+    # deterministic across repeated calls (hash-free LUT)
+    assert _canonical_ranks(nd_g, 6, z=g.z) == ranks_g
