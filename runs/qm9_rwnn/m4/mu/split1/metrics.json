@@ -1,0 +1,158 @@
+{
+  "config": {
+    "target": "mu",
+    "distances": 1,
+    "mol_edge_feat": 1,
+    "rbf_K": 16,
+    "rbf_cutoff": 5.0,
+    "seed": 43,
+    "epochs": 15,
+    "early_stopping": 4,
+    "batch_size": 128,
+    "h_dim": 128,
+    "num_layers": 2,
+    "lr": 0.001,
+    "m": 4,
+    "w": 8,
+    "reduce": "mean",
+    "walk_type": "walk_ada",
+    "n_splits": 1,
+    "max_len": 29,
+    "n_total": 130831,
+    "pe_in_dim": 35,
+    "pe_out_dim": 16,
+    "y_mean": 2.672952890396118,
+    "y_std": 1.5034793615341187,
+    "vocab": {
+      "C": 0,
+      "F": 1,
+      "H": 2,
+      "N": 3,
+      "O": 4,
+      "PAD": 5
+    }
+  },
+  "splits": [
+    {
+      "split": 0,
+      "epochs_run": 15,
+      "best_valid_mae": 0.7781602740287781,
+      "test_mae": 0.7797903418540955,
+      "split_dt_sec": 3212.152339220047,
+      "epochs": [
+        {
+          "epoch": 0,
+          "train_mse": 0.7476395874341847,
+          "valid_mae": 0.8813416957855225,
+          "dt_sec": 215.59421730041504,
+          "improved": true
+        },
+        {
+          "epoch": 1,
+          "train_mse": 0.6702323256466987,
+          "valid_mae": 0.8624144792556763,
+          "dt_sec": 210.8617148399353,
+          "improved": true
+        },
+        {
+          "epoch": 2,
+          "train_mse": 0.6499032811640917,
+          "valid_mae": 0.852740466594696,
+          "dt_sec": 209.92131757736206,
+          "improved": true
+        },
+        {
+          "epoch": 3,
+          "train_mse": 0.6261214335791839,
+          "valid_mae": 0.856046199798584,
+          "dt_sec": 210.0424997806549,
+          "improved": false
+        },
+        {
+          "epoch": 4,
+          "train_mse": 0.5963139212675126,
+          "valid_mae": 0.8277034163475037,
+          "dt_sec": 210.5301308631897,
+          "improved": true
+        },
+        {
+          "epoch": 5,
+          "train_mse": 0.5687164852595873,
+          "valid_mae": 0.8220836520195007,
+          "dt_sec": 209.3415744304657,
+          "improved": true
+        },
+        {
+          "epoch": 6,
+          "train_mse": 0.5608220744501884,
+          "valid_mae": 0.8208385109901428,
+          "dt_sec": 209.80584526062012,
+          "improved": true
+        },
+        {
+          "epoch": 7,
+          "train_mse": 0.5447962075860182,
+          "valid_mae": 0.8043332695960999,
+          "dt_sec": 210.84471464157104,
+          "improved": true
+        },
+        {
+          "epoch": 8,
+          "train_mse": 0.5293541299209532,
+          "valid_mae": 0.8147332668304443,
+          "dt_sec": 210.5557758808136,
+          "improved": false
+        },
+        {
+          "epoch": 9,
+          "train_mse": 0.5269010437816284,
+          "valid_mae": 0.7873217463493347,
+          "dt_sec": 210.99600052833557,
+          "improved": true
+        },
+        {
+          "epoch": 10,
+          "train_mse": 0.530398617398467,
+          "valid_mae": 0.791610062122345,
+          "dt_sec": 209.50445795059204,
+          "improved": false
+        },
+        {
+          "epoch": 11,
+          "train_mse": 0.5088318712548247,
+          "valid_mae": 0.7818251252174377,
+          "dt_sec": 210.62023949623108,
+          "improved": true
+        },
+        {
+          "epoch": 12,
+          "train_mse": 0.5060908511426627,
+          "valid_mae": 0.7878974080085754,
+          "dt_sec": 210.9164490699768,
+          "improved": false
+        },
+        {
+          "epoch": 13,
+          "train_mse": 0.5000929097108033,
+          "valid_mae": 0.7818407416343689,
+          "dt_sec": 209.29304909706116,
+          "improved": false
+        },
+        {
+          "epoch": 14,
+          "train_mse": 0.49561905618210955,
+          "valid_mae": 0.7781602740287781,
+          "dt_sec": 209.4428687095642,
+          "improved": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "mean_test_mae": 0.7797903418540955,
+    "std_test_mae": 0.0,
+    "mean_valid_mae": 0.7781602740287781,
+    "total_wall_sec": 3212.2190141677856,
+    "peak_gpu_mem_mb": 264.4638671875
+  }
+}

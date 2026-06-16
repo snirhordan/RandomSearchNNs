@@ -1,0 +1,108 @@
+[dispatch-rwnn] 78 jobs (gpus=[2, 2, 2, 3, 3, 3], epochs=15, patience=4)
+  preview: m=16 tgt=G split=0
+  preview: m=16 tgt=G split=1
+  preview: m=16 tgt=G split=2
+  preview: m=16 tgt=Cv split=0
+  preview: m=16 tgt=Cv split=1
+[dispatch-rwnn] [1/78] launch m=16 tgt=G     split=0 -> gpu=2 pid=157108
+[dispatch-rwnn] [2/78] launch m=16 tgt=G     split=1 -> gpu=2 pid=157109
+[dispatch-rwnn] [3/78] launch m=16 tgt=G     split=2 -> gpu=2 pid=157110
+[dispatch-rwnn] [4/78] launch m=16 tgt=Cv    split=0 -> gpu=3 pid=157111
+[dispatch-rwnn] [5/78] launch m=16 tgt=Cv    split=1 -> gpu=3 pid=157112
+[dispatch-rwnn] [6/78] launch m=16 tgt=Cv    split=2 -> gpu=3 pid=157113
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=G     split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=G     split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=G     split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=Cv    split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=Cv    split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=16 tgt=Cv    split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [7/78] launch m=8 tgt=mu    split=0 -> gpu=2 pid=158490
+[dispatch-rwnn] [8/78] launch m=8 tgt=mu    split=1 -> gpu=2 pid=158491
+[dispatch-rwnn] [9/78] launch m=8 tgt=mu    split=2 -> gpu=2 pid=158492
+[dispatch-rwnn] [10/78] launch m=8 tgt=alpha split=0 -> gpu=3 pid=158495
+[dispatch-rwnn] [11/78] launch m=8 tgt=alpha split=1 -> gpu=3 pid=158496
+[dispatch-rwnn] [12/78] launch m=8 tgt=alpha split=2 -> gpu=3 pid=158497
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=mu    split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=mu    split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=mu    split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=alpha split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=alpha split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=alpha split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [13/78] launch m=8 tgt=homo  split=0 -> gpu=2 pid=158909
+[dispatch-rwnn] [14/78] launch m=8 tgt=homo  split=1 -> gpu=2 pid=158910
+[dispatch-rwnn] [15/78] launch m=8 tgt=homo  split=2 -> gpu=2 pid=158912
+[dispatch-rwnn] [16/78] launch m=8 tgt=lumo  split=0 -> gpu=3 pid=158913
+[dispatch-rwnn] [17/78] launch m=8 tgt=lumo  split=1 -> gpu=3 pid=158914
+[dispatch-rwnn] [18/78] launch m=8 tgt=lumo  split=2 -> gpu=3 pid=158915
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=homo  split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=homo  split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=homo  split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=lumo  split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=lumo  split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=lumo  split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [19/78] launch m=8 tgt=gap   split=0 -> gpu=2 pid=159530
+[dispatch-rwnn] [20/78] launch m=8 tgt=gap   split=1 -> gpu=2 pid=159531
+[dispatch-rwnn] [21/78] launch m=8 tgt=gap   split=2 -> gpu=2 pid=159532
+[dispatch-rwnn] [22/78] launch m=8 tgt=R2    split=0 -> gpu=3 pid=159533
+[dispatch-rwnn] [23/78] launch m=8 tgt=R2    split=1 -> gpu=3 pid=159534
+[dispatch-rwnn] [24/78] launch m=8 tgt=R2    split=2 -> gpu=3 pid=159535
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=gap   split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=gap   split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=gap   split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=R2    split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=R2    split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=R2    split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [25/78] launch m=8 tgt=zpve  split=0 -> gpu=2 pid=159955
+[dispatch-rwnn] [26/78] launch m=8 tgt=zpve  split=1 -> gpu=2 pid=159956
+[dispatch-rwnn] [27/78] launch m=8 tgt=zpve  split=2 -> gpu=2 pid=159957
+[dispatch-rwnn] [28/78] launch m=8 tgt=U0    split=0 -> gpu=3 pid=159958
+[dispatch-rwnn] [29/78] launch m=8 tgt=U0    split=1 -> gpu=3 pid=159959
+[dispatch-rwnn] [30/78] launch m=8 tgt=U0    split=2 -> gpu=3 pid=159960
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=zpve  split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=zpve  split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=zpve  split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=U0    split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=U0    split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=U0    split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [31/78] launch m=8 tgt=U     split=0 -> gpu=2 pid=160360
+[dispatch-rwnn] [32/78] launch m=8 tgt=U     split=1 -> gpu=2 pid=160361
+[dispatch-rwnn] [33/78] launch m=8 tgt=U     split=2 -> gpu=2 pid=160362
+[dispatch-rwnn] [34/78] launch m=8 tgt=H     split=0 -> gpu=3 pid=160363
+[dispatch-rwnn] [35/78] launch m=8 tgt=H     split=1 -> gpu=3 pid=160364
+[dispatch-rwnn] [36/78] launch m=8 tgt=H     split=2 -> gpu=3 pid=160365
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=U     split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=U     split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=U     split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=H     split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=H     split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=H     split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [37/78] launch m=8 tgt=G     split=0 -> gpu=2 pid=160750
+[dispatch-rwnn] [38/78] launch m=8 tgt=G     split=1 -> gpu=2 pid=160751
+[dispatch-rwnn] [39/78] launch m=8 tgt=G     split=2 -> gpu=2 pid=160752
+[dispatch-rwnn] [40/78] launch m=8 tgt=Cv    split=0 -> gpu=3 pid=160753
+[dispatch-rwnn] [41/78] launch m=8 tgt=Cv    split=1 -> gpu=3 pid=160754
+[dispatch-rwnn] [42/78] launch m=8 tgt=Cv    split=2 -> gpu=3 pid=160755
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=G     split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=G     split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=G     split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=Cv    split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=Cv    split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=8 tgt=Cv    split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [43/78] launch m=4 tgt=mu    split=0 -> gpu=2 pid=161184
+[dispatch-rwnn] [44/78] launch m=4 tgt=mu    split=1 -> gpu=2 pid=161185
+[dispatch-rwnn] [45/78] launch m=4 tgt=mu    split=2 -> gpu=2 pid=161186
+[dispatch-rwnn] [46/78] launch m=4 tgt=alpha split=0 -> gpu=3 pid=161187
+[dispatch-rwnn] [47/78] launch m=4 tgt=alpha split=1 -> gpu=3 pid=161188
+[dispatch-rwnn] [48/78] launch m=4 tgt=alpha split=2 -> gpu=3 pid=161189
+[dispatch-rwnn] FAIL(rc=1) m=4 tgt=mu    split=0 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=4 tgt=mu    split=1 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=4 tgt=mu    split=2 gpu=2 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=4 tgt=alpha split=0 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=4 tgt=alpha split=1 gpu=3 dt=0.3min
+[dispatch-rwnn] FAIL(rc=1) m=4 tgt=alpha split=2 gpu=3 dt=0.3min
+[dispatch-rwnn] [49/78] launch m=4 tgt=homo  split=0 -> gpu=2 pid=161568
+[dispatch-rwnn] [50/78] launch m=4 tgt=homo  split=1 -> gpu=2 pid=161569
+[dispatch-rwnn] [51/78] launch m=4 tgt=homo  split=2 -> gpu=2 pid=161570
+[dispatch-rwnn] [52/78] launch m=4 tgt=lumo  split=0 -> gpu=3 pid=161571
+[dispatch-rwnn] [53/78] launch m=4 tgt=lumo  split=1 -> gpu=3 pid=161572
+[dispatch-rwnn] [54/78] launch m=4 tgt=lumo  split=2 -> gpu=3 pid=161573

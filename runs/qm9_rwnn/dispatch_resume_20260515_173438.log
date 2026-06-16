@@ -1,0 +1,12 @@
+[dispatch-rwnn] 78 jobs (gpus=[2, 2, 2, 3, 3, 3], epochs=15, patience=4)
+  preview: m=16 tgt=G split=0
+  preview: m=16 tgt=G split=1
+  preview: m=16 tgt=G split=2
+  preview: m=16 tgt=Cv split=0
+  preview: m=16 tgt=Cv split=1
+[dispatch-rwnn] [1/78] launch m=16 tgt=G     split=0 -> gpu=2 pid=162130
+[dispatch-rwnn] [2/78] launch m=16 tgt=G     split=1 -> gpu=2 pid=162131
+[dispatch-rwnn] [3/78] launch m=16 tgt=G     split=2 -> gpu=2 pid=162132
+[dispatch-rwnn] [4/78] launch m=16 tgt=Cv    split=0 -> gpu=3 pid=162133
+[dispatch-rwnn] [5/78] launch m=16 tgt=Cv    split=1 -> gpu=3 pid=162134
+[dispatch-rwnn] [6/78] launch m=16 tgt=Cv    split=2 -> gpu=3 pid=162135

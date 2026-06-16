@@ -1,0 +1,14 @@
+[dispatch-egnn] 29 jobs (gpus=[0, 0, 0, 1, 1, 1], epochs=300, nf=128, n_layers=7)
+  preview: tgt=alpha seed=42
+  preview: tgt=homo seed=44
+  preview: tgt=lumo seed=42
+  preview: tgt=lumo seed=43
+  preview: tgt=lumo seed=44
+[dispatch-egnn] [1/29] launch tgt=alpha seed=42 -> gpu=0 pid=162124
+[dispatch-egnn] [2/29] launch tgt=homo seed=44 -> gpu=0 pid=162125
+[dispatch-egnn] [3/29] launch tgt=lumo seed=42 -> gpu=0 pid=162126
+[dispatch-egnn] [4/29] launch tgt=lumo seed=43 -> gpu=1 pid=162127
+[dispatch-egnn] [5/29] launch tgt=lumo seed=44 -> gpu=1 pid=162128
+[dispatch-egnn] [6/29] launch tgt=gap seed=42 -> gpu=1 pid=162129
+[dispatch-egnn] FAIL(rc=0) tgt=alpha seed=42 gpu=0 dt=0.5min
+[dispatch-egnn] [7/29] launch tgt=gap seed=43 -> gpu=0 pid=164016

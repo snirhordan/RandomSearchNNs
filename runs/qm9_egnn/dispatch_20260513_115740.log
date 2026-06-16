@@ -1,0 +1,12 @@
+[dispatch-egnn] 36 jobs (gpus=[0, 1], epochs=300, nf=128, n_layers=7)
+  preview: tgt=mu seed=42
+  preview: tgt=mu seed=43
+  preview: tgt=mu seed=44
+  preview: tgt=alpha seed=42
+  preview: tgt=alpha seed=43
+[dispatch-egnn] [1/36] launch tgt=mu seed=42 -> gpu=0 pid=4090875
+[dispatch-egnn] [2/36] launch tgt=mu seed=43 -> gpu=1 pid=4090876
+[dispatch-egnn] OK tgt=mu    seed=42 gpu=0 dt=1244.0min
+[dispatch-egnn] OK tgt=mu    seed=43 gpu=1 dt=1244.0min
+[dispatch-egnn] [3/36] launch tgt=mu seed=44 -> gpu=0 pid=20478
+[dispatch-egnn] [4/36] launch tgt=alpha seed=42 -> gpu=1 pid=20479

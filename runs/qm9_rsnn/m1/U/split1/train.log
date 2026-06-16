@@ -1,0 +1,27 @@
+# cmd: /home/snirhordan/miniconda3/envs/rwnn/bin/python3 -u quickstart/train_qm9.py --target U --walk_type search --distances 0 --mol_edge_feat 0 --epochs 10 --early_stopping 3 --n_splits 1 --batch_size 128 --h_dim 128 --num_layers 2 --m 1 --w 8 --reduce mean --seed 43 --num_workers 4 --device_idx 0 --out_root /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rsnn/_stage --run_subdir m1/U/split1 --limit 0
+# gpu: 1
+# seed: 43
+[d0_m0/U] device=cuda:0 seed=43 cwd=/home/snirhordan/ito/RandomSearchNNs
+[d0_m0/U] loading preprocessed cache from data/qm9/qm9_d_rwnn_cache/mols_U.pt
+/home/snirhordan/ito/RandomSearchNNs/quickstart/train_qm9.py:357: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  mols = torch.load(cache_path)
+/home/snirhordan/ito/RandomSearchNNs/quickstart/train_qm9.py:358: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  vocab = torch.load(vocab_path)
+[d0_m0/U] loaded cache (130831 mols, vocab={'C': 0, 'F': 1, 'H': 2, 'N': 3, 'O': 4, 'PAD': 5}), dt=45.0s
+[d0_m0/U] max_len=29
+[d0_m0/U] target stats: mean=-11178.7354 std=1085.5728
+[d0_m0/U] pe_in_dim=8 pe_out_dim=16 vocab_size=6
+[d0_m0/U] split 0: train=78498 valid=26166 test=26167
+[d0_m0/U] split 0 epoch   0 train_mse=0.0756 valid_mae=46.0132 dt=81.9s *
+[d0_m0/U] split 0 epoch   1 train_mse=0.0048 valid_mae=47.3781 dt=79.7s  
+[d0_m0/U] split 0 epoch   2 train_mse=0.0045 valid_mae=29.0401 dt=79.7s *
+[d0_m0/U] split 0 epoch   3 train_mse=0.0018 valid_mae=29.5283 dt=79.8s  
+[d0_m0/U] split 0 epoch   4 train_mse=0.0028 valid_mae=16.2684 dt=79.9s *
+[d0_m0/U] split 0 epoch   5 train_mse=0.0020 valid_mae=15.0418 dt=79.7s *
+[d0_m0/U] split 0 epoch   6 train_mse=0.0031 valid_mae=27.3210 dt=79.7s  
+[d0_m0/U] split 0 epoch   7 train_mse=0.0035 valid_mae=40.5268 dt=79.8s  
+[d0_m0/U] split 0 epoch   8 train_mse=0.0005 valid_mae=14.4891 dt=79.5s *
+[d0_m0/U] split 0 epoch   9 train_mse=0.0011 valid_mae=13.5538 dt=79.6s *
+[d0_m0/U] split 0 DONE best_valid_mae=13.5538 test_mae=13.5022 split_dt=818.1s
+[d0_m0/U] DONE mean_test_mae=13.5022 total=818.2s peak_gpu_mem=105.7MB
+[d0_m0/U] metrics saved -> /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rsnn/_stage/m1/U/split1/U/metrics.json

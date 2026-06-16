@@ -2,6 +2,112 @@ import torch
 import random
 from collections import deque
 
+
+# ---------------------------------------------------------------------------
+# Quadruplet geometric features (bond angle, dihedral) for sample_dfs.
+# ---------------------------------------------------------------------------
+
+def _bond_angle(p_prev2, p_prev1, p_curr):
+    """Bond angle θ at p_prev1 between (p_prev2, p_prev1, p_curr).
+
+    Returns θ ∈ [0, π] as a scalar tensor. Clamps cosine to [-1, 1] to
+    suppress floating-point noise without biasing the answer at endpoints
+    (torch.acos handles exact ±1 correctly).
+    """
+    a = p_prev2 - p_prev1
+    b = p_curr - p_prev1
+    a_norm = a.norm()
+    b_norm = b.norm()
+    eps = 1e-8
+    cos_t = (a * b).sum() / (a_norm * b_norm + eps)
+    cos_t = cos_t.clamp(-1.0, 1.0)
+    return torch.acos(cos_t)
+
+
+def _dihedral(p0, p1, p2, p3):
+    """Dihedral φ ∈ [-π, π] for the four points (p0, p1, p2, p3).
+
+    Uses the standard atan2-based formula to avoid arccos sign loss:
+        b1 = p1 - p0;  b2 = p2 - p1;  b3 = p3 - p2
+        n1 = b1 × b2;  n2 = b2 × b3
+        m1 = n1 × (b2 / ‖b2‖)
+        x = n1 · n2;  y = m1 · n2
+        φ = atan2(y, x)
+    Degenerate (collinear three-of-four) returns 0.
+    """
+    b1 = p1 - p0
+    b2 = p2 - p1
+    b3 = p3 - p2
+    n1 = torch.cross(b1, b2, dim=-1)
+    n2 = torch.cross(b2, b3, dim=-1)
+    b2_norm = b2.norm()
+    if b2_norm < 1e-8:
+        return torch.zeros((), dtype=p0.dtype, device=p0.device)
+    b2_hat = b2 / b2_norm
+    m1 = torch.cross(n1, b2_hat, dim=-1)
+    x = (n1 * n2).sum()
+    y = (m1 * n2).sum()
+    return torch.atan2(y, x)
+
+
+def _angle_basis(theta, K):
+    """Bond-angle Fourier basis: cos(l θ) for l = 1..K, returns (K,) tensor."""
+    ls = torch.arange(1, K + 1, dtype=theta.dtype, device=theta.device)
+    return torch.cos(ls * theta)
+
+
+def _dihedral_basis(phi, K):
+    """Dihedral Fourier basis: (sin(l φ), cos(l φ)) for l = 1..K, returns (2K,)."""
+    ls = torch.arange(1, K + 1, dtype=phi.dtype, device=phi.device)
+    return torch.cat([torch.sin(ls * phi), torch.cos(ls * phi)])
+
+
+# ---------------------------------------------------------------------------
+# Batched (vectorized) versions of the above. Numerically equivalent to the
+# scalar helpers element-by-element; eliminates Python per-step call overhead
+# inside sample_dfs when many quadruplets need to be computed.
+# ---------------------------------------------------------------------------
+
+
+def _batch_bond_angle(p_prev2, p_prev1, p_curr):
+    """Vectorized _bond_angle. Inputs are (M, 3) tensors; returns (M,)."""
+    a = p_prev2 - p_prev1
+    b = p_curr - p_prev1
+    a_norm = a.norm(dim=-1)
+    b_norm = b.norm(dim=-1)
+    eps = 1e-8
+    cos_t = (a * b).sum(dim=-1) / (a_norm * b_norm + eps)
+    cos_t = cos_t.clamp(-1.0, 1.0)
+    return torch.acos(cos_t)
+
+
+def _batch_dihedral(p0, p1, p2, p3):
+    """Vectorized _dihedral. Inputs are (M, 3) tensors; returns (M,)."""
+    b1 = p1 - p0
+    b2 = p2 - p1
+    b3 = p3 - p2
+    n1 = torch.cross(b1, b2, dim=-1)
+    n2 = torch.cross(b2, b3, dim=-1)
+    b2_norm = b2.norm(dim=-1, keepdim=True).clamp(min=1e-8)
+    b2_hat = b2 / b2_norm
+    m1 = torch.cross(n1, b2_hat, dim=-1)
+    x = (n1 * n2).sum(dim=-1)
+    y = (m1 * n2).sum(dim=-1)
+    return torch.atan2(y, x)
+
+
+def _batch_angle_basis(theta, K):
+    """Vectorized _angle_basis. theta is (M,); returns (M, K)."""
+    ls = torch.arange(1, K + 1, dtype=theta.dtype, device=theta.device)
+    return torch.cos(theta.unsqueeze(-1) * ls)
+
+
+def _batch_dihedral_basis(phi, K):
+    """Vectorized _dihedral_basis. phi is (M,); returns (M, 2K)."""
+    ls = torch.arange(1, K + 1, dtype=phi.dtype, device=phi.device)
+    lp = phi.unsqueeze(-1) * ls
+    return torch.cat([torch.sin(lp), torch.cos(lp)], dim=-1)
+
 def get_neighbor_dict(data):
     """
     Computes and returns the neighbor dictionary for a graph represented by data.edge_index.
@@ -29,7 +135,7 @@ def get_neighbor_dict(data):
     data._neighbor_dict = neighbor_dict
     return neighbor_dict
     
-def sample_bfs(data, nw, s, max_len, vocab):
+def sample_bfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     """
     Performs optimized BFS-based searches on the graph and computes the edge encoding on the fly.
     
@@ -76,6 +182,19 @@ def sample_bfs(data, nw, s, max_len, vocab):
     encoding_edge = torch.zeros((nw, max_len, s), dtype=torch.float)
     lengths = []
 
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
+
     # For each BFS search:
     for i in range(nw):
         start_node = random.randint(0, num_nodes - 1)
@@ -101,6 +220,13 @@ def sample_bfs(data, nw, s, max_len, vocab):
                 if (node in neighbor_dict.get(prev_node, set())) or (prev_node in neighbor_dict.get(node, set())):
                     encoding_edge[i, pos, d - 1] = 1
 
+
+            # Per-step edge feature (BFS): incoming edge is from prev node
+            # in BFS order; if not adjacent in graph, leave zeros.
+            if walk_pe_extra is not None and pos > 0:
+                prev_in_order = order[pos - 1]
+                if (node in neighbor_dict.get(prev_in_order, set())) or (prev_in_order in neighbor_dict.get(node, set())):
+                    walk_pe_extra[i, pos] = add_edge_feat[prev_in_order, node]
             pos += 1
 
             # Append unvisited neighbors to the queue (randomized order for variability).
@@ -114,15 +240,36 @@ def sample_bfs(data, nw, s, max_len, vocab):
 
     data.walk_emb = searches_emb
     data.walk_ids = searches[None, :, :]
-    data.walk_pe = encoding_edge
+    if walk_pe_extra is not None:
+        data.walk_pe = torch.cat([encoding_edge, walk_pe_extra], dim=-1)
+    else:
+        data.walk_pe = encoding_edge
     data.lengths = torch.tensor(lengths, dtype=torch.long)
     
     return data
 
-def sample_dfs(data, nw, s, max_len, vocab):
+def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
+               max_search_len=None, angles=False, dihedrals=False,
+               angle_K=8, dihedral_K=4, vectorize=False):
     """
     Performs DFS-based searches on the graph and computes the edge encoding on the fly.
-    
+
+    New optional features (default off, fully backward-compatible):
+      max_search_len : int or None
+        If set, terminates each DFS at this position instead of max_len.
+        Effective cap is min(max_len, max_search_len).
+      angles : bool
+        If True, append bond-angle Fourier features (cos(l θ), l=1..angle_K)
+        at each step pos >= 2. Steps with pos < 2 are zero-filled.
+      dihedrals : bool
+        If True, append dihedral Fourier features (sin/cos(l φ), l=1..dihedral_K)
+        at each step pos >= 3. Steps with pos < 3 are zero-filled.
+      angle_K, dihedral_K : int
+        Basis sizes (default 8 / 4 per Gasteiger et al. DimeNet defaults).
+
+    Requires data.pos (N, 3) for angle/dihedral features. Without those flags,
+    behaviour is byte-for-byte identical to the original function.
+
     For each DFS search:
       - A random starting node is chosen.
       - A DFS is performed (without revisiting nodes) to obtain an ordering of nodes.
@@ -134,14 +281,14 @@ def sample_dfs(data, nw, s, max_len, vocab):
       - The DFS order is stored in a tensor of shape (nw, max_len), where unfilled positions
         remain padded with vocab['PAD'].
       - The actual length (number of nodes visited) is recorded.
-    
+
     Parameters:
         data (torch_geometric.data.Data): Graph data object with 'edge_index' and 'x_emb' attributes.
         nw (int): Number of DFS searches to perform.
         max_len (int): Maximum length of each DFS search order; shorter searches are padded with vocab['PAD'].
         s (int): Window size for the edge encoding.
         vocab (dict): Mapping from tokens to embedding ids; must include an entry for 'PAD'.
-    
+
     Returns:
         data (torch_geometric.data.Data): The input data object with three new attributes:
             - walk_emb: A tensor of shape (nw, max_len) with the DFS search order in embedding ids.
@@ -165,6 +312,44 @@ def sample_dfs(data, nw, s, max_len, vocab):
     encoding_edge = torch.zeros((nw, max_len, s), dtype=torch.float)
     lengths = []
 
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
+
+    # Quadruplet geometric features (per Gasteiger et al. DimeNet). Allocated
+    # only when requested; require data.pos.
+    if angles or dihedrals:
+        if not hasattr(data, "pos") or data.pos is None:
+            raise ValueError("angles/dihedrals=True requires data.pos (N, 3) coordinates.")
+        pos_xyz = data.pos
+    walk_pe_angle = (
+        torch.zeros((nw, max_len, angle_K), dtype=torch.float)
+        if angles else None
+    )
+    walk_pe_dihedral = (
+        torch.zeros((nw, max_len, 2 * dihedral_K), dtype=torch.float)
+        if dihedrals else None
+    )
+
+    # Effective per-walk length cap (search-length, separate from max_len padding).
+    cap = max_len if max_search_len is None else min(int(max_search_len), max_len)
+
+    # When vectorize=True, collect quadruplet INDICES per step and batch-compute
+    # all the angle/dihedral features in a single tensor op after the loop.
+    # Eliminates Python-level per-step call overhead. Numerically equivalent to
+    # the scalar path (same eps, same clamp, same atan2-based formula).
+    angle_idx = [] if (vectorize and walk_pe_angle is not None) else None
+    dihedral_idx = [] if (vectorize and walk_pe_dihedral is not None) else None
+
     # For each DFS search:
     for i in range(nw):
         start_node = random.randint(0, num_nodes - 1)
@@ -172,8 +357,8 @@ def sample_dfs(data, nw, s, max_len, vocab):
         stack = [start_node]
         order = []  # To store the raw node indices in the DFS order.
         pos = 0     # Current position in the DFS order.
-        
-        while stack and pos < max_len:
+
+        while stack and pos < cap:
             node = stack.pop()
             if node in visited:
                 continue
@@ -190,6 +375,42 @@ def sample_dfs(data, nw, s, max_len, vocab):
                 if (node in neighbor_dict[prev_node]) or (prev_node in neighbor_dict[node]):
                     encoding_edge[i, pos, d - 1] = 1
 
+
+            # Per-step edge feature (DFS): always populate from the (prev,
+            # node) entry of add_edge_feat regardless of graph-adjacency.
+            # When prev and node are not bonded, edge_attr_to_dense yields
+            # zeros for the bond-type slice, so the bond-type semantics
+            # remain "zero unless bonded" — but the distance slice (RBF of
+            # the pairwise Euclidean distance) is always populated. This
+            # ensures DFS stack-jumps still carry the geometric distance
+            # signal to the LSTM.
+            if walk_pe_extra is not None and pos > 0:
+                prev_in_order = order[pos - 1]
+                walk_pe_extra[i, pos] = add_edge_feat[prev_in_order, node]
+
+            # Quadruplet geometric features. DFS guarantees four distinct
+            # nodes at pos >= 3 (no revisits), so bond angle / dihedral are
+            # well-defined by construction (modulo collinearity, handled
+            # inside _bond_angle / _dihedral with eps safeguards).
+            # Two paths: scalar (default, one tensor op per step) or vectorize
+            # (collect indices, batched compute after the loop).
+            if walk_pe_angle is not None and pos >= 2:
+                v0 = order[pos - 2]
+                v1 = order[pos - 1]
+                if vectorize:
+                    angle_idx.append((i, pos, v0, v1, node))
+                else:
+                    theta = _bond_angle(pos_xyz[v0], pos_xyz[v1], pos_xyz[node])
+                    walk_pe_angle[i, pos] = _angle_basis(theta, angle_K)
+            if walk_pe_dihedral is not None and pos >= 3:
+                u0 = order[pos - 3]
+                u1 = order[pos - 2]
+                u2 = order[pos - 1]
+                if vectorize:
+                    dihedral_idx.append((i, pos, u0, u1, u2, node))
+                else:
+                    phi = _dihedral(pos_xyz[u0], pos_xyz[u1], pos_xyz[u2], pos_xyz[node])
+                    walk_pe_dihedral[i, pos] = _dihedral_basis(phi, dihedral_K)
             pos += 1
 
             # Push unvisited neighbors onto the stack in randomized order.
@@ -201,13 +422,40 @@ def sample_dfs(data, nw, s, max_len, vocab):
                     
         lengths.append(pos)
 
+    # Vectorized quadruplet compute (only when vectorize=True and there is at
+    # least one valid step to score). Index arrays were accumulated above.
+    if angle_idx is not None and len(angle_idx) > 0:
+        idx_a = torch.tensor(angle_idx, dtype=torch.long)  # (M, 5)
+        p_prev2 = pos_xyz[idx_a[:, 2]]
+        p_prev1 = pos_xyz[idx_a[:, 3]]
+        p_curr = pos_xyz[idx_a[:, 4]]
+        thetas = _batch_bond_angle(p_prev2, p_prev1, p_curr)  # (M,)
+        basis_a = _batch_angle_basis(thetas, angle_K)         # (M, angle_K)
+        walk_pe_angle[idx_a[:, 0], idx_a[:, 1]] = basis_a.to(walk_pe_angle.dtype)
+    if dihedral_idx is not None and len(dihedral_idx) > 0:
+        idx_d = torch.tensor(dihedral_idx, dtype=torch.long)  # (M, 6)
+        p0 = pos_xyz[idx_d[:, 2]]
+        p1 = pos_xyz[idx_d[:, 3]]
+        p2 = pos_xyz[idx_d[:, 4]]
+        p3 = pos_xyz[idx_d[:, 5]]
+        phis = _batch_dihedral(p0, p1, p2, p3)                # (M,)
+        basis_d = _batch_dihedral_basis(phis, dihedral_K)     # (M, 2*dihedral_K)
+        walk_pe_dihedral[idx_d[:, 0], idx_d[:, 1]] = basis_d.to(walk_pe_dihedral.dtype)
+
     data.walk_emb = searches_emb
     data.walk_ids = searches[None, :, :]
-    data.walk_pe = encoding_edge
+    parts = [encoding_edge]
+    if walk_pe_extra is not None:
+        parts.append(walk_pe_extra)
+    if walk_pe_angle is not None:
+        parts.append(walk_pe_angle)
+    if walk_pe_dihedral is not None:
+        parts.append(walk_pe_dihedral)
+    data.walk_pe = parts[0] if len(parts) == 1 else torch.cat(parts, dim=-1)
     data.lengths = torch.tensor(lengths, dtype=torch.long)
     return data
 
-def sample_walks(data, nw, l, s, non_backtracking):
+def sample_walks(data, nw, l, s, non_backtracking, add_edge_feat=None):
     """
     Samples random walks from a graph and computes two encodings on the fly:
     
@@ -250,6 +498,19 @@ def sample_walks(data, nw, l, s, non_backtracking):
     encoding_repeat = torch.zeros((nw, l, s), dtype=torch.float)
     encoding_edge = torch.zeros((nw, l, s), dtype=torch.float)
 
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, l, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
+
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
     
@@ -288,16 +549,23 @@ def sample_walks(data, nw, l, s, non_backtracking):
                 if (next_node in neighbor_dict[previous_node]) or (previous_node in neighbor_dict[next_node]):
                     encoding_edge[i, j, d - 1] = 1
 
+
+            # Per-step edge feature: edge (current_node -> next_node).
+            if walk_pe_extra is not None:
+                walk_pe_extra[i, j] = add_edge_feat[current_node, next_node]
             current_node = next_node
 
     # Attach the results to the data object.
     data.walk_emb = walk_emb
     data.walk_ids = walk_ids[None, :, :]
-    data.walk_pe = torch.cat([encoding_repeat, encoding_edge], dim=-1)
+    walk_pe = torch.cat([encoding_repeat, encoding_edge], dim=-1)
+    if walk_pe_extra is not None:
+        walk_pe = torch.cat([walk_pe, walk_pe_extra], dim=-1)
+    data.walk_pe = walk_pe
     
     return data
 
-def sample_walks_mdlr(data, nw, l, s, non_backtracking):
+def sample_walks_mdlr(data, nw, l, s, non_backtracking, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -347,6 +615,21 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking):
     walk_emb = torch.empty((nw, l), dtype=torch.long)
     # walk_anonym will store the anonymized version of each walk.
     walk_anonym = torch.empty((nw, l), dtype=torch.long)
+
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    # MDLR baseline does not produce walk_pe; when add_edge_feat is None we
+    # preserve that, otherwise we attach a (nw, l, B) walk_pe tensor.
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, l, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -398,6 +681,10 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking):
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+
+            # Per-step edge feature: edge (current_node -> next_node).
+            if walk_pe_extra is not None:
+                walk_pe_extra[i, j] = add_edge_feat[current_node, next_node]
             current_node = next_node
 
     # Attach the results to the data object.
@@ -405,10 +692,12 @@ def sample_walks_mdlr(data, nw, l, s, non_backtracking):
     data.walk_ids = walk_ids[None, :, :]
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
+    if walk_pe_extra is not None:
+        data.walk_pe = walk_pe_extra
 
     return data
 
-def sample_walks_rum(data, nw, l, s, non_backtracking):
+def sample_walks_rum(data, nw, l, s, non_backtracking, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -458,6 +747,19 @@ def sample_walks_rum(data, nw, l, s, non_backtracking):
     walk_emb = torch.empty((nw, l), dtype=torch.long)
     # walk_anonym will store the anonymized version of each walk.
     walk_anonym = torch.empty((nw, l), dtype=torch.long)
+
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, l, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -523,6 +825,10 @@ def sample_walks_rum(data, nw, l, s, non_backtracking):
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+
+            # Per-step edge feature: edge (current_node -> next_node).
+            if walk_pe_extra is not None:
+                walk_pe_extra[i, j] = add_edge_feat[current_node, next_node]
             current_node = next_node
 
     # Attach the results to the data object.
@@ -530,10 +836,12 @@ def sample_walks_rum(data, nw, l, s, non_backtracking):
     data.walk_ids = walk_ids[None, :, :]
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
+    if walk_pe_extra is not None:
+        data.walk_pe = walk_pe_extra
 
     return data
 
-def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
+def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, add_edge_feat=None):
     """
     Performs DFS-based searches on the graph and computes the edge encoding on the fly.
     
@@ -584,6 +892,19 @@ def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
     encoding_edge = torch.zeros((nw, max_len, s), dtype=torch.float)
     lengths = []
 
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
+
     # For each DFS search:
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -623,17 +944,24 @@ def sample_walks_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
                 if (next_node in neighbor_dict[previous_node]) or (previous_node in neighbor_dict[next_node]):
                     encoding_edge[i, j, d - 1] = 1
 
+
+            # Per-step edge feature: edge (current_node -> next_node).
+            if walk_pe_extra is not None:
+                walk_pe_extra[i, j] = add_edge_feat[current_node, next_node]
             current_node = next_node
                     
         lengths.append(l)
 
     data.walk_emb = walk_emb
     data.walk_ids = walk_ids[None, :, :]
-    data.walk_pe = torch.cat([encoding_repeat, encoding_edge], dim=-1)
+    walk_pe = torch.cat([encoding_repeat, encoding_edge], dim=-1)
+    if walk_pe_extra is not None:
+        walk_pe = torch.cat([walk_pe, walk_pe_extra], dim=-1)
+    data.walk_pe = walk_pe
     data.lengths = torch.tensor(lengths, dtype=torch.long)
     return data
 
-def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
+def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -689,6 +1017,19 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab)
     walk_emb = torch.full((nw, max_len), vocab['PAD'], dtype=torch.long)
     walk_anonym = torch.empty((nw, max_len), dtype=torch.long)
     lengths = []
+
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -740,6 +1081,10 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab)
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+
+            # Per-step edge feature: edge (current_node -> next_node).
+            if walk_pe_extra is not None:
+                walk_pe_extra[i, j] = add_edge_feat[current_node, next_node]
             current_node = next_node
 
         lengths.append(l)
@@ -750,10 +1095,12 @@ def sample_walks_mdlr_adaptive(data, nw, l, s, non_backtracking, max_len, vocab)
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
     data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_pe_extra is not None:
+        data.walk_pe = walk_pe_extra
 
     return data
 
-def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
+def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab, add_edge_feat=None):
     """
     Samples random walks from a graph using the minimum-degree local rule (MDLR) for neighbor sampling.
     Each walk is of length l, and neighbors are chosen with probability proportional to
@@ -809,6 +1156,19 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
     walk_emb = torch.full((nw, max_len), vocab['PAD'], dtype=torch.long)
     walk_anonym = torch.empty((nw, max_len), dtype=torch.long)
     lengths = []
+
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        # Match dtype/device of add_edge_feat so e.g. CUDA tensors stay on GPU
+        # and bf16/half are preserved through the per-step scatter.
+        walk_pe_extra = torch.zeros(
+            (nw, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
 
     # Randomly select starting nodes for each walk.
     start_nodes = torch.randint(0, num_nodes, (nw,), dtype=torch.long)
@@ -874,6 +1234,10 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
                 walk_anonym[i, j] = anon_counter
                 anon_counter += 1
 
+
+            # Per-step edge feature: edge (current_node -> next_node).
+            if walk_pe_extra is not None:
+                walk_pe_extra[i, j] = add_edge_feat[current_node, next_node]
             current_node = next_node
             
         lengths.append(l)
@@ -884,6 +1248,8 @@ def sample_walks_rum_adaptive(data, nw, l, s, non_backtracking, max_len, vocab):
     data.walk_emb = walk_emb  # (nw, l)
     data.walk_anonym = walk_anonym  # (nw, l) anonymized walk representations
     data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_pe_extra is not None:
+        data.walk_pe = walk_pe_extra
 
     return data
 

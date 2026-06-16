@@ -1,0 +1,32 @@
+[dispatch-rwnn] 108 jobs (gpus=[2, 3], epochs=15, patience=4)
+  preview: m=16 tgt=mu split=0
+  preview: m=16 tgt=mu split=1
+  preview: m=16 tgt=mu split=2
+  preview: m=16 tgt=alpha split=0
+  preview: m=16 tgt=alpha split=1
+[dispatch-rwnn] [1/108] launch m=16 tgt=mu    split=0 -> gpu=2 pid=4086771
+[dispatch-rwnn] [2/108] launch m=16 tgt=mu    split=1 -> gpu=3 pid=4086773
+[dispatch-rwnn] OK m=16 tgt=mu    split=0 gpu=2 dt=187.5min
+[dispatch-rwnn] [3/108] launch m=16 tgt=mu    split=2 -> gpu=2 pid=4142167
+[dispatch-rwnn] OK m=16 tgt=mu    split=1 gpu=3 dt=188.0min
+[dispatch-rwnn] [4/108] launch m=16 tgt=alpha split=0 -> gpu=3 pid=4142260
+[dispatch-rwnn] OK m=16 tgt=alpha split=0 gpu=3 dt=187.5min
+[dispatch-rwnn] [5/108] launch m=16 tgt=alpha split=1 -> gpu=3 pid=4153912
+[dispatch-rwnn] OK m=16 tgt=mu    split=2 gpu=2 dt=189.3min
+[dispatch-rwnn] [6/108] launch m=16 tgt=alpha split=2 -> gpu=2 pid=4154398
+[dispatch-rwnn] OK m=16 tgt=alpha split=1 gpu=3 dt=187.8min
+[dispatch-rwnn] [7/108] launch m=16 tgt=homo  split=0 -> gpu=3 pid=4166554
+[dispatch-rwnn] OK m=16 tgt=alpha split=2 gpu=2 dt=190.8min
+[dispatch-rwnn] [8/108] launch m=16 tgt=homo  split=1 -> gpu=2 pid=4167220
+[dispatch-rwnn] OK m=16 tgt=homo  split=0 gpu=3 dt=190.5min
+[dispatch-rwnn] [9/108] launch m=16 tgt=homo  split=2 -> gpu=3 pid=4179565
+[dispatch-rwnn] OK m=16 tgt=homo  split=1 gpu=2 dt=188.0min
+[dispatch-rwnn] [10/108] launch m=16 tgt=lumo  split=0 -> gpu=2 pid=4180040
+[dispatch-rwnn] OK m=16 tgt=homo  split=2 gpu=3 dt=189.0min
+[dispatch-rwnn] OK m=16 tgt=lumo  split=0 gpu=2 dt=187.3min
+[dispatch-rwnn] [11/108] launch m=16 tgt=lumo  split=1 -> gpu=3 pid=4191728
+[dispatch-rwnn] [12/108] launch m=16 tgt=lumo  split=2 -> gpu=2 pid=4191729
+[dispatch-rwnn] OK m=16 tgt=lumo  split=2 gpu=2 dt=187.8min
+[dispatch-rwnn] [13/108] launch m=16 tgt=gap   split=0 -> gpu=2 pid=12094
+[dispatch-rwnn] OK m=16 tgt=lumo  split=1 gpu=3 dt=188.8min
+[dispatch-rwnn] [14/108] launch m=16 tgt=gap   split=1 -> gpu=3 pid=12560

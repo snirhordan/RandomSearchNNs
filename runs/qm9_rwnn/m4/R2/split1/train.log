@@ -1,0 +1,31 @@
+# cmd: /home/snirhordan/miniconda3/envs/rwnn/bin/python3 -u /home/snirhordan/ito/RandomSearchNNs/quickstart/train_qm9.py --target R2 --walk_type walk_ada --distances 1 --mol_edge_feat 1 --epochs 15 --early_stopping 4 --n_splits 1 --batch_size 128 --h_dim 128 --num_layers 2 --m 4 --w 8 --reduce mean --seed 43 --num_workers 4 --device_idx 0 --out_root /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rwnn/_stage --run_subdir m4/R2/split1 --limit 0
+# gpu: 0 seed: 43 (CVD=0)
+[d1_m1/R2] device=cuda:0 seed=43 cwd=/home/snirhordan/ito/RandomSearchNNs
+[d1_m1/R2] loading preprocessed cache from data/qm9/qm9_d_rwnn_cache/mols_R2.pt
+/home/snirhordan/ito/RandomSearchNNs/quickstart/train_qm9.py:357: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  mols = torch.load(cache_path)
+/home/snirhordan/ito/RandomSearchNNs/quickstart/train_qm9.py:358: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  vocab = torch.load(vocab_path)
+[d1_m1/R2] loaded cache (130831 mols, vocab={'C': 0, 'F': 1, 'H': 2, 'N': 3, 'O': 4, 'PAD': 5}), dt=37.0s
+[d1_m1/R2] max_len=29
+[d1_m1/R2] target stats: mean=1189.4105 std=280.4781
+[d1_m1/R2] pe_in_dim=35 pe_out_dim=16 vocab_size=6
+[d1_m1/R2] split 0: train=78498 valid=26166 test=26167
+[d1_m1/R2] split 0 epoch   0 train_mse=0.6209 valid_mae=138.4026 dt=400.0s *
+[d1_m1/R2] split 0 epoch   1 train_mse=0.4361 valid_mae=125.0368 dt=411.6s *
+[d1_m1/R2] split 0 epoch   2 train_mse=0.3864 valid_mae=124.4264 dt=413.4s *
+[d1_m1/R2] split 0 epoch   3 train_mse=0.3643 valid_mae=116.8172 dt=409.1s *
+[d1_m1/R2] split 0 epoch   4 train_mse=0.3453 valid_mae=115.5550 dt=417.9s *
+[d1_m1/R2] split 0 epoch   5 train_mse=0.3258 valid_mae=117.6098 dt=398.8s  
+[d1_m1/R2] split 0 epoch   6 train_mse=0.3191 valid_mae=112.3594 dt=407.7s *
+[d1_m1/R2] split 0 epoch   7 train_mse=0.3087 valid_mae=115.1039 dt=412.3s  
+[d1_m1/R2] split 0 epoch   8 train_mse=0.3020 valid_mae=113.3600 dt=403.2s  
+[d1_m1/R2] split 0 epoch   9 train_mse=0.3039 valid_mae=107.8980 dt=415.4s *
+[d1_m1/R2] split 0 epoch  10 train_mse=0.2970 valid_mae=105.5947 dt=408.6s *
+[d1_m1/R2] split 0 epoch  11 train_mse=0.2801 valid_mae=108.8862 dt=408.5s  
+[d1_m1/R2] split 0 epoch  12 train_mse=0.2804 valid_mae=105.0952 dt=412.2s *
+[d1_m1/R2] split 0 epoch  13 train_mse=0.2802 valid_mae=105.5368 dt=459.0s  
+[d1_m1/R2] split 0 epoch  14 train_mse=0.2716 valid_mae=101.6369 dt=446.7s *
+[d1_m1/R2] split 0 DONE best_valid_mae=101.6369 test_mae=101.6814 split_dt=6300.2s
+[d1_m1/R2] DONE mean_test_mae=101.6814 total=6300.3s peak_gpu_mem=264.6MB
+[d1_m1/R2] metrics saved -> /home/snirhordan/ito/RandomSearchNNs/runs/qm9_rwnn/_stage/m4/R2/split1/R2/metrics.json

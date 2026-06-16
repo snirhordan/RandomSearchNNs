@@ -1,0 +1,102 @@
+[full] device=cuda:0  seed=42
+[full] loaded 1480 graphs, vocab size=71, l_max=136
+[full] split 0: train=888 valid=296 test=296
+[full] split 0 epoch   0 train_loss=0.5138 valid_loss=0.2840 valid_auc=0.461 dt=8.2s *
+[full] split 0 epoch   1 train_loss=0.2955 valid_loss=0.2823 valid_auc=0.516 dt=8.0s *
+[full] split 0 epoch   2 train_loss=0.2667 valid_loss=0.2298 valid_auc=0.683 dt=8.4s *
+[full] split 0 epoch   3 train_loss=0.2654 valid_loss=0.2831 valid_auc=0.642 dt=8.2s  
+[full] split 0 epoch   4 train_loss=0.2581 valid_loss=0.2362 valid_auc=0.643 dt=8.2s  
+[full] split 0 epoch   5 train_loss=0.2545 valid_loss=0.2521 valid_auc=0.675 dt=8.1s  
+[full] split 0 epoch   6 train_loss=0.2536 valid_loss=0.2484 valid_auc=0.674 dt=7.9s  
+[full] split 0 epoch   7 train_loss=0.2533 valid_loss=0.2182 valid_auc=0.694 dt=8.0s *
+[full] split 0 epoch   8 train_loss=0.2441 valid_loss=0.2499 valid_auc=0.779 dt=8.3s  
+[full] split 0 epoch   9 train_loss=0.2406 valid_loss=0.2019 valid_auc=0.779 dt=8.6s *
+[full] split 0 epoch  10 train_loss=0.2314 valid_loss=0.1943 valid_auc=0.811 dt=8.4s *
+[full] split 0 epoch  11 train_loss=0.2340 valid_loss=0.2374 valid_auc=0.681 dt=8.1s  
+[full] split 0 epoch  12 train_loss=0.2243 valid_loss=0.2326 valid_auc=0.752 dt=8.0s  
+[full] split 0 epoch  13 train_loss=0.2077 valid_loss=0.2273 valid_auc=0.733 dt=7.9s  
+[full] split 0 epoch  14 train_loss=0.2037 valid_loss=0.2217 valid_auc=0.808 dt=8.3s  
+[full] split 0 epoch  15 train_loss=0.1942 valid_loss=0.2423 valid_auc=0.787 dt=7.9s  
+[full] split 0 epoch  16 train_loss=0.1974 valid_loss=0.2213 valid_auc=0.744 dt=8.0s  
+[full] split 0 epoch  17 train_loss=0.1734 valid_loss=0.2662 valid_auc=0.784 dt=7.9s  
+[full] split 0 epoch  18 train_loss=0.1708 valid_loss=0.2178 valid_auc=0.773 dt=8.1s  
+[full] split 0 epoch  19 train_loss=0.1832 valid_loss=0.2433 valid_auc=0.735 dt=7.8s  
+[full] split 0 epoch  20 train_loss=0.1632 valid_loss=0.2440 valid_auc=0.782 dt=8.2s  
+[full] split 0 early stop at epoch 21
+[full] split 0 DONE valid_auc=0.799 test_auc=0.811 split_dt=176.6s
+[full] split 1: train=888 valid=296 test=296
+[full] split 1 epoch   0 train_loss=0.5431 valid_loss=0.2439 valid_auc=0.561 dt=8.2s *
+[full] split 1 epoch   1 train_loss=0.3375 valid_loss=0.3102 valid_auc=0.587 dt=7.9s  
+[full] split 1 epoch   2 train_loss=0.2931 valid_loss=0.2647 valid_auc=0.603 dt=7.8s  
+[full] split 1 epoch   3 train_loss=0.2829 valid_loss=0.2370 valid_auc=0.607 dt=8.1s *
+[full] split 1 epoch   4 train_loss=0.2767 valid_loss=0.2331 valid_auc=0.651 dt=8.1s *
+[full] split 1 epoch   5 train_loss=0.2708 valid_loss=0.2397 valid_auc=0.661 dt=7.8s  
+[full] split 1 epoch   6 train_loss=0.2668 valid_loss=0.2689 valid_auc=0.726 dt=8.0s  
+[full] split 1 epoch   7 train_loss=0.2643 valid_loss=0.2656 valid_auc=0.632 dt=7.9s  
+[full] split 1 epoch   8 train_loss=0.2545 valid_loss=0.2771 valid_auc=0.698 dt=8.2s  
+[full] split 1 epoch   9 train_loss=0.2483 valid_loss=0.2280 valid_auc=0.758 dt=8.1s *
+[full] split 1 epoch  10 train_loss=0.2383 valid_loss=0.2280 valid_auc=0.712 dt=8.0s *
+[full] split 1 epoch  11 train_loss=0.2327 valid_loss=0.2064 valid_auc=0.774 dt=8.1s *
+[full] split 1 epoch  12 train_loss=0.2274 valid_loss=0.2158 valid_auc=0.842 dt=8.0s  
+[full] split 1 epoch  13 train_loss=0.2157 valid_loss=0.1979 valid_auc=0.793 dt=8.1s *
+[full] split 1 epoch  14 train_loss=0.2009 valid_loss=0.2447 valid_auc=0.760 dt=8.2s  
+[full] split 1 epoch  15 train_loss=0.2184 valid_loss=0.2625 valid_auc=0.738 dt=8.0s  
+[full] split 1 epoch  16 train_loss=0.2072 valid_loss=0.2271 valid_auc=0.807 dt=8.1s  
+[full] split 1 epoch  17 train_loss=0.2175 valid_loss=0.2448 valid_auc=0.811 dt=7.8s  
+[full] split 1 epoch  18 train_loss=0.2031 valid_loss=0.1763 valid_auc=0.828 dt=8.0s *
+[full] split 1 epoch  19 train_loss=0.1909 valid_loss=0.2328 valid_auc=0.803 dt=8.1s  
+[full] split 1 epoch  20 train_loss=0.1867 valid_loss=0.2771 valid_auc=0.803 dt=8.1s  
+[full] split 1 epoch  21 train_loss=0.1868 valid_loss=0.2037 valid_auc=0.846 dt=8.4s  
+[full] split 1 epoch  22 train_loss=0.1852 valid_loss=0.2457 valid_auc=0.766 dt=8.1s  
+[full] split 1 epoch  23 train_loss=0.1732 valid_loss=0.2030 valid_auc=0.836 dt=8.2s  
+[full] split 1 epoch  24 train_loss=0.1687 valid_loss=0.2056 valid_auc=0.836 dt=8.1s  
+[full] split 1 epoch  25 train_loss=0.1596 valid_loss=0.2071 valid_auc=0.812 dt=8.3s  
+[full] split 1 epoch  26 train_loss=0.1681 valid_loss=0.2685 valid_auc=0.824 dt=7.8s  
+[full] split 1 epoch  27 train_loss=0.1801 valid_loss=0.2178 valid_auc=0.824 dt=8.1s  
+[full] split 1 epoch  28 train_loss=0.1751 valid_loss=0.2207 valid_auc=0.751 dt=8.1s  
+[full] split 1 early stop at epoch 29
+[full] split 1 DONE valid_auc=0.785 test_auc=0.749 split_dt=239.0s
+[full] split 2: train=888 valid=296 test=296
+[full] split 2 epoch   0 train_loss=0.5348 valid_loss=0.2998 valid_auc=0.363 dt=7.8s *
+[full] split 2 epoch   1 train_loss=0.2985 valid_loss=0.3276 valid_auc=0.468 dt=8.2s  
+[full] split 2 epoch   2 train_loss=0.2668 valid_loss=0.3110 valid_auc=0.537 dt=7.9s  
+[full] split 2 epoch   3 train_loss=0.2670 valid_loss=0.3108 valid_auc=0.565 dt=8.0s  
+[full] split 2 epoch   4 train_loss=0.2592 valid_loss=0.2929 valid_auc=0.594 dt=7.7s *
+[full] split 2 epoch   5 train_loss=0.2577 valid_loss=0.2728 valid_auc=0.628 dt=7.9s *
+[full] split 2 epoch   6 train_loss=0.2544 valid_loss=0.2961 valid_auc=0.697 dt=8.0s  
+[full] split 2 epoch   7 train_loss=0.2476 valid_loss=0.3076 valid_auc=0.671 dt=7.7s  
+[full] split 2 epoch   8 train_loss=0.2508 valid_loss=0.3129 valid_auc=0.711 dt=7.7s  
+[full] split 2 epoch   9 train_loss=0.2522 valid_loss=0.3100 valid_auc=0.739 dt=7.8s  
+[full] split 2 epoch  10 train_loss=0.2461 valid_loss=0.2851 valid_auc=0.742 dt=7.8s  
+[full] split 2 epoch  11 train_loss=0.2495 valid_loss=0.3210 valid_auc=0.742 dt=7.8s  
+[full] split 2 epoch  12 train_loss=0.2338 valid_loss=0.2656 valid_auc=0.780 dt=7.8s *
+[full] split 2 epoch  13 train_loss=0.2331 valid_loss=0.2410 valid_auc=0.802 dt=7.9s *
+[full] split 2 epoch  14 train_loss=0.2153 valid_loss=0.2299 valid_auc=0.815 dt=8.0s *
+[full] split 2 epoch  15 train_loss=0.2091 valid_loss=0.2409 valid_auc=0.803 dt=7.9s  
+[full] split 2 epoch  16 train_loss=0.2053 valid_loss=0.2663 valid_auc=0.785 dt=7.7s  
+[full] split 2 epoch  17 train_loss=0.2031 valid_loss=0.2550 valid_auc=0.832 dt=8.0s  
+[full] split 2 epoch  18 train_loss=0.1930 valid_loss=0.2301 valid_auc=0.858 dt=8.0s  
+[full] split 2 epoch  19 train_loss=0.1977 valid_loss=0.2279 valid_auc=0.849 dt=7.6s *
+[full] split 2 epoch  20 train_loss=0.1770 valid_loss=0.2637 valid_auc=0.835 dt=7.9s  
+[full] split 2 epoch  21 train_loss=0.1881 valid_loss=0.2826 valid_auc=0.836 dt=8.0s  
+[full] split 2 epoch  22 train_loss=0.1761 valid_loss=0.2153 valid_auc=0.855 dt=8.0s *
+[full] split 2 epoch  23 train_loss=0.1805 valid_loss=0.2069 valid_auc=0.885 dt=7.9s *
+[full] split 2 epoch  24 train_loss=0.1760 valid_loss=0.2341 valid_auc=0.885 dt=7.9s  
+[full] split 2 epoch  25 train_loss=0.1737 valid_loss=0.2189 valid_auc=0.895 dt=8.0s  
+[full] split 2 epoch  26 train_loss=0.1680 valid_loss=0.2100 valid_auc=0.880 dt=7.9s  
+[full] split 2 epoch  27 train_loss=0.1547 valid_loss=0.2057 valid_auc=0.879 dt=7.8s *
+[full] split 2 epoch  28 train_loss=0.1596 valid_loss=0.1608 valid_auc=0.895 dt=8.1s *
+[full] split 2 epoch  29 train_loss=0.1559 valid_loss=0.2518 valid_auc=0.892 dt=7.7s  
+[full] split 2 epoch  30 train_loss=0.1723 valid_loss=0.1849 valid_auc=0.921 dt=7.8s  
+[full] split 2 epoch  31 train_loss=0.1492 valid_loss=0.1750 valid_auc=0.903 dt=8.1s  
+[full] split 2 epoch  32 train_loss=0.1545 valid_loss=0.1781 valid_auc=0.875 dt=7.8s  
+[full] split 2 epoch  33 train_loss=0.1640 valid_loss=0.2078 valid_auc=0.872 dt=7.9s  
+[full] split 2 epoch  34 train_loss=0.1510 valid_loss=0.2311 valid_auc=0.897 dt=7.6s  
+[full] split 2 epoch  35 train_loss=0.1687 valid_loss=0.2241 valid_auc=0.886 dt=7.9s  
+[full] split 2 epoch  36 train_loss=0.1447 valid_loss=0.1815 valid_auc=0.903 dt=7.9s  
+[full] split 2 epoch  37 train_loss=0.1346 valid_loss=0.1816 valid_auc=0.907 dt=7.8s  
+[full] split 2 epoch  38 train_loss=0.1450 valid_loss=0.2905 valid_auc=0.864 dt=7.7s  
+[full] split 2 early stop at epoch 39
+[full] split 2 DONE valid_auc=0.893 test_auc=0.912 split_dt=312.0s
+[full] DONE mean_test_auc=0.824 +/- 0.067 mean_valid_auc=0.826 +/- 0.048 total=727.7s peak_gpu_mem=737.6MB
+[full] metrics saved -> /home/snirhordan/ito/RandomSearchNNs/runs/rwnn_full/metrics.json

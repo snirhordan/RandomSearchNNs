@@ -1,0 +1,4607 @@
+/home/snirhordan/miniconda3/envs/rwnn/lib/python3.11/site-packages/torch/optim/lr_scheduler.py:216: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  warnings.warn(
+Namespace(exp_name='r_Cv_s42_e300', batch_size=96, epochs=300, patience=50, no_cuda=False, seed=42, log_interval=20, test_interval=1, outf='qm9/logs', lr=0.001, nf=128, attention=1, n_layers=7, property='Cv', num_workers=0, charge_power=2, dataset_paper='cormorant', node_attr=0, weight_decay=1e-16, cuda=True)
+EGNN(
+  (embedding): Linear(in_features=15, out_features=128, bias=True)
+  (gcl_0): E_GCL_mask(
+    (edge_mlp): Sequential(
+      (0): Linear(in_features=257, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+      (3): SiLU()
+    )
+    (node_mlp): Sequential(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (att_mlp): Sequential(
+      (0): Linear(in_features=128, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (act_fn): SiLU()
+  )
+  (gcl_1): E_GCL_mask(
+    (edge_mlp): Sequential(
+      (0): Linear(in_features=257, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+      (3): SiLU()
+    )
+    (node_mlp): Sequential(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (att_mlp): Sequential(
+      (0): Linear(in_features=128, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (act_fn): SiLU()
+  )
+  (gcl_2): E_GCL_mask(
+    (edge_mlp): Sequential(
+      (0): Linear(in_features=257, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+      (3): SiLU()
+    )
+    (node_mlp): Sequential(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (att_mlp): Sequential(
+      (0): Linear(in_features=128, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (act_fn): SiLU()
+  )
+  (gcl_3): E_GCL_mask(
+    (edge_mlp): Sequential(
+      (0): Linear(in_features=257, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+      (3): SiLU()
+    )
+    (node_mlp): Sequential(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (att_mlp): Sequential(
+      (0): Linear(in_features=128, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (act_fn): SiLU()
+  )
+  (gcl_4): E_GCL_mask(
+    (edge_mlp): Sequential(
+      (0): Linear(in_features=257, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+      (3): SiLU()
+    )
+    (node_mlp): Sequential(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (att_mlp): Sequential(
+      (0): Linear(in_features=128, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (act_fn): SiLU()
+  )
+  (gcl_5): E_GCL_mask(
+    (edge_mlp): Sequential(
+      (0): Linear(in_features=257, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+      (3): SiLU()
+    )
+    (node_mlp): Sequential(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (att_mlp): Sequential(
+      (0): Linear(in_features=128, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (act_fn): SiLU()
+  )
+  (gcl_6): E_GCL_mask(
+    (edge_mlp): Sequential(
+      (0): Linear(in_features=257, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+      (3): SiLU()
+    )
+    (node_mlp): Sequential(
+      (0): Linear(in_features=256, out_features=128, bias=True)
+      (1): SiLU()
+      (2): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (att_mlp): Sequential(
+      (0): Linear(in_features=128, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (act_fn): SiLU()
+  )
+  (node_dec): Sequential(
+    (0): Linear(in_features=128, out_features=128, bias=True)
+    (1): SiLU()
+    (2): Linear(in_features=128, out_features=128, bias=True)
+  )
+  (graph_dec): Sequential(
+    (0): Linear(in_features=128, out_features=128, bias=True)
+    (1): SiLU()
+    (2): Linear(in_features=128, out_features=1, bias=True)
+  )
+)
+Epoch 0 	 Iteration 0 	 loss 1.0813
+Epoch 0 	 Iteration 20 	 loss 0.7815
+Epoch 0 	 Iteration 40 	 loss 0.5422
+Epoch 0 	 Iteration 60 	 loss 0.4027
+Epoch 0 	 Iteration 80 	 loss 0.3565
+Epoch 0 	 Iteration 100 	 loss 0.3144
+Epoch 0 	 Iteration 120 	 loss 0.3201
+Epoch 0 	 Iteration 140 	 loss 0.3204
+Epoch 0 	 Iteration 160 	 loss 0.3365
+Epoch 0 	 Iteration 180 	 loss 0.3207
+Epoch 0 	 Iteration 200 	 loss 0.2595
+Epoch 0 	 Iteration 220 	 loss 0.2575
+Epoch 0 	 Iteration 240 	 loss 0.2451
+Epoch 0 	 Iteration 260 	 loss 0.2322
+Epoch 0 	 Iteration 280 	 loss 0.2483
+Epoch 0 	 Iteration 300 	 loss 0.2355
+Epoch 0 	 Iteration 320 	 loss 0.2267
+Epoch 0 	 Iteration 340 	 loss 0.2206
+Epoch 0 	 Iteration 360 	 loss 0.2079
+Epoch 0 	 Iteration 380 	 loss 0.2077
+Epoch 0 	 Iteration 400 	 loss 0.2970
+Epoch 0 	 Iteration 420 	 loss 0.2429
+Epoch 0 	 Iteration 440 	 loss 0.2213
+Epoch 0 	 Iteration 460 	 loss 0.1846
+Epoch 0 	 Iteration 480 	 loss 0.2009
+Epoch 0 	 Iteration 500 	 loss 0.1618
+Epoch 0 	 Iteration 520 	 loss 0.1610
+Epoch 0 	 Iteration 540 	 loss 0.1784
+Epoch 0 	 Iteration 560 	 loss 0.1555
+Epoch 0 	 Iteration 580 	 loss 0.1401
+Epoch 0 	 Iteration 600 	 loss 0.1466
+Epoch 0 	 Iteration 620 	 loss 0.1491
+Epoch 0 	 Iteration 640 	 loss 0.1344
+Epoch 0 	 Iteration 660 	 loss 0.1254
+Epoch 0 	 Iteration 680 	 loss 0.1452
+Epoch 0 	 Iteration 700 	 loss 0.1429
+Epoch 0 	 Iteration 720 	 loss 0.1258
+Epoch 0 	 Iteration 740 	 loss 0.2207
+Epoch 0 	 Iteration 760 	 loss 0.1279
+Epoch 0 	 Iteration 780 	 loss 0.1700
+Epoch 0 	 Iteration 800 	 loss 0.1327
+Epoch 0 	 Iteration 820 	 loss 0.1792
+Epoch 0 	 Iteration 840 	 loss 0.1391
+Epoch 0 	 Iteration 860 	 loss 0.1175
+Epoch 0 	 Iteration 880 	 loss 0.1094
+Epoch 0 	 Iteration 900 	 loss 0.1106
+Epoch 0 	 Iteration 920 	 loss 0.1546
+Epoch 0 	 Iteration 940 	 loss 0.1255
+Epoch 0 	 Iteration 960 	 loss 0.1675
+Epoch 0 	 Iteration 980 	 loss 0.1132
+Epoch 0 	 Iteration 1000 	 loss 0.1150
+Epoch 0 	 Iteration 1020 	 loss 0.1042
+Epoch 0 	 Iteration 1040 	 loss 0.1410
+>> valid 	Epoch 0 	 Iteration 0 	 loss 0.4654
+>> valid 	Epoch 0 	 Iteration 20 	 loss 0.4801
+>> valid 	Epoch 0 	 Iteration 40 	 loss 0.4599
+>> valid 	Epoch 0 	 Iteration 60 	 loss 0.4657
+>> valid 	Epoch 0 	 Iteration 80 	 loss 0.4835
+>> valid 	Epoch 0 	 Iteration 100 	 loss 0.4773
+>> valid 	Epoch 0 	 Iteration 120 	 loss 0.4718
+>> valid 	Epoch 0 	 Iteration 140 	 loss 0.4479
+>> valid 	Epoch 0 	 Iteration 160 	 loss 0.4706
+>> valid 	Epoch 0 	 Iteration 180 	 loss 0.4909
+>> test 	Epoch 0 	 Iteration 0 	 loss 0.4554
+>> test 	Epoch 0 	 Iteration 20 	 loss 0.4882
+>> test 	Epoch 0 	 Iteration 40 	 loss 0.4894
+>> test 	Epoch 0 	 Iteration 60 	 loss 0.4939
+>> test 	Epoch 0 	 Iteration 80 	 loss 0.4688
+>> test 	Epoch 0 	 Iteration 100 	 loss 0.4726
+>> test 	Epoch 0 	 Iteration 120 	 loss 0.4801
+Val loss: 0.4747 	 test loss: 0.4785 	 epoch 0
+Best: val loss: 0.4747 	 test loss: 0.4785 	 epoch 0
+Epoch 1 	 Iteration 0 	 loss 0.1069
+Epoch 1 	 Iteration 20 	 loss 0.1441
+Epoch 1 	 Iteration 40 	 loss 0.1210
+Epoch 1 	 Iteration 60 	 loss 0.0897
+Epoch 1 	 Iteration 80 	 loss 0.1132
+Epoch 1 	 Iteration 100 	 loss 0.1031
+Epoch 1 	 Iteration 120 	 loss 0.0860
+Epoch 1 	 Iteration 140 	 loss 0.1168
+Epoch 1 	 Iteration 160 	 loss 0.0963
+Epoch 1 	 Iteration 180 	 loss 0.1627
+Epoch 1 	 Iteration 200 	 loss 0.1665
+Epoch 1 	 Iteration 220 	 loss 0.1301
+Epoch 1 	 Iteration 240 	 loss 0.1135
+Epoch 1 	 Iteration 260 	 loss 0.1277
+Epoch 1 	 Iteration 280 	 loss 0.0984
+Epoch 1 	 Iteration 300 	 loss 0.1213
+Epoch 1 	 Iteration 320 	 loss 0.0915
+Epoch 1 	 Iteration 340 	 loss 0.0945
+Epoch 1 	 Iteration 360 	 loss 0.1551
+Epoch 1 	 Iteration 380 	 loss 0.1240
+Epoch 1 	 Iteration 400 	 loss 0.0887
+Epoch 1 	 Iteration 420 	 loss 0.0972
+Epoch 1 	 Iteration 440 	 loss 0.0906
+Epoch 1 	 Iteration 460 	 loss 0.0989
+Epoch 1 	 Iteration 480 	 loss 0.1089
+Epoch 1 	 Iteration 500 	 loss 0.0825
+Epoch 1 	 Iteration 520 	 loss 0.1246
+Epoch 1 	 Iteration 540 	 loss 0.0834
+Epoch 1 	 Iteration 560 	 loss 0.0943
+Epoch 1 	 Iteration 580 	 loss 0.1132
+Epoch 1 	 Iteration 600 	 loss 0.0985
+Epoch 1 	 Iteration 620 	 loss 0.0793
+Epoch 1 	 Iteration 640 	 loss 0.0838
+Epoch 1 	 Iteration 660 	 loss 0.0934
+Epoch 1 	 Iteration 680 	 loss 0.1093
+Epoch 1 	 Iteration 700 	 loss 0.0857
+Epoch 1 	 Iteration 720 	 loss 0.0979
+Epoch 1 	 Iteration 740 	 loss 0.0969
+Epoch 1 	 Iteration 760 	 loss 0.1073
+Epoch 1 	 Iteration 780 	 loss 0.1215
+Epoch 1 	 Iteration 800 	 loss 0.0787
+Epoch 1 	 Iteration 820 	 loss 0.0788
+Epoch 1 	 Iteration 840 	 loss 0.0750
+Epoch 1 	 Iteration 860 	 loss 0.0699
+Epoch 1 	 Iteration 880 	 loss 0.0828
+Epoch 1 	 Iteration 900 	 loss 0.0666
+Epoch 1 	 Iteration 920 	 loss 0.0695
+Epoch 1 	 Iteration 940 	 loss 0.0831
+Epoch 1 	 Iteration 960 	 loss 0.0881
+Epoch 1 	 Iteration 980 	 loss 0.0843
+Epoch 1 	 Iteration 1000 	 loss 0.1332
+Epoch 1 	 Iteration 1020 	 loss 0.0759
+Epoch 1 	 Iteration 1040 	 loss 0.0682
+>> valid 	Epoch 1 	 Iteration 0 	 loss 0.6642
+>> valid 	Epoch 1 	 Iteration 20 	 loss 0.6877
+>> valid 	Epoch 1 	 Iteration 40 	 loss 0.6876
+>> valid 	Epoch 1 	 Iteration 60 	 loss 0.7003
+>> valid 	Epoch 1 	 Iteration 80 	 loss 0.6763
+>> valid 	Epoch 1 	 Iteration 100 	 loss 0.6668
+>> valid 	Epoch 1 	 Iteration 120 	 loss 0.7205
+>> valid 	Epoch 1 	 Iteration 140 	 loss 0.6639
+>> valid 	Epoch 1 	 Iteration 160 	 loss 0.6773
+>> valid 	Epoch 1 	 Iteration 180 	 loss 0.6981
+>> test 	Epoch 1 	 Iteration 0 	 loss 0.6822
+>> test 	Epoch 1 	 Iteration 20 	 loss 0.7117
+>> test 	Epoch 1 	 Iteration 40 	 loss 0.6952
+>> test 	Epoch 1 	 Iteration 60 	 loss 0.6925
+>> test 	Epoch 1 	 Iteration 80 	 loss 0.6989
+>> test 	Epoch 1 	 Iteration 100 	 loss 0.7012
+>> test 	Epoch 1 	 Iteration 120 	 loss 0.6982
+Val loss: 0.6874 	 test loss: 0.6955 	 epoch 1
+Best: val loss: 0.4747 	 test loss: 0.4785 	 epoch 0
+Epoch 2 	 Iteration 0 	 loss 0.1470
+Epoch 2 	 Iteration 20 	 loss 0.0745
+Epoch 2 	 Iteration 40 	 loss 0.0656
+Epoch 2 	 Iteration 60 	 loss 0.0665
+Epoch 2 	 Iteration 80 	 loss 0.1188
+Epoch 2 	 Iteration 100 	 loss 0.1005
+Epoch 2 	 Iteration 120 	 loss 0.0842
+Epoch 2 	 Iteration 140 	 loss 0.1025
+Epoch 2 	 Iteration 160 	 loss 0.0795
+Epoch 2 	 Iteration 180 	 loss 0.1015
+Epoch 2 	 Iteration 200 	 loss 0.0833
+Epoch 2 	 Iteration 220 	 loss 0.0775
+Epoch 2 	 Iteration 240 	 loss 0.0891
+Epoch 2 	 Iteration 260 	 loss 0.0906
+Epoch 2 	 Iteration 280 	 loss 0.0830
+Epoch 2 	 Iteration 300 	 loss 0.0692
+Epoch 2 	 Iteration 320 	 loss 0.0753
+Epoch 2 	 Iteration 340 	 loss 0.0613
+Epoch 2 	 Iteration 360 	 loss 0.0619
+Epoch 2 	 Iteration 380 	 loss 0.0588
+Epoch 2 	 Iteration 400 	 loss 0.0611
+Epoch 2 	 Iteration 420 	 loss 0.0659
+Epoch 2 	 Iteration 440 	 loss 0.0610
+Epoch 2 	 Iteration 460 	 loss 0.0740
+Epoch 2 	 Iteration 480 	 loss 0.0606
+Epoch 2 	 Iteration 500 	 loss 0.0652
+Epoch 2 	 Iteration 520 	 loss 0.0900
+Epoch 2 	 Iteration 540 	 loss 0.1051
+Epoch 2 	 Iteration 560 	 loss 0.0726
+Epoch 2 	 Iteration 580 	 loss 0.0578
+Epoch 2 	 Iteration 600 	 loss 0.0584
+Epoch 2 	 Iteration 620 	 loss 0.0771
+Epoch 2 	 Iteration 640 	 loss 0.1051
+Epoch 2 	 Iteration 660 	 loss 0.0693
+Epoch 2 	 Iteration 680 	 loss 0.0585
+Epoch 2 	 Iteration 700 	 loss 0.0555
+Epoch 2 	 Iteration 720 	 loss 0.0605
+Epoch 2 	 Iteration 740 	 loss 0.0951
+Epoch 2 	 Iteration 760 	 loss 0.1206
+Epoch 2 	 Iteration 780 	 loss 0.0747
+Epoch 2 	 Iteration 800 	 loss 0.0676
+Epoch 2 	 Iteration 820 	 loss 0.0971
+Epoch 2 	 Iteration 840 	 loss 0.0684
+Epoch 2 	 Iteration 860 	 loss 0.1145
+Epoch 2 	 Iteration 880 	 loss 0.0646
+Epoch 2 	 Iteration 900 	 loss 0.0817
+Epoch 2 	 Iteration 920 	 loss 0.0588
+Epoch 2 	 Iteration 940 	 loss 0.0811
+Epoch 2 	 Iteration 960 	 loss 0.0628
+Epoch 2 	 Iteration 980 	 loss 0.0582
+Epoch 2 	 Iteration 1000 	 loss 0.0654
+Epoch 2 	 Iteration 1020 	 loss 0.0639
+Epoch 2 	 Iteration 1040 	 loss 0.0820
+>> valid 	Epoch 2 	 Iteration 0 	 loss 0.3179
+>> valid 	Epoch 2 	 Iteration 20 	 loss 0.3164
+>> valid 	Epoch 2 	 Iteration 40 	 loss 0.3186
+>> valid 	Epoch 2 	 Iteration 60 	 loss 0.3301
+>> valid 	Epoch 2 	 Iteration 80 	 loss 0.3189
+>> valid 	Epoch 2 	 Iteration 100 	 loss 0.3072
+>> valid 	Epoch 2 	 Iteration 120 	 loss 0.3320
+>> valid 	Epoch 2 	 Iteration 140 	 loss 0.3100
+>> valid 	Epoch 2 	 Iteration 160 	 loss 0.3057
+>> valid 	Epoch 2 	 Iteration 180 	 loss 0.3250
+>> test 	Epoch 2 	 Iteration 0 	 loss 0.3334
+>> test 	Epoch 2 	 Iteration 20 	 loss 0.3222
+>> test 	Epoch 2 	 Iteration 40 	 loss 0.3218
+>> test 	Epoch 2 	 Iteration 60 	 loss 0.3141
+>> test 	Epoch 2 	 Iteration 80 	 loss 0.3272
+>> test 	Epoch 2 	 Iteration 100 	 loss 0.3260
+>> test 	Epoch 2 	 Iteration 120 	 loss 0.3104
+Val loss: 0.3183 	 test loss: 0.3184 	 epoch 2
+Best: val loss: 0.3183 	 test loss: 0.3184 	 epoch 2
+Epoch 3 	 Iteration 0 	 loss 0.0697
+Epoch 3 	 Iteration 20 	 loss 0.0866
+Epoch 3 	 Iteration 40 	 loss 0.0675
+Epoch 3 	 Iteration 60 	 loss 0.0586
+Epoch 3 	 Iteration 80 	 loss 0.0591
+Epoch 3 	 Iteration 100 	 loss 0.0670
+Epoch 3 	 Iteration 120 	 loss 0.0559
+Epoch 3 	 Iteration 140 	 loss 0.0747
+Epoch 3 	 Iteration 160 	 loss 0.0556
+Epoch 3 	 Iteration 180 	 loss 0.0732
+Epoch 3 	 Iteration 200 	 loss 0.0762
+Epoch 3 	 Iteration 220 	 loss 0.0718
+Epoch 3 	 Iteration 240 	 loss 0.0749
+Epoch 3 	 Iteration 260 	 loss 0.0783
+Epoch 3 	 Iteration 280 	 loss 0.0571
+Epoch 3 	 Iteration 300 	 loss 0.0604
+Epoch 3 	 Iteration 320 	 loss 0.0579
+Epoch 3 	 Iteration 340 	 loss 0.0798
+Epoch 3 	 Iteration 360 	 loss 0.0626
+Epoch 3 	 Iteration 380 	 loss 0.0552
+Epoch 3 	 Iteration 400 	 loss 0.0585
+Epoch 3 	 Iteration 420 	 loss 0.0792
+Epoch 3 	 Iteration 440 	 loss 0.0779
+Epoch 3 	 Iteration 460 	 loss 0.0793
+Epoch 3 	 Iteration 480 	 loss 0.0686
+Epoch 3 	 Iteration 500 	 loss 0.0660
+Epoch 3 	 Iteration 520 	 loss 0.0676
+Epoch 3 	 Iteration 540 	 loss 0.0547
+Epoch 3 	 Iteration 560 	 loss 0.0545
+Epoch 3 	 Iteration 580 	 loss 0.0647
+Epoch 3 	 Iteration 600 	 loss 0.0580
+Epoch 3 	 Iteration 620 	 loss 0.0460
+Epoch 3 	 Iteration 640 	 loss 0.0770
+Epoch 3 	 Iteration 660 	 loss 0.0833
+Epoch 3 	 Iteration 680 	 loss 0.0814
+Epoch 3 	 Iteration 700 	 loss 0.0518
+Epoch 3 	 Iteration 720 	 loss 0.0930
+Epoch 3 	 Iteration 740 	 loss 0.0972
+Epoch 3 	 Iteration 760 	 loss 0.0820
+Epoch 3 	 Iteration 780 	 loss 0.0802
+Epoch 3 	 Iteration 800 	 loss 0.0789
+Epoch 3 	 Iteration 820 	 loss 0.0553
+Epoch 3 	 Iteration 840 	 loss 0.0532
+Epoch 3 	 Iteration 860 	 loss 0.0799
+Epoch 3 	 Iteration 880 	 loss 0.0693
+Epoch 3 	 Iteration 900 	 loss 0.0728
+Epoch 3 	 Iteration 920 	 loss 0.0577
+Epoch 3 	 Iteration 940 	 loss 0.0570
+Epoch 3 	 Iteration 960 	 loss 0.0531
+Epoch 3 	 Iteration 980 	 loss 0.0544
+Epoch 3 	 Iteration 1000 	 loss 0.0489
+Epoch 3 	 Iteration 1020 	 loss 0.0687
+Epoch 3 	 Iteration 1040 	 loss 0.0619
+>> valid 	Epoch 3 	 Iteration 0 	 loss 0.2676
+>> valid 	Epoch 3 	 Iteration 20 	 loss 0.2793
+>> valid 	Epoch 3 	 Iteration 40 	 loss 0.2554
+>> valid 	Epoch 3 	 Iteration 60 	 loss 0.2674
+>> valid 	Epoch 3 	 Iteration 80 	 loss 0.2695
+>> valid 	Epoch 3 	 Iteration 100 	 loss 0.2632
+>> valid 	Epoch 3 	 Iteration 120 	 loss 0.2579
+>> valid 	Epoch 3 	 Iteration 140 	 loss 0.2700
+>> valid 	Epoch 3 	 Iteration 160 	 loss 0.2697
+>> valid 	Epoch 3 	 Iteration 180 	 loss 0.2697
+>> test 	Epoch 3 	 Iteration 0 	 loss 0.2939
+>> test 	Epoch 3 	 Iteration 20 	 loss 0.2646
+>> test 	Epoch 3 	 Iteration 40 	 loss 0.2730
+>> test 	Epoch 3 	 Iteration 60 	 loss 0.2697
+>> test 	Epoch 3 	 Iteration 80 	 loss 0.2739
+>> test 	Epoch 3 	 Iteration 100 	 loss 0.2615
+>> test 	Epoch 3 	 Iteration 120 	 loss 0.2622
+Val loss: 0.2658 	 test loss: 0.2688 	 epoch 3
+Best: val loss: 0.2658 	 test loss: 0.2688 	 epoch 3
+Epoch 4 	 Iteration 0 	 loss 0.0559
+Epoch 4 	 Iteration 20 	 loss 0.0719
+Epoch 4 	 Iteration 40 	 loss 0.0520
+Epoch 4 	 Iteration 60 	 loss 0.0536
+Epoch 4 	 Iteration 80 	 loss 0.0480
+Epoch 4 	 Iteration 100 	 loss 0.0819
+Epoch 4 	 Iteration 120 	 loss 0.0778
+Epoch 4 	 Iteration 140 	 loss 0.0555
+Epoch 4 	 Iteration 160 	 loss 0.0802
+Epoch 4 	 Iteration 180 	 loss 0.0734
+Epoch 4 	 Iteration 200 	 loss 0.0606
+Epoch 4 	 Iteration 220 	 loss 0.0487
+Epoch 4 	 Iteration 240 	 loss 0.0526
+Epoch 4 	 Iteration 260 	 loss 0.0593
+Epoch 4 	 Iteration 280 	 loss 0.0581
+Epoch 4 	 Iteration 300 	 loss 0.0523
+Epoch 4 	 Iteration 320 	 loss 0.0550
+Epoch 4 	 Iteration 340 	 loss 0.0857
+Epoch 4 	 Iteration 360 	 loss 0.0646
+Epoch 4 	 Iteration 380 	 loss 0.0689
+Epoch 4 	 Iteration 400 	 loss 0.0493
+Epoch 4 	 Iteration 420 	 loss 0.0598
+Epoch 4 	 Iteration 440 	 loss 0.0483
+Epoch 4 	 Iteration 460 	 loss 0.0478
+Epoch 4 	 Iteration 480 	 loss 0.0656
+Epoch 4 	 Iteration 500 	 loss 0.0518
+Epoch 4 	 Iteration 520 	 loss 0.0494
+Epoch 4 	 Iteration 540 	 loss 0.0622
+Epoch 4 	 Iteration 560 	 loss 0.0749
+Epoch 4 	 Iteration 580 	 loss 0.0626
+Epoch 4 	 Iteration 600 	 loss 0.0501
+Epoch 4 	 Iteration 620 	 loss 0.0569
+Epoch 4 	 Iteration 640 	 loss 0.0636
+Epoch 4 	 Iteration 660 	 loss 0.0674
+Epoch 4 	 Iteration 680 	 loss 0.0784
+Epoch 4 	 Iteration 700 	 loss 0.0777
+Epoch 4 	 Iteration 720 	 loss 0.0521
+Epoch 4 	 Iteration 740 	 loss 0.0479
+Epoch 4 	 Iteration 760 	 loss 0.0545
+Epoch 4 	 Iteration 780 	 loss 0.0452
+Epoch 4 	 Iteration 800 	 loss 0.0704
+Epoch 4 	 Iteration 820 	 loss 0.0499
+Epoch 4 	 Iteration 840 	 loss 0.0581
+Epoch 4 	 Iteration 860 	 loss 0.0632
+Epoch 4 	 Iteration 880 	 loss 0.0690
+Epoch 4 	 Iteration 900 	 loss 0.0490
+Epoch 4 	 Iteration 920 	 loss 0.0481
+Epoch 4 	 Iteration 940 	 loss 0.0472
+Epoch 4 	 Iteration 960 	 loss 0.0790
+Epoch 4 	 Iteration 980 	 loss 0.0490
+Epoch 4 	 Iteration 1000 	 loss 0.0506
+Epoch 4 	 Iteration 1020 	 loss 0.0423
+Epoch 4 	 Iteration 1040 	 loss 0.0703
+>> valid 	Epoch 4 	 Iteration 0 	 loss 0.2269
+>> valid 	Epoch 4 	 Iteration 20 	 loss 0.2284
+>> valid 	Epoch 4 	 Iteration 40 	 loss 0.2250
+>> valid 	Epoch 4 	 Iteration 60 	 loss 0.2249
+>> valid 	Epoch 4 	 Iteration 80 	 loss 0.2259
+>> valid 	Epoch 4 	 Iteration 100 	 loss 0.2288
+>> valid 	Epoch 4 	 Iteration 120 	 loss 0.2303
+>> valid 	Epoch 4 	 Iteration 140 	 loss 0.2217
+>> valid 	Epoch 4 	 Iteration 160 	 loss 0.2223
+>> valid 	Epoch 4 	 Iteration 180 	 loss 0.2217
+>> test 	Epoch 4 	 Iteration 0 	 loss 0.2398
+>> test 	Epoch 4 	 Iteration 20 	 loss 0.2310
+>> test 	Epoch 4 	 Iteration 40 	 loss 0.2247
+>> test 	Epoch 4 	 Iteration 60 	 loss 0.2338
+>> test 	Epoch 4 	 Iteration 80 	 loss 0.2307
+>> test 	Epoch 4 	 Iteration 100 	 loss 0.2297
+>> test 	Epoch 4 	 Iteration 120 	 loss 0.2092
+Val loss: 0.2274 	 test loss: 0.2280 	 epoch 4
+Best: val loss: 0.2274 	 test loss: 0.2280 	 epoch 4
+Epoch 5 	 Iteration 0 	 loss 0.0396
+Epoch 5 	 Iteration 20 	 loss 0.0484
+Epoch 5 	 Iteration 40 	 loss 0.0451
+Epoch 5 	 Iteration 60 	 loss 0.0980
+Epoch 5 	 Iteration 80 	 loss 0.0823
+Epoch 5 	 Iteration 100 	 loss 0.0609
+Epoch 5 	 Iteration 120 	 loss 0.0500
+Epoch 5 	 Iteration 140 	 loss 0.0471
+Epoch 5 	 Iteration 160 	 loss 0.0433
+Epoch 5 	 Iteration 180 	 loss 0.0456
+Epoch 5 	 Iteration 200 	 loss 0.0546
+Epoch 5 	 Iteration 220 	 loss 0.0501
+Epoch 5 	 Iteration 240 	 loss 0.0557
+Epoch 5 	 Iteration 260 	 loss 0.0453
+Epoch 5 	 Iteration 280 	 loss 0.0565
+Epoch 5 	 Iteration 300 	 loss 0.0653
+Epoch 5 	 Iteration 320 	 loss 0.0713
+Epoch 5 	 Iteration 340 	 loss 0.0505
+Epoch 5 	 Iteration 360 	 loss 0.0683
+Epoch 5 	 Iteration 380 	 loss 0.0458
+Epoch 5 	 Iteration 400 	 loss 0.0419
+Epoch 5 	 Iteration 420 	 loss 0.0465
+Epoch 5 	 Iteration 440 	 loss 0.0667
+Epoch 5 	 Iteration 460 	 loss 0.0467
+Epoch 5 	 Iteration 480 	 loss 0.0486
+Epoch 5 	 Iteration 500 	 loss 0.0892
+Epoch 5 	 Iteration 520 	 loss 0.0599
+Epoch 5 	 Iteration 540 	 loss 0.0661
+Epoch 5 	 Iteration 560 	 loss 0.0697
+Epoch 5 	 Iteration 580 	 loss 0.0636
+Epoch 5 	 Iteration 600 	 loss 0.0603
+Epoch 5 	 Iteration 620 	 loss 0.0715
+Epoch 5 	 Iteration 640 	 loss 0.0537
+Epoch 5 	 Iteration 660 	 loss 0.0521
+Epoch 5 	 Iteration 680 	 loss 0.0736
+Epoch 5 	 Iteration 700 	 loss 0.0477
+Epoch 5 	 Iteration 720 	 loss 0.0815
+Epoch 5 	 Iteration 740 	 loss 0.0594
+Epoch 5 	 Iteration 760 	 loss 0.0540
+Epoch 5 	 Iteration 780 	 loss 0.0452
+Epoch 5 	 Iteration 800 	 loss 0.0413
+Epoch 5 	 Iteration 820 	 loss 0.0719
+Epoch 5 	 Iteration 840 	 loss 0.0534
+Epoch 5 	 Iteration 860 	 loss 0.0483
+Epoch 5 	 Iteration 880 	 loss 0.0466
+Epoch 5 	 Iteration 900 	 loss 0.0654
+Epoch 5 	 Iteration 920 	 loss 0.0533
+Epoch 5 	 Iteration 940 	 loss 0.0407
+Epoch 5 	 Iteration 960 	 loss 0.0384
+Epoch 5 	 Iteration 980 	 loss 0.0624
+Epoch 5 	 Iteration 1000 	 loss 0.0441
+Epoch 5 	 Iteration 1020 	 loss 0.0459
+Epoch 5 	 Iteration 1040 	 loss 0.0440
+>> valid 	Epoch 5 	 Iteration 0 	 loss 0.1967
+>> valid 	Epoch 5 	 Iteration 20 	 loss 0.2023
+>> valid 	Epoch 5 	 Iteration 40 	 loss 0.1955
+>> valid 	Epoch 5 	 Iteration 60 	 loss 0.2045
+>> valid 	Epoch 5 	 Iteration 80 	 loss 0.1998
+>> valid 	Epoch 5 	 Iteration 100 	 loss 0.2060
+>> valid 	Epoch 5 	 Iteration 120 	 loss 0.2008
+>> valid 	Epoch 5 	 Iteration 140 	 loss 0.2064
+>> valid 	Epoch 5 	 Iteration 160 	 loss 0.1926
+>> valid 	Epoch 5 	 Iteration 180 	 loss 0.2111
+>> test 	Epoch 5 	 Iteration 0 	 loss 0.2008
+>> test 	Epoch 5 	 Iteration 20 	 loss 0.2077
+>> test 	Epoch 5 	 Iteration 40 	 loss 0.2015
+>> test 	Epoch 5 	 Iteration 60 	 loss 0.1977
+>> test 	Epoch 5 	 Iteration 80 	 loss 0.2066
+>> test 	Epoch 5 	 Iteration 100 	 loss 0.2000
+>> test 	Epoch 5 	 Iteration 120 	 loss 0.2046
+Val loss: 0.2025 	 test loss: 0.2032 	 epoch 5
+Best: val loss: 0.2025 	 test loss: 0.2032 	 epoch 5
+Epoch 6 	 Iteration 0 	 loss 0.0471
+Epoch 6 	 Iteration 20 	 loss 0.0600
+Epoch 6 	 Iteration 40 	 loss 0.0515
+Epoch 6 	 Iteration 60 	 loss 0.0413
+Epoch 6 	 Iteration 80 	 loss 0.0570
+Epoch 6 	 Iteration 100 	 loss 0.0422
+Epoch 6 	 Iteration 120 	 loss 0.0445
+Epoch 6 	 Iteration 140 	 loss 0.0425
+Epoch 6 	 Iteration 160 	 loss 0.0408
+Epoch 6 	 Iteration 180 	 loss 0.0439
+Epoch 6 	 Iteration 200 	 loss 0.0467
+Epoch 6 	 Iteration 220 	 loss 0.0511
+Epoch 6 	 Iteration 240 	 loss 0.0430
+Epoch 6 	 Iteration 260 	 loss 0.0779
+Epoch 6 	 Iteration 280 	 loss 0.0502
+Epoch 6 	 Iteration 300 	 loss 0.0444
+Epoch 6 	 Iteration 320 	 loss 0.0731
+Epoch 6 	 Iteration 340 	 loss 0.0641
+Epoch 6 	 Iteration 360 	 loss 0.0443
+Epoch 6 	 Iteration 380 	 loss 0.0457
+Epoch 6 	 Iteration 400 	 loss 0.0389
+Epoch 6 	 Iteration 420 	 loss 0.0454
+Epoch 6 	 Iteration 440 	 loss 0.0439
+Epoch 6 	 Iteration 460 	 loss 0.0432
+Epoch 6 	 Iteration 480 	 loss 0.0417
+Epoch 6 	 Iteration 500 	 loss 0.0428
+Epoch 6 	 Iteration 520 	 loss 0.0343
+Epoch 6 	 Iteration 540 	 loss 0.0363
+Epoch 6 	 Iteration 560 	 loss 0.0565
+Epoch 6 	 Iteration 580 	 loss 0.0434
+Epoch 6 	 Iteration 600 	 loss 0.0391
+Epoch 6 	 Iteration 620 	 loss 0.0463
+Epoch 6 	 Iteration 640 	 loss 0.0433
+Epoch 6 	 Iteration 660 	 loss 0.0390
+Epoch 6 	 Iteration 680 	 loss 0.0416
+Epoch 6 	 Iteration 700 	 loss 0.0618
+Epoch 6 	 Iteration 720 	 loss 0.0552
+Epoch 6 	 Iteration 740 	 loss 0.0533
+Epoch 6 	 Iteration 760 	 loss 0.0368
+Epoch 6 	 Iteration 780 	 loss 0.0398
+Epoch 6 	 Iteration 800 	 loss 0.0496
+Epoch 6 	 Iteration 820 	 loss 0.0472
+Epoch 6 	 Iteration 840 	 loss 0.0489
+Epoch 6 	 Iteration 860 	 loss 0.0438
+Epoch 6 	 Iteration 880 	 loss 0.0540
+Epoch 6 	 Iteration 900 	 loss 0.0616
+Epoch 6 	 Iteration 920 	 loss 0.0633
+Epoch 6 	 Iteration 940 	 loss 0.0513
+Epoch 6 	 Iteration 960 	 loss 0.0433
+Epoch 6 	 Iteration 980 	 loss 0.0502
+Epoch 6 	 Iteration 1000 	 loss 0.0474
+Epoch 6 	 Iteration 1020 	 loss 0.0587
+Epoch 6 	 Iteration 1040 	 loss 0.0527
+>> valid 	Epoch 6 	 Iteration 0 	 loss 0.4078
+>> valid 	Epoch 6 	 Iteration 20 	 loss 0.3912
+>> valid 	Epoch 6 	 Iteration 40 	 loss 0.3880
+>> valid 	Epoch 6 	 Iteration 60 	 loss 0.3851
+>> valid 	Epoch 6 	 Iteration 80 	 loss 0.3846
+>> valid 	Epoch 6 	 Iteration 100 	 loss 0.3857
+>> valid 	Epoch 6 	 Iteration 120 	 loss 0.3760
+>> valid 	Epoch 6 	 Iteration 140 	 loss 0.4054
+>> valid 	Epoch 6 	 Iteration 160 	 loss 0.3910
+>> valid 	Epoch 6 	 Iteration 180 	 loss 0.3777
+>> test 	Epoch 6 	 Iteration 0 	 loss 0.3956
+>> test 	Epoch 6 	 Iteration 20 	 loss 0.3836
+>> test 	Epoch 6 	 Iteration 40 	 loss 0.3815
+>> test 	Epoch 6 	 Iteration 60 	 loss 0.3863
+>> test 	Epoch 6 	 Iteration 80 	 loss 0.3913
+>> test 	Epoch 6 	 Iteration 100 	 loss 0.3747
+>> test 	Epoch 6 	 Iteration 120 	 loss 0.3944
+Val loss: 0.3888 	 test loss: 0.3850 	 epoch 6
+Best: val loss: 0.2025 	 test loss: 0.2032 	 epoch 5
+Epoch 7 	 Iteration 0 	 loss 0.0765
+Epoch 7 	 Iteration 20 	 loss 0.0497
+Epoch 7 	 Iteration 40 	 loss 0.0427
+Epoch 7 	 Iteration 60 	 loss 0.0545
+Epoch 7 	 Iteration 80 	 loss 0.0494
+Epoch 7 	 Iteration 100 	 loss 0.0399
+Epoch 7 	 Iteration 120 	 loss 0.0424
+Epoch 7 	 Iteration 140 	 loss 0.0443
+Epoch 7 	 Iteration 160 	 loss 0.0394
+Epoch 7 	 Iteration 180 	 loss 0.0534
+Epoch 7 	 Iteration 200 	 loss 0.0456
+Epoch 7 	 Iteration 220 	 loss 0.0712
+Epoch 7 	 Iteration 240 	 loss 0.0462
+Epoch 7 	 Iteration 260 	 loss 0.0388
+Epoch 7 	 Iteration 280 	 loss 0.0457
+Epoch 7 	 Iteration 300 	 loss 0.0400
+Epoch 7 	 Iteration 320 	 loss 0.0471
+Epoch 7 	 Iteration 340 	 loss 0.0624
+Epoch 7 	 Iteration 360 	 loss 0.0413
+Epoch 7 	 Iteration 380 	 loss 0.0502
+Epoch 7 	 Iteration 400 	 loss 0.0381
+Epoch 7 	 Iteration 420 	 loss 0.0400
+Epoch 7 	 Iteration 440 	 loss 0.0368
+Epoch 7 	 Iteration 460 	 loss 0.0549
+Epoch 7 	 Iteration 480 	 loss 0.0379
+Epoch 7 	 Iteration 500 	 loss 0.0425
+Epoch 7 	 Iteration 520 	 loss 0.0399
+Epoch 7 	 Iteration 540 	 loss 0.0388
+Epoch 7 	 Iteration 560 	 loss 0.0392
+Epoch 7 	 Iteration 580 	 loss 0.0456
+Epoch 7 	 Iteration 600 	 loss 0.0403
+Epoch 7 	 Iteration 620 	 loss 0.0339
+Epoch 7 	 Iteration 640 	 loss 0.0389
+Epoch 7 	 Iteration 660 	 loss 0.0413
+Epoch 7 	 Iteration 680 	 loss 0.0460
+Epoch 7 	 Iteration 700 	 loss 0.0426
+Epoch 7 	 Iteration 720 	 loss 0.0459
+Epoch 7 	 Iteration 740 	 loss 0.0378
+Epoch 7 	 Iteration 760 	 loss 0.0409
+Epoch 7 	 Iteration 780 	 loss 0.0402
+Epoch 7 	 Iteration 800 	 loss 0.0390
+Epoch 7 	 Iteration 820 	 loss 0.0485
+Epoch 7 	 Iteration 840 	 loss 0.0552
+Epoch 7 	 Iteration 860 	 loss 0.0446
+Epoch 7 	 Iteration 880 	 loss 0.0396
+Epoch 7 	 Iteration 900 	 loss 0.0387
+Epoch 7 	 Iteration 920 	 loss 0.0427
+Epoch 7 	 Iteration 940 	 loss 0.0396
+Epoch 7 	 Iteration 960 	 loss 0.0467
+Epoch 7 	 Iteration 980 	 loss 0.0401
+Epoch 7 	 Iteration 1000 	 loss 0.0469
+Epoch 7 	 Iteration 1020 	 loss 0.0453
+Epoch 7 	 Iteration 1040 	 loss 0.0406
+>> valid 	Epoch 7 	 Iteration 0 	 loss 0.1680
+>> valid 	Epoch 7 	 Iteration 20 	 loss 0.1761
+>> valid 	Epoch 7 	 Iteration 40 	 loss 0.1656
+>> valid 	Epoch 7 	 Iteration 60 	 loss 0.1622
+>> valid 	Epoch 7 	 Iteration 80 	 loss 0.1723
+>> valid 	Epoch 7 	 Iteration 100 	 loss 0.1612
+>> valid 	Epoch 7 	 Iteration 120 	 loss 0.1669
+>> valid 	Epoch 7 	 Iteration 140 	 loss 0.1639
+>> valid 	Epoch 7 	 Iteration 160 	 loss 0.1588
+>> valid 	Epoch 7 	 Iteration 180 	 loss 0.1655
+>> test 	Epoch 7 	 Iteration 0 	 loss 0.1700
+>> test 	Epoch 7 	 Iteration 20 	 loss 0.1716
+>> test 	Epoch 7 	 Iteration 40 	 loss 0.1706
+>> test 	Epoch 7 	 Iteration 60 	 loss 0.1600
+>> test 	Epoch 7 	 Iteration 80 	 loss 0.1720
+>> test 	Epoch 7 	 Iteration 100 	 loss 0.1658
+>> test 	Epoch 7 	 Iteration 120 	 loss 0.1609
+Val loss: 0.1658 	 test loss: 0.1682 	 epoch 7
+Best: val loss: 0.1658 	 test loss: 0.1682 	 epoch 7
+Epoch 8 	 Iteration 0 	 loss 0.0315
+Epoch 8 	 Iteration 20 	 loss 0.0381
+Epoch 8 	 Iteration 40 	 loss 0.0405
+Epoch 8 	 Iteration 60 	 loss 0.0434
+Epoch 8 	 Iteration 80 	 loss 0.0416
+Epoch 8 	 Iteration 100 	 loss 0.0393
+Epoch 8 	 Iteration 120 	 loss 0.0447
+Epoch 8 	 Iteration 140 	 loss 0.0574
+Epoch 8 	 Iteration 160 	 loss 0.0403
+Epoch 8 	 Iteration 180 	 loss 0.0363
+Epoch 8 	 Iteration 200 	 loss 0.0784
+Epoch 8 	 Iteration 220 	 loss 0.0764
+Epoch 8 	 Iteration 240 	 loss 0.0490
+Epoch 8 	 Iteration 260 	 loss 0.0684
+Epoch 8 	 Iteration 280 	 loss 0.0615
+Epoch 8 	 Iteration 300 	 loss 0.0499
+Epoch 8 	 Iteration 320 	 loss 0.0421
+Epoch 8 	 Iteration 340 	 loss 0.0676
+Epoch 8 	 Iteration 360 	 loss 0.0487
+Epoch 8 	 Iteration 380 	 loss 0.0359
+Epoch 8 	 Iteration 400 	 loss 0.0366
+Epoch 8 	 Iteration 420 	 loss 0.0409
+Epoch 8 	 Iteration 440 	 loss 0.0375
+Epoch 8 	 Iteration 460 	 loss 0.0376
+Epoch 8 	 Iteration 480 	 loss 0.0366
+Epoch 8 	 Iteration 500 	 loss 0.0419
+Epoch 8 	 Iteration 520 	 loss 0.0592
+Epoch 8 	 Iteration 540 	 loss 0.0406
+Epoch 8 	 Iteration 560 	 loss 0.0379
+Epoch 8 	 Iteration 580 	 loss 0.0327
+Epoch 8 	 Iteration 600 	 loss 0.0579
+Epoch 8 	 Iteration 620 	 loss 0.0447
+Epoch 8 	 Iteration 640 	 loss 0.0431
+Epoch 8 	 Iteration 660 	 loss 0.0465
+Epoch 8 	 Iteration 680 	 loss 0.0509
+Epoch 8 	 Iteration 700 	 loss 0.0457
+Epoch 8 	 Iteration 720 	 loss 0.0587
+Epoch 8 	 Iteration 740 	 loss 0.0350
+Epoch 8 	 Iteration 760 	 loss 0.0366
+Epoch 8 	 Iteration 780 	 loss 0.0392
+Epoch 8 	 Iteration 800 	 loss 0.0401
+Epoch 8 	 Iteration 820 	 loss 0.0384
+Epoch 8 	 Iteration 840 	 loss 0.0365
+Epoch 8 	 Iteration 860 	 loss 0.0353
+Epoch 8 	 Iteration 880 	 loss 0.0361
+Epoch 8 	 Iteration 900 	 loss 0.0410
+Epoch 8 	 Iteration 920 	 loss 0.0622
+Epoch 8 	 Iteration 940 	 loss 0.0579
+Epoch 8 	 Iteration 960 	 loss 0.0483
+Epoch 8 	 Iteration 980 	 loss 0.0398
+Epoch 8 	 Iteration 1000 	 loss 0.0456
+Epoch 8 	 Iteration 1020 	 loss 0.0567
+Epoch 8 	 Iteration 1040 	 loss 0.0444
+>> valid 	Epoch 8 	 Iteration 0 	 loss 0.1734
+>> valid 	Epoch 8 	 Iteration 20 	 loss 0.1948
+>> valid 	Epoch 8 	 Iteration 40 	 loss 0.1826
+>> valid 	Epoch 8 	 Iteration 60 	 loss 0.1829
+>> valid 	Epoch 8 	 Iteration 80 	 loss 0.1845
+>> valid 	Epoch 8 	 Iteration 100 	 loss 0.1788
+>> valid 	Epoch 8 	 Iteration 120 	 loss 0.1862
+>> valid 	Epoch 8 	 Iteration 140 	 loss 0.1803
+>> valid 	Epoch 8 	 Iteration 160 	 loss 0.1779
+>> valid 	Epoch 8 	 Iteration 180 	 loss 0.1834
+>> test 	Epoch 8 	 Iteration 0 	 loss 0.2162
+>> test 	Epoch 8 	 Iteration 20 	 loss 0.1835
+>> test 	Epoch 8 	 Iteration 40 	 loss 0.1933
+>> test 	Epoch 8 	 Iteration 60 	 loss 0.1848
+>> test 	Epoch 8 	 Iteration 80 	 loss 0.1908
+>> test 	Epoch 8 	 Iteration 100 	 loss 0.1854
+>> test 	Epoch 8 	 Iteration 120 	 loss 0.1774
+Val loss: 0.1835 	 test loss: 0.1877 	 epoch 8
+Best: val loss: 0.1658 	 test loss: 0.1682 	 epoch 7
+Epoch 9 	 Iteration 0 	 loss 0.0372
+Epoch 9 	 Iteration 20 	 loss 0.0581
+Epoch 9 	 Iteration 40 	 loss 0.0386
+Epoch 9 	 Iteration 60 	 loss 0.0430
+Epoch 9 	 Iteration 80 	 loss 0.0492
+Epoch 9 	 Iteration 100 	 loss 0.0457
+Epoch 9 	 Iteration 120 	 loss 0.0401
+Epoch 9 	 Iteration 140 	 loss 0.0355
+Epoch 9 	 Iteration 160 	 loss 0.0382
+Epoch 9 	 Iteration 180 	 loss 0.0391
+Epoch 9 	 Iteration 200 	 loss 0.0599
+Epoch 9 	 Iteration 220 	 loss 0.0512
+Epoch 9 	 Iteration 240 	 loss 0.0437
+Epoch 9 	 Iteration 260 	 loss 0.0340
+Epoch 9 	 Iteration 280 	 loss 0.0388
+Epoch 9 	 Iteration 300 	 loss 0.0397
+Epoch 9 	 Iteration 320 	 loss 0.0357
+Epoch 9 	 Iteration 340 	 loss 0.0315
+Epoch 9 	 Iteration 360 	 loss 0.0425
+Epoch 9 	 Iteration 380 	 loss 0.0491
+Epoch 9 	 Iteration 400 	 loss 0.0511
+Epoch 9 	 Iteration 420 	 loss 0.0405
+Epoch 9 	 Iteration 440 	 loss 0.0530
+Epoch 9 	 Iteration 460 	 loss 0.0425
+Epoch 9 	 Iteration 480 	 loss 0.0341
+Epoch 9 	 Iteration 500 	 loss 0.0425
+Epoch 9 	 Iteration 520 	 loss 0.0435
+Epoch 9 	 Iteration 540 	 loss 0.0385
+Epoch 9 	 Iteration 560 	 loss 0.0453
+Epoch 9 	 Iteration 580 	 loss 0.0527
+Epoch 9 	 Iteration 600 	 loss 0.0397
+Epoch 9 	 Iteration 620 	 loss 0.0348
+Epoch 9 	 Iteration 640 	 loss 0.0523
+Epoch 9 	 Iteration 660 	 loss 0.0358
+Epoch 9 	 Iteration 680 	 loss 0.0413
+Epoch 9 	 Iteration 700 	 loss 0.0384
+Epoch 9 	 Iteration 720 	 loss 0.0382
+Epoch 9 	 Iteration 740 	 loss 0.0419
+Epoch 9 	 Iteration 760 	 loss 0.0414
+Epoch 9 	 Iteration 780 	 loss 0.0335
+Epoch 9 	 Iteration 800 	 loss 0.0365
+Epoch 9 	 Iteration 820 	 loss 0.0313
+Epoch 9 	 Iteration 840 	 loss 0.0374
+Epoch 9 	 Iteration 860 	 loss 0.0329
+Epoch 9 	 Iteration 880 	 loss 0.0363
+Epoch 9 	 Iteration 900 	 loss 0.0406
+Epoch 9 	 Iteration 920 	 loss 0.0440
+Epoch 9 	 Iteration 940 	 loss 0.0416
+Epoch 9 	 Iteration 960 	 loss 0.0374
+Epoch 9 	 Iteration 980 	 loss 0.0397
+Epoch 9 	 Iteration 1000 	 loss 0.0341
+Epoch 9 	 Iteration 1020 	 loss 0.0428
+Epoch 9 	 Iteration 1040 	 loss 0.0364
+>> valid 	Epoch 9 	 Iteration 0 	 loss 0.1866
+>> valid 	Epoch 9 	 Iteration 20 	 loss 0.1841
+>> valid 	Epoch 9 	 Iteration 40 	 loss 0.1842
+>> valid 	Epoch 9 	 Iteration 60 	 loss 0.1818
+>> valid 	Epoch 9 	 Iteration 80 	 loss 0.1772
+>> valid 	Epoch 9 	 Iteration 100 	 loss 0.1801
+>> valid 	Epoch 9 	 Iteration 120 	 loss 0.1824
+>> valid 	Epoch 9 	 Iteration 140 	 loss 0.1772
+>> valid 	Epoch 9 	 Iteration 160 	 loss 0.1761
+>> valid 	Epoch 9 	 Iteration 180 	 loss 0.1923
+>> test 	Epoch 9 	 Iteration 0 	 loss 0.1987
+>> test 	Epoch 9 	 Iteration 20 	 loss 0.1821
+>> test 	Epoch 9 	 Iteration 40 	 loss 0.1857
+>> test 	Epoch 9 	 Iteration 60 	 loss 0.1734
+>> test 	Epoch 9 	 Iteration 80 	 loss 0.1919
+>> test 	Epoch 9 	 Iteration 100 	 loss 0.1766
+>> test 	Epoch 9 	 Iteration 120 	 loss 0.1782
+Val loss: 0.1821 	 test loss: 0.1821 	 epoch 9
+Best: val loss: 0.1658 	 test loss: 0.1682 	 epoch 7
+Epoch 10 	 Iteration 0 	 loss 0.0371
+Epoch 10 	 Iteration 20 	 loss 0.0376
+Epoch 10 	 Iteration 40 	 loss 0.0480
+Epoch 10 	 Iteration 60 	 loss 0.0353
+Epoch 10 	 Iteration 80 	 loss 0.0415
+Epoch 10 	 Iteration 100 	 loss 0.0506
+Epoch 10 	 Iteration 120 	 loss 0.0598
+Epoch 10 	 Iteration 140 	 loss 0.0343
+Epoch 10 	 Iteration 160 	 loss 0.0320
+Epoch 10 	 Iteration 180 	 loss 0.0367
+Epoch 10 	 Iteration 200 	 loss 0.0408
+Epoch 10 	 Iteration 220 	 loss 0.0352
+Epoch 10 	 Iteration 240 	 loss 0.0394
+Epoch 10 	 Iteration 260 	 loss 0.0364
+Epoch 10 	 Iteration 280 	 loss 0.0339
+Epoch 10 	 Iteration 300 	 loss 0.0389
+Epoch 10 	 Iteration 320 	 loss 0.0333
+Epoch 10 	 Iteration 340 	 loss 0.0389
+Epoch 10 	 Iteration 360 	 loss 0.0354
+Epoch 10 	 Iteration 380 	 loss 0.0382
+Epoch 10 	 Iteration 400 	 loss 0.0468
+Epoch 10 	 Iteration 420 	 loss 0.0370
+Epoch 10 	 Iteration 440 	 loss 0.0395
+Epoch 10 	 Iteration 460 	 loss 0.0394
+Epoch 10 	 Iteration 480 	 loss 0.0503
+Epoch 10 	 Iteration 500 	 loss 0.0397
+Epoch 10 	 Iteration 520 	 loss 0.0398
+Epoch 10 	 Iteration 540 	 loss 0.0312
+Epoch 10 	 Iteration 560 	 loss 0.0372
+Epoch 10 	 Iteration 580 	 loss 0.0327
+Epoch 10 	 Iteration 600 	 loss 0.0356
+Epoch 10 	 Iteration 620 	 loss 0.0343
+Epoch 10 	 Iteration 640 	 loss 0.0383
+Epoch 10 	 Iteration 660 	 loss 0.0488
+Epoch 10 	 Iteration 680 	 loss 0.0381
+Epoch 10 	 Iteration 700 	 loss 0.0318
+Epoch 10 	 Iteration 720 	 loss 0.0360
+Epoch 10 	 Iteration 740 	 loss 0.0313
+Epoch 10 	 Iteration 760 	 loss 0.0332
+Epoch 10 	 Iteration 780 	 loss 0.0329
+Epoch 10 	 Iteration 800 	 loss 0.0347
+Epoch 10 	 Iteration 820 	 loss 0.0415
+Epoch 10 	 Iteration 840 	 loss 0.0363
+Epoch 10 	 Iteration 860 	 loss 0.0382
+Epoch 10 	 Iteration 880 	 loss 0.0435
+Epoch 10 	 Iteration 900 	 loss 0.0446
+Epoch 10 	 Iteration 920 	 loss 0.0419
+Epoch 10 	 Iteration 940 	 loss 0.0434
+Epoch 10 	 Iteration 960 	 loss 0.0378
+Epoch 10 	 Iteration 980 	 loss 0.0408
+Epoch 10 	 Iteration 1000 	 loss 0.0353
+Epoch 10 	 Iteration 1020 	 loss 0.0410
+Epoch 10 	 Iteration 1040 	 loss 0.0433
+>> valid 	Epoch 10 	 Iteration 0 	 loss 0.2493
+>> valid 	Epoch 10 	 Iteration 20 	 loss 0.2589
+>> valid 	Epoch 10 	 Iteration 40 	 loss 0.2605
+>> valid 	Epoch 10 	 Iteration 60 	 loss 0.2624
+>> valid 	Epoch 10 	 Iteration 80 	 loss 0.2627
+>> valid 	Epoch 10 	 Iteration 100 	 loss 0.2509
+>> valid 	Epoch 10 	 Iteration 120 	 loss 0.2721
+>> valid 	Epoch 10 	 Iteration 140 	 loss 0.2560
+>> valid 	Epoch 10 	 Iteration 160 	 loss 0.2542
+>> valid 	Epoch 10 	 Iteration 180 	 loss 0.2616
+>> test 	Epoch 10 	 Iteration 0 	 loss 0.2726
+>> test 	Epoch 10 	 Iteration 20 	 loss 0.2619
+>> test 	Epoch 10 	 Iteration 40 	 loss 0.2603
+>> test 	Epoch 10 	 Iteration 60 	 loss 0.2539
+>> test 	Epoch 10 	 Iteration 80 	 loss 0.2632
+>> test 	Epoch 10 	 Iteration 100 	 loss 0.2638
+>> test 	Epoch 10 	 Iteration 120 	 loss 0.2542
+Val loss: 0.2593 	 test loss: 0.2590 	 epoch 10
+Best: val loss: 0.1658 	 test loss: 0.1682 	 epoch 7
+Epoch 11 	 Iteration 0 	 loss 0.0523
+Epoch 11 	 Iteration 20 	 loss 0.0366
+Epoch 11 	 Iteration 40 	 loss 0.0315
+Epoch 11 	 Iteration 60 	 loss 0.0409
+Epoch 11 	 Iteration 80 	 loss 0.0313
+Epoch 11 	 Iteration 100 	 loss 0.0445
+Epoch 11 	 Iteration 120 	 loss 0.0488
+Epoch 11 	 Iteration 140 	 loss 0.0373
+Epoch 11 	 Iteration 160 	 loss 0.0313
+Epoch 11 	 Iteration 180 	 loss 0.0333
+Epoch 11 	 Iteration 200 	 loss 0.0343
+Epoch 11 	 Iteration 220 	 loss 0.0459
+Epoch 11 	 Iteration 240 	 loss 0.0331
+Epoch 11 	 Iteration 260 	 loss 0.0557
+Epoch 11 	 Iteration 280 	 loss 0.0332
+Epoch 11 	 Iteration 300 	 loss 0.0373
+Epoch 11 	 Iteration 320 	 loss 0.0322
+Epoch 11 	 Iteration 340 	 loss 0.0330
+Epoch 11 	 Iteration 360 	 loss 0.0526
+Epoch 11 	 Iteration 380 	 loss 0.0344
+Epoch 11 	 Iteration 400 	 loss 0.0334
+Epoch 11 	 Iteration 420 	 loss 0.0318
+Epoch 11 	 Iteration 440 	 loss 0.0284
+Epoch 11 	 Iteration 460 	 loss 0.0343
+Epoch 11 	 Iteration 480 	 loss 0.0344
+Epoch 11 	 Iteration 500 	 loss 0.0316
+Epoch 11 	 Iteration 520 	 loss 0.0415
+Epoch 11 	 Iteration 540 	 loss 0.0375
+Epoch 11 	 Iteration 560 	 loss 0.0352
+Epoch 11 	 Iteration 580 	 loss 0.0432
+Epoch 11 	 Iteration 600 	 loss 0.0323
+Epoch 11 	 Iteration 620 	 loss 0.0312
+Epoch 11 	 Iteration 640 	 loss 0.0324
+Epoch 11 	 Iteration 660 	 loss 0.0310
+Epoch 11 	 Iteration 680 	 loss 0.0287
+Epoch 11 	 Iteration 700 	 loss 0.0337
+Epoch 11 	 Iteration 720 	 loss 0.0442
+Epoch 11 	 Iteration 740 	 loss 0.0384
+Epoch 11 	 Iteration 760 	 loss 0.0342
+Epoch 11 	 Iteration 780 	 loss 0.0324
+Epoch 11 	 Iteration 800 	 loss 0.0351
+Epoch 11 	 Iteration 820 	 loss 0.0331
+Epoch 11 	 Iteration 840 	 loss 0.0323
+Epoch 11 	 Iteration 860 	 loss 0.0387
+Epoch 11 	 Iteration 880 	 loss 0.0450
+Epoch 11 	 Iteration 900 	 loss 0.0398
+Epoch 11 	 Iteration 920 	 loss 0.0449
+Epoch 11 	 Iteration 940 	 loss 0.0563
+Epoch 11 	 Iteration 960 	 loss 0.0447
+Epoch 11 	 Iteration 980 	 loss 0.0324
+Epoch 11 	 Iteration 1000 	 loss 0.0310
+Epoch 11 	 Iteration 1020 	 loss 0.0301
+Epoch 11 	 Iteration 1040 	 loss 0.0495
+>> valid 	Epoch 11 	 Iteration 0 	 loss 0.1521
+>> valid 	Epoch 11 	 Iteration 20 	 loss 0.1647
+>> valid 	Epoch 11 	 Iteration 40 	 loss 0.1504
+>> valid 	Epoch 11 	 Iteration 60 	 loss 0.1596
+>> valid 	Epoch 11 	 Iteration 80 	 loss 0.1550
+>> valid 	Epoch 11 	 Iteration 100 	 loss 0.1501
+>> valid 	Epoch 11 	 Iteration 120 	 loss 0.1571
+>> valid 	Epoch 11 	 Iteration 140 	 loss 0.1550
+>> valid 	Epoch 11 	 Iteration 160 	 loss 0.1580
+>> valid 	Epoch 11 	 Iteration 180 	 loss 0.1618
+>> test 	Epoch 11 	 Iteration 0 	 loss 0.1912
+>> test 	Epoch 11 	 Iteration 20 	 loss 0.1570
+>> test 	Epoch 11 	 Iteration 40 	 loss 0.1680
+>> test 	Epoch 11 	 Iteration 60 	 loss 0.1527
+>> test 	Epoch 11 	 Iteration 80 	 loss 0.1575
+>> test 	Epoch 11 	 Iteration 100 	 loss 0.1488
+>> test 	Epoch 11 	 Iteration 120 	 loss 0.1557
+Val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 12 	 Iteration 0 	 loss 0.0330
+Epoch 12 	 Iteration 20 	 loss 0.0351
+Epoch 12 	 Iteration 40 	 loss 0.0504
+Epoch 12 	 Iteration 60 	 loss 0.0311
+Epoch 12 	 Iteration 80 	 loss 0.0317
+Epoch 12 	 Iteration 100 	 loss 0.0307
+Epoch 12 	 Iteration 120 	 loss 0.0346
+Epoch 12 	 Iteration 140 	 loss 0.0362
+Epoch 12 	 Iteration 160 	 loss 0.0374
+Epoch 12 	 Iteration 180 	 loss 0.0350
+Epoch 12 	 Iteration 200 	 loss 0.0322
+Epoch 12 	 Iteration 220 	 loss 0.0349
+Epoch 12 	 Iteration 240 	 loss 0.0449
+Epoch 12 	 Iteration 260 	 loss 0.0377
+Epoch 12 	 Iteration 280 	 loss 0.0312
+Epoch 12 	 Iteration 300 	 loss 0.0395
+Epoch 12 	 Iteration 320 	 loss 0.0268
+Epoch 12 	 Iteration 340 	 loss 0.0327
+Epoch 12 	 Iteration 360 	 loss 0.0410
+Epoch 12 	 Iteration 380 	 loss 0.0328
+Epoch 12 	 Iteration 400 	 loss 0.0303
+Epoch 12 	 Iteration 420 	 loss 0.0401
+Epoch 12 	 Iteration 440 	 loss 0.0394
+Epoch 12 	 Iteration 460 	 loss 0.0332
+Epoch 12 	 Iteration 480 	 loss 0.0406
+Epoch 12 	 Iteration 500 	 loss 0.0356
+Epoch 12 	 Iteration 520 	 loss 0.0417
+Epoch 12 	 Iteration 540 	 loss 0.0307
+Epoch 12 	 Iteration 560 	 loss 0.0465
+Epoch 12 	 Iteration 580 	 loss 0.0389
+Epoch 12 	 Iteration 600 	 loss 0.0415
+Epoch 12 	 Iteration 620 	 loss 0.0395
+Epoch 12 	 Iteration 640 	 loss 0.1810
+Epoch 12 	 Iteration 660 	 loss 11.6819
+Epoch 12 	 Iteration 680 	 loss 10.8110
+Epoch 12 	 Iteration 700 	 loss 1.3514
+Epoch 12 	 Iteration 720 	 loss 1.0178
+Epoch 12 	 Iteration 740 	 loss 1.0393
+Epoch 12 	 Iteration 760 	 loss 1.0147
+Epoch 12 	 Iteration 780 	 loss 1.0179
+Epoch 12 	 Iteration 800 	 loss 0.9628
+Epoch 12 	 Iteration 820 	 loss 0.9752
+Epoch 12 	 Iteration 840 	 loss 1.0194
+Epoch 12 	 Iteration 860 	 loss 1.0533
+Epoch 12 	 Iteration 880 	 loss 1.0211
+Epoch 12 	 Iteration 900 	 loss 0.9960
+Epoch 12 	 Iteration 920 	 loss 0.9961
+Epoch 12 	 Iteration 940 	 loss 1.0219
+Epoch 12 	 Iteration 960 	 loss 1.0238
+Epoch 12 	 Iteration 980 	 loss 1.0289
+Epoch 12 	 Iteration 1000 	 loss 0.9764
+Epoch 12 	 Iteration 1020 	 loss 0.9935
+Epoch 12 	 Iteration 1040 	 loss 0.9675
+>> valid 	Epoch 12 	 Iteration 0 	 loss 5.0638
+>> valid 	Epoch 12 	 Iteration 20 	 loss 4.9294
+>> valid 	Epoch 12 	 Iteration 40 	 loss 5.0404
+>> valid 	Epoch 12 	 Iteration 60 	 loss 4.9298
+>> valid 	Epoch 12 	 Iteration 80 	 loss 4.6948
+>> valid 	Epoch 12 	 Iteration 100 	 loss 4.8210
+>> valid 	Epoch 12 	 Iteration 120 	 loss 5.0074
+>> valid 	Epoch 12 	 Iteration 140 	 loss 4.8288
+>> valid 	Epoch 12 	 Iteration 160 	 loss 4.8455
+>> valid 	Epoch 12 	 Iteration 180 	 loss 5.0939
+>> test 	Epoch 12 	 Iteration 0 	 loss 5.6003
+>> test 	Epoch 12 	 Iteration 20 	 loss 5.1285
+>> test 	Epoch 12 	 Iteration 40 	 loss 4.9329
+>> test 	Epoch 12 	 Iteration 60 	 loss 4.8632
+>> test 	Epoch 12 	 Iteration 80 	 loss 5.0583
+>> test 	Epoch 12 	 Iteration 100 	 loss 4.7944
+>> test 	Epoch 12 	 Iteration 120 	 loss 4.8203
+Val loss: 4.9141 	 test loss: 4.9589 	 epoch 12
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 13 	 Iteration 0 	 loss 1.0443
+Epoch 13 	 Iteration 20 	 loss 0.9902
+Epoch 13 	 Iteration 40 	 loss 1.0066
+Epoch 13 	 Iteration 60 	 loss 1.0245
+Epoch 13 	 Iteration 80 	 loss 0.9969
+Epoch 13 	 Iteration 100 	 loss 1.0061
+Epoch 13 	 Iteration 120 	 loss 1.0030
+Epoch 13 	 Iteration 140 	 loss 0.9961
+Epoch 13 	 Iteration 160 	 loss 1.0425
+Epoch 13 	 Iteration 180 	 loss 1.0465
+Epoch 13 	 Iteration 200 	 loss 0.9817
+Epoch 13 	 Iteration 220 	 loss 0.9885
+Epoch 13 	 Iteration 240 	 loss 0.9942
+Epoch 13 	 Iteration 260 	 loss 1.0011
+Epoch 13 	 Iteration 280 	 loss 0.9845
+Epoch 13 	 Iteration 300 	 loss 1.0567
+Epoch 13 	 Iteration 320 	 loss 0.9858
+Epoch 13 	 Iteration 340 	 loss 1.0150
+Epoch 13 	 Iteration 360 	 loss 0.9538
+Epoch 13 	 Iteration 380 	 loss 0.9897
+Epoch 13 	 Iteration 400 	 loss 0.9798
+Epoch 13 	 Iteration 420 	 loss 0.9897
+Epoch 13 	 Iteration 440 	 loss 0.9951
+Epoch 13 	 Iteration 460 	 loss 1.0421
+Epoch 13 	 Iteration 480 	 loss 1.0049
+Epoch 13 	 Iteration 500 	 loss 0.9910
+Epoch 13 	 Iteration 520 	 loss 0.9982
+Epoch 13 	 Iteration 540 	 loss 0.9790
+Epoch 13 	 Iteration 560 	 loss 1.0326
+Epoch 13 	 Iteration 580 	 loss 0.9886
+Epoch 13 	 Iteration 600 	 loss 0.9619
+Epoch 13 	 Iteration 620 	 loss 1.0222
+Epoch 13 	 Iteration 640 	 loss 1.0278
+Epoch 13 	 Iteration 660 	 loss 0.9843
+Epoch 13 	 Iteration 680 	 loss 0.9364
+Epoch 13 	 Iteration 700 	 loss 1.0119
+Epoch 13 	 Iteration 720 	 loss 1.0306
+Epoch 13 	 Iteration 740 	 loss 0.9975
+Epoch 13 	 Iteration 760 	 loss 0.9999
+Epoch 13 	 Iteration 780 	 loss 0.9888
+Epoch 13 	 Iteration 800 	 loss 0.9863
+Epoch 13 	 Iteration 820 	 loss 1.0032
+Epoch 13 	 Iteration 840 	 loss 1.0105
+Epoch 13 	 Iteration 860 	 loss 1.0439
+Epoch 13 	 Iteration 880 	 loss 0.9642
+Epoch 13 	 Iteration 900 	 loss 0.9566
+Epoch 13 	 Iteration 920 	 loss 1.0272
+Epoch 13 	 Iteration 940 	 loss 1.0051
+Epoch 13 	 Iteration 960 	 loss 1.0132
+Epoch 13 	 Iteration 980 	 loss 1.0035
+Epoch 13 	 Iteration 1000 	 loss 0.9947
+Epoch 13 	 Iteration 1020 	 loss 1.0191
+Epoch 13 	 Iteration 1040 	 loss 1.0162
+>> valid 	Epoch 13 	 Iteration 0 	 loss 5.0733
+>> valid 	Epoch 13 	 Iteration 20 	 loss 4.8896
+>> valid 	Epoch 13 	 Iteration 40 	 loss 5.0035
+>> valid 	Epoch 13 	 Iteration 60 	 loss 4.9108
+>> valid 	Epoch 13 	 Iteration 80 	 loss 4.6688
+>> valid 	Epoch 13 	 Iteration 100 	 loss 4.7911
+>> valid 	Epoch 13 	 Iteration 120 	 loss 4.9758
+>> valid 	Epoch 13 	 Iteration 140 	 loss 4.7965
+>> valid 	Epoch 13 	 Iteration 160 	 loss 4.8098
+>> valid 	Epoch 13 	 Iteration 180 	 loss 5.0663
+>> test 	Epoch 13 	 Iteration 0 	 loss 5.6076
+>> test 	Epoch 13 	 Iteration 20 	 loss 5.1216
+>> test 	Epoch 13 	 Iteration 40 	 loss 4.9010
+>> test 	Epoch 13 	 Iteration 60 	 loss 4.8646
+>> test 	Epoch 13 	 Iteration 80 	 loss 5.0314
+>> test 	Epoch 13 	 Iteration 100 	 loss 4.7606
+>> test 	Epoch 13 	 Iteration 120 	 loss 4.7942
+Val loss: 4.8889 	 test loss: 4.9381 	 epoch 13
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 14 	 Iteration 0 	 loss 1.0587
+Epoch 14 	 Iteration 20 	 loss 0.9985
+Epoch 14 	 Iteration 40 	 loss 1.0060
+Epoch 14 	 Iteration 60 	 loss 1.0123
+Epoch 14 	 Iteration 80 	 loss 1.0093
+Epoch 14 	 Iteration 100 	 loss 1.0126
+Epoch 14 	 Iteration 120 	 loss 1.0353
+Epoch 14 	 Iteration 140 	 loss 0.9541
+Epoch 14 	 Iteration 160 	 loss 1.0248
+Epoch 14 	 Iteration 180 	 loss 0.9856
+Epoch 14 	 Iteration 200 	 loss 1.0028
+Epoch 14 	 Iteration 220 	 loss 1.0486
+Epoch 14 	 Iteration 240 	 loss 0.9978
+Epoch 14 	 Iteration 260 	 loss 0.9513
+Epoch 14 	 Iteration 280 	 loss 1.0254
+Epoch 14 	 Iteration 300 	 loss 1.0369
+Epoch 14 	 Iteration 320 	 loss 0.9844
+Epoch 14 	 Iteration 340 	 loss 1.0140
+Epoch 14 	 Iteration 360 	 loss 1.0186
+Epoch 14 	 Iteration 380 	 loss 1.0093
+Epoch 14 	 Iteration 400 	 loss 0.9569
+Epoch 14 	 Iteration 420 	 loss 1.0160
+Epoch 14 	 Iteration 440 	 loss 1.0152
+Epoch 14 	 Iteration 460 	 loss 0.9926
+Epoch 14 	 Iteration 480 	 loss 0.9952
+Epoch 14 	 Iteration 500 	 loss 0.9942
+Epoch 14 	 Iteration 520 	 loss 1.0120
+Epoch 14 	 Iteration 540 	 loss 0.9988
+Epoch 14 	 Iteration 560 	 loss 0.9678
+Epoch 14 	 Iteration 580 	 loss 1.0256
+Epoch 14 	 Iteration 600 	 loss 0.9441
+Epoch 14 	 Iteration 620 	 loss 1.0183
+Epoch 14 	 Iteration 640 	 loss 1.0027
+Epoch 14 	 Iteration 660 	 loss 0.9985
+Epoch 14 	 Iteration 680 	 loss 0.9696
+Epoch 14 	 Iteration 700 	 loss 0.9955
+Epoch 14 	 Iteration 720 	 loss 1.0385
+Epoch 14 	 Iteration 740 	 loss 0.9914
+Epoch 14 	 Iteration 760 	 loss 0.9715
+Epoch 14 	 Iteration 780 	 loss 0.9850
+Epoch 14 	 Iteration 800 	 loss 0.9949
+Epoch 14 	 Iteration 820 	 loss 0.9846
+Epoch 14 	 Iteration 840 	 loss 1.0162
+Epoch 14 	 Iteration 860 	 loss 0.9965
+Epoch 14 	 Iteration 880 	 loss 1.0064
+Epoch 14 	 Iteration 900 	 loss 0.9970
+Epoch 14 	 Iteration 920 	 loss 0.9912
+Epoch 14 	 Iteration 940 	 loss 0.9659
+Epoch 14 	 Iteration 960 	 loss 1.0106
+Epoch 14 	 Iteration 980 	 loss 1.0403
+Epoch 14 	 Iteration 1000 	 loss 1.0294
+Epoch 14 	 Iteration 1020 	 loss 0.9985
+Epoch 14 	 Iteration 1040 	 loss 1.0150
+>> valid 	Epoch 14 	 Iteration 0 	 loss 5.0751
+>> valid 	Epoch 14 	 Iteration 20 	 loss 4.8848
+>> valid 	Epoch 14 	 Iteration 40 	 loss 4.9986
+>> valid 	Epoch 14 	 Iteration 60 	 loss 4.9093
+>> valid 	Epoch 14 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 14 	 Iteration 100 	 loss 4.7887
+>> valid 	Epoch 14 	 Iteration 120 	 loss 4.9747
+>> valid 	Epoch 14 	 Iteration 140 	 loss 4.7933
+>> valid 	Epoch 14 	 Iteration 160 	 loss 4.8068
+>> valid 	Epoch 14 	 Iteration 180 	 loss 5.0637
+>> test 	Epoch 14 	 Iteration 0 	 loss 5.6129
+>> test 	Epoch 14 	 Iteration 20 	 loss 5.1228
+>> test 	Epoch 14 	 Iteration 40 	 loss 4.8985
+>> test 	Epoch 14 	 Iteration 60 	 loss 4.8672
+>> test 	Epoch 14 	 Iteration 80 	 loss 5.0281
+>> test 	Epoch 14 	 Iteration 100 	 loss 4.7575
+>> test 	Epoch 14 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 14
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 15 	 Iteration 0 	 loss 1.0008
+Epoch 15 	 Iteration 20 	 loss 0.9569
+Epoch 15 	 Iteration 40 	 loss 0.9614
+Epoch 15 	 Iteration 60 	 loss 0.9728
+Epoch 15 	 Iteration 80 	 loss 0.9851
+Epoch 15 	 Iteration 100 	 loss 0.9953
+Epoch 15 	 Iteration 120 	 loss 0.9860
+Epoch 15 	 Iteration 140 	 loss 1.0038
+Epoch 15 	 Iteration 160 	 loss 0.9908
+Epoch 15 	 Iteration 180 	 loss 1.0368
+Epoch 15 	 Iteration 200 	 loss 1.0171
+Epoch 15 	 Iteration 220 	 loss 1.0019
+Epoch 15 	 Iteration 240 	 loss 0.9747
+Epoch 15 	 Iteration 260 	 loss 1.0054
+Epoch 15 	 Iteration 280 	 loss 0.9728
+Epoch 15 	 Iteration 300 	 loss 0.9796
+Epoch 15 	 Iteration 320 	 loss 1.0300
+Epoch 15 	 Iteration 340 	 loss 1.0158
+Epoch 15 	 Iteration 360 	 loss 0.9844
+Epoch 15 	 Iteration 380 	 loss 0.9928
+Epoch 15 	 Iteration 400 	 loss 0.9919
+Epoch 15 	 Iteration 420 	 loss 1.0535
+Epoch 15 	 Iteration 440 	 loss 0.9923
+Epoch 15 	 Iteration 460 	 loss 0.9669
+Epoch 15 	 Iteration 480 	 loss 0.9943
+Epoch 15 	 Iteration 500 	 loss 0.9915
+Epoch 15 	 Iteration 520 	 loss 0.9988
+Epoch 15 	 Iteration 540 	 loss 0.9896
+Epoch 15 	 Iteration 560 	 loss 1.0370
+Epoch 15 	 Iteration 580 	 loss 0.9786
+Epoch 15 	 Iteration 600 	 loss 1.0046
+Epoch 15 	 Iteration 620 	 loss 0.9751
+Epoch 15 	 Iteration 640 	 loss 1.0073
+Epoch 15 	 Iteration 660 	 loss 0.9946
+Epoch 15 	 Iteration 680 	 loss 1.0024
+Epoch 15 	 Iteration 700 	 loss 0.9696
+Epoch 15 	 Iteration 720 	 loss 0.9787
+Epoch 15 	 Iteration 740 	 loss 0.9603
+Epoch 15 	 Iteration 760 	 loss 0.9742
+Epoch 15 	 Iteration 780 	 loss 0.9954
+Epoch 15 	 Iteration 800 	 loss 1.0298
+Epoch 15 	 Iteration 820 	 loss 1.0256
+Epoch 15 	 Iteration 840 	 loss 1.0147
+Epoch 15 	 Iteration 860 	 loss 1.0275
+Epoch 15 	 Iteration 880 	 loss 1.0044
+Epoch 15 	 Iteration 900 	 loss 1.0205
+Epoch 15 	 Iteration 920 	 loss 1.0241
+Epoch 15 	 Iteration 940 	 loss 1.0278
+Epoch 15 	 Iteration 960 	 loss 0.9918
+Epoch 15 	 Iteration 980 	 loss 0.9918
+Epoch 15 	 Iteration 1000 	 loss 1.0424
+Epoch 15 	 Iteration 1020 	 loss 1.0220
+Epoch 15 	 Iteration 1040 	 loss 0.9735
+>> valid 	Epoch 15 	 Iteration 0 	 loss 5.0751
+>> valid 	Epoch 15 	 Iteration 20 	 loss 4.8849
+>> valid 	Epoch 15 	 Iteration 40 	 loss 4.9986
+>> valid 	Epoch 15 	 Iteration 60 	 loss 4.9093
+>> valid 	Epoch 15 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 15 	 Iteration 100 	 loss 4.7887
+>> valid 	Epoch 15 	 Iteration 120 	 loss 4.9747
+>> valid 	Epoch 15 	 Iteration 140 	 loss 4.7933
+>> valid 	Epoch 15 	 Iteration 160 	 loss 4.8068
+>> valid 	Epoch 15 	 Iteration 180 	 loss 5.0638
+>> test 	Epoch 15 	 Iteration 0 	 loss 5.6128
+>> test 	Epoch 15 	 Iteration 20 	 loss 5.1228
+>> test 	Epoch 15 	 Iteration 40 	 loss 4.8985
+>> test 	Epoch 15 	 Iteration 60 	 loss 4.8672
+>> test 	Epoch 15 	 Iteration 80 	 loss 5.0281
+>> test 	Epoch 15 	 Iteration 100 	 loss 4.7575
+>> test 	Epoch 15 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 15
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 16 	 Iteration 0 	 loss 0.9877
+Epoch 16 	 Iteration 20 	 loss 0.9967
+Epoch 16 	 Iteration 40 	 loss 0.9742
+Epoch 16 	 Iteration 60 	 loss 1.0221
+Epoch 16 	 Iteration 80 	 loss 1.0210
+Epoch 16 	 Iteration 100 	 loss 1.0022
+Epoch 16 	 Iteration 120 	 loss 0.9891
+Epoch 16 	 Iteration 140 	 loss 0.9751
+Epoch 16 	 Iteration 160 	 loss 1.0159
+Epoch 16 	 Iteration 180 	 loss 1.0397
+Epoch 16 	 Iteration 200 	 loss 0.9997
+Epoch 16 	 Iteration 220 	 loss 0.9939
+Epoch 16 	 Iteration 240 	 loss 0.9808
+Epoch 16 	 Iteration 260 	 loss 0.9981
+Epoch 16 	 Iteration 280 	 loss 1.0028
+Epoch 16 	 Iteration 300 	 loss 1.0041
+Epoch 16 	 Iteration 320 	 loss 1.0036
+Epoch 16 	 Iteration 340 	 loss 0.9553
+Epoch 16 	 Iteration 360 	 loss 0.9802
+Epoch 16 	 Iteration 380 	 loss 1.0171
+Epoch 16 	 Iteration 400 	 loss 1.0308
+Epoch 16 	 Iteration 420 	 loss 0.9848
+Epoch 16 	 Iteration 440 	 loss 0.9928
+Epoch 16 	 Iteration 460 	 loss 1.0127
+Epoch 16 	 Iteration 480 	 loss 0.9807
+Epoch 16 	 Iteration 500 	 loss 0.9991
+Epoch 16 	 Iteration 520 	 loss 0.9836
+Epoch 16 	 Iteration 540 	 loss 1.0554
+Epoch 16 	 Iteration 560 	 loss 0.9826
+Epoch 16 	 Iteration 580 	 loss 1.0100
+Epoch 16 	 Iteration 600 	 loss 1.0192
+Epoch 16 	 Iteration 620 	 loss 1.0125
+Epoch 16 	 Iteration 640 	 loss 0.9953
+Epoch 16 	 Iteration 660 	 loss 0.9746
+Epoch 16 	 Iteration 680 	 loss 0.9744
+Epoch 16 	 Iteration 700 	 loss 0.9685
+Epoch 16 	 Iteration 720 	 loss 0.9889
+Epoch 16 	 Iteration 740 	 loss 1.0037
+Epoch 16 	 Iteration 760 	 loss 1.0055
+Epoch 16 	 Iteration 780 	 loss 0.9938
+Epoch 16 	 Iteration 800 	 loss 1.0225
+Epoch 16 	 Iteration 820 	 loss 1.0370
+Epoch 16 	 Iteration 840 	 loss 0.9803
+Epoch 16 	 Iteration 860 	 loss 0.9962
+Epoch 16 	 Iteration 880 	 loss 1.0186
+Epoch 16 	 Iteration 900 	 loss 0.9763
+Epoch 16 	 Iteration 920 	 loss 1.0163
+Epoch 16 	 Iteration 940 	 loss 0.9691
+Epoch 16 	 Iteration 960 	 loss 0.9831
+Epoch 16 	 Iteration 980 	 loss 0.9734
+Epoch 16 	 Iteration 1000 	 loss 1.0017
+Epoch 16 	 Iteration 1020 	 loss 0.9959
+Epoch 16 	 Iteration 1040 	 loss 1.0478
+>> valid 	Epoch 16 	 Iteration 0 	 loss 5.0760
+>> valid 	Epoch 16 	 Iteration 20 	 loss 4.8825
+>> valid 	Epoch 16 	 Iteration 40 	 loss 4.9965
+>> valid 	Epoch 16 	 Iteration 60 	 loss 4.9088
+>> valid 	Epoch 16 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 16 	 Iteration 100 	 loss 4.7880
+>> valid 	Epoch 16 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 16 	 Iteration 140 	 loss 4.7922
+>> valid 	Epoch 16 	 Iteration 160 	 loss 4.8057
+>> valid 	Epoch 16 	 Iteration 180 	 loss 5.0628
+>> test 	Epoch 16 	 Iteration 0 	 loss 5.6157
+>> test 	Epoch 16 	 Iteration 20 	 loss 5.1241
+>> test 	Epoch 16 	 Iteration 40 	 loss 4.8976
+>> test 	Epoch 16 	 Iteration 60 	 loss 4.8690
+>> test 	Epoch 16 	 Iteration 80 	 loss 5.0268
+>> test 	Epoch 16 	 Iteration 100 	 loss 4.7561
+>> test 	Epoch 16 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8869 	 test loss: 4.9370 	 epoch 16
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 17 	 Iteration 0 	 loss 1.0515
+Epoch 17 	 Iteration 20 	 loss 1.0208
+Epoch 17 	 Iteration 40 	 loss 1.0056
+Epoch 17 	 Iteration 60 	 loss 0.9986
+Epoch 17 	 Iteration 80 	 loss 1.0543
+Epoch 17 	 Iteration 100 	 loss 0.9832
+Epoch 17 	 Iteration 120 	 loss 1.0122
+Epoch 17 	 Iteration 140 	 loss 0.9595
+Epoch 17 	 Iteration 160 	 loss 0.9463
+Epoch 17 	 Iteration 180 	 loss 1.0041
+Epoch 17 	 Iteration 200 	 loss 1.0128
+Epoch 17 	 Iteration 220 	 loss 0.9967
+Epoch 17 	 Iteration 240 	 loss 1.0268
+Epoch 17 	 Iteration 260 	 loss 1.0151
+Epoch 17 	 Iteration 280 	 loss 0.9710
+Epoch 17 	 Iteration 300 	 loss 0.9766
+Epoch 17 	 Iteration 320 	 loss 1.0281
+Epoch 17 	 Iteration 340 	 loss 1.0084
+Epoch 17 	 Iteration 360 	 loss 1.0328
+Epoch 17 	 Iteration 380 	 loss 1.0018
+Epoch 17 	 Iteration 400 	 loss 1.0142
+Epoch 17 	 Iteration 420 	 loss 0.9857
+Epoch 17 	 Iteration 440 	 loss 1.0229
+Epoch 17 	 Iteration 460 	 loss 1.0042
+Epoch 17 	 Iteration 480 	 loss 0.9804
+Epoch 17 	 Iteration 500 	 loss 0.9800
+Epoch 17 	 Iteration 520 	 loss 0.9625
+Epoch 17 	 Iteration 540 	 loss 1.0476
+Epoch 17 	 Iteration 560 	 loss 1.0248
+Epoch 17 	 Iteration 580 	 loss 1.0206
+Epoch 17 	 Iteration 600 	 loss 1.0214
+Epoch 17 	 Iteration 620 	 loss 1.0157
+Epoch 17 	 Iteration 640 	 loss 0.9946
+Epoch 17 	 Iteration 660 	 loss 0.9810
+Epoch 17 	 Iteration 680 	 loss 1.0124
+Epoch 17 	 Iteration 700 	 loss 1.0500
+Epoch 17 	 Iteration 720 	 loss 0.9603
+Epoch 17 	 Iteration 740 	 loss 1.0012
+Epoch 17 	 Iteration 760 	 loss 0.9473
+Epoch 17 	 Iteration 780 	 loss 1.0318
+Epoch 17 	 Iteration 800 	 loss 0.9799
+Epoch 17 	 Iteration 820 	 loss 1.0224
+Epoch 17 	 Iteration 840 	 loss 0.9741
+Epoch 17 	 Iteration 860 	 loss 0.9872
+Epoch 17 	 Iteration 880 	 loss 0.9815
+Epoch 17 	 Iteration 900 	 loss 1.0047
+Epoch 17 	 Iteration 920 	 loss 1.0192
+Epoch 17 	 Iteration 940 	 loss 0.9538
+Epoch 17 	 Iteration 960 	 loss 0.9958
+Epoch 17 	 Iteration 980 	 loss 0.9942
+Epoch 17 	 Iteration 1000 	 loss 1.0612
+Epoch 17 	 Iteration 1020 	 loss 1.0025
+Epoch 17 	 Iteration 1040 	 loss 0.9502
+>> valid 	Epoch 17 	 Iteration 0 	 loss 5.0751
+>> valid 	Epoch 17 	 Iteration 20 	 loss 4.8847
+>> valid 	Epoch 17 	 Iteration 40 	 loss 4.9984
+>> valid 	Epoch 17 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 17 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 17 	 Iteration 100 	 loss 4.7886
+>> valid 	Epoch 17 	 Iteration 120 	 loss 4.9747
+>> valid 	Epoch 17 	 Iteration 140 	 loss 4.7932
+>> valid 	Epoch 17 	 Iteration 160 	 loss 4.8067
+>> valid 	Epoch 17 	 Iteration 180 	 loss 5.0637
+>> test 	Epoch 17 	 Iteration 0 	 loss 5.6131
+>> test 	Epoch 17 	 Iteration 20 	 loss 5.1229
+>> test 	Epoch 17 	 Iteration 40 	 loss 4.8985
+>> test 	Epoch 17 	 Iteration 60 	 loss 4.8674
+>> test 	Epoch 17 	 Iteration 80 	 loss 5.0280
+>> test 	Epoch 17 	 Iteration 100 	 loss 4.7574
+>> test 	Epoch 17 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 17
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 18 	 Iteration 0 	 loss 0.9224
+Epoch 18 	 Iteration 20 	 loss 0.9993
+Epoch 18 	 Iteration 40 	 loss 0.9810
+Epoch 18 	 Iteration 60 	 loss 1.0222
+Epoch 18 	 Iteration 80 	 loss 0.9956
+Epoch 18 	 Iteration 100 	 loss 0.9781
+Epoch 18 	 Iteration 120 	 loss 1.0205
+Epoch 18 	 Iteration 140 	 loss 1.0232
+Epoch 18 	 Iteration 160 	 loss 1.0084
+Epoch 18 	 Iteration 180 	 loss 0.9856
+Epoch 18 	 Iteration 200 	 loss 0.9632
+Epoch 18 	 Iteration 220 	 loss 0.9868
+Epoch 18 	 Iteration 240 	 loss 0.9948
+Epoch 18 	 Iteration 260 	 loss 1.0063
+Epoch 18 	 Iteration 280 	 loss 0.9909
+Epoch 18 	 Iteration 300 	 loss 1.0311
+Epoch 18 	 Iteration 320 	 loss 1.0244
+Epoch 18 	 Iteration 340 	 loss 0.9882
+Epoch 18 	 Iteration 360 	 loss 0.9944
+Epoch 18 	 Iteration 380 	 loss 1.0170
+Epoch 18 	 Iteration 400 	 loss 1.0303
+Epoch 18 	 Iteration 420 	 loss 1.0130
+Epoch 18 	 Iteration 440 	 loss 1.0112
+Epoch 18 	 Iteration 460 	 loss 1.0170
+Epoch 18 	 Iteration 480 	 loss 0.9998
+Epoch 18 	 Iteration 500 	 loss 0.9712
+Epoch 18 	 Iteration 520 	 loss 0.9896
+Epoch 18 	 Iteration 540 	 loss 1.0211
+Epoch 18 	 Iteration 560 	 loss 0.9839
+Epoch 18 	 Iteration 580 	 loss 0.9536
+Epoch 18 	 Iteration 600 	 loss 0.9679
+Epoch 18 	 Iteration 620 	 loss 0.9652
+Epoch 18 	 Iteration 640 	 loss 1.0074
+Epoch 18 	 Iteration 660 	 loss 1.0259
+Epoch 18 	 Iteration 680 	 loss 0.9868
+Epoch 18 	 Iteration 700 	 loss 0.9971
+Epoch 18 	 Iteration 720 	 loss 1.0028
+Epoch 18 	 Iteration 740 	 loss 0.9914
+Epoch 18 	 Iteration 760 	 loss 1.0040
+Epoch 18 	 Iteration 780 	 loss 1.0090
+Epoch 18 	 Iteration 800 	 loss 1.0183
+Epoch 18 	 Iteration 820 	 loss 0.9957
+Epoch 18 	 Iteration 840 	 loss 0.9746
+Epoch 18 	 Iteration 860 	 loss 1.0133
+Epoch 18 	 Iteration 880 	 loss 0.9653
+Epoch 18 	 Iteration 900 	 loss 1.0495
+Epoch 18 	 Iteration 920 	 loss 0.9993
+Epoch 18 	 Iteration 940 	 loss 1.0075
+Epoch 18 	 Iteration 960 	 loss 1.0006
+Epoch 18 	 Iteration 980 	 loss 0.9938
+Epoch 18 	 Iteration 1000 	 loss 0.9753
+Epoch 18 	 Iteration 1020 	 loss 0.9811
+Epoch 18 	 Iteration 1040 	 loss 1.0452
+>> valid 	Epoch 18 	 Iteration 0 	 loss 5.0746
+>> valid 	Epoch 18 	 Iteration 20 	 loss 4.8860
+>> valid 	Epoch 18 	 Iteration 40 	 loss 4.9997
+>> valid 	Epoch 18 	 Iteration 60 	 loss 4.9096
+>> valid 	Epoch 18 	 Iteration 80 	 loss 4.6680
+>> valid 	Epoch 18 	 Iteration 100 	 loss 4.7892
+>> valid 	Epoch 18 	 Iteration 120 	 loss 4.9749
+>> valid 	Epoch 18 	 Iteration 140 	 loss 4.7940
+>> valid 	Epoch 18 	 Iteration 160 	 loss 4.8075
+>> valid 	Epoch 18 	 Iteration 180 	 loss 5.0644
+>> test 	Epoch 18 	 Iteration 0 	 loss 5.6115
+>> test 	Epoch 18 	 Iteration 20 	 loss 5.1224
+>> test 	Epoch 18 	 Iteration 40 	 loss 4.8991
+>> test 	Epoch 18 	 Iteration 60 	 loss 4.8664
+>> test 	Epoch 18 	 Iteration 80 	 loss 5.0289
+>> test 	Epoch 18 	 Iteration 100 	 loss 4.7583
+>> test 	Epoch 18 	 Iteration 120 	 loss 4.7932
+Val loss: 4.8876 	 test loss: 4.9373 	 epoch 18
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 19 	 Iteration 0 	 loss 0.9877
+Epoch 19 	 Iteration 20 	 loss 0.9963
+Epoch 19 	 Iteration 40 	 loss 0.9969
+Epoch 19 	 Iteration 60 	 loss 1.0075
+Epoch 19 	 Iteration 80 	 loss 0.9994
+Epoch 19 	 Iteration 100 	 loss 0.9993
+Epoch 19 	 Iteration 120 	 loss 0.9952
+Epoch 19 	 Iteration 140 	 loss 1.0111
+Epoch 19 	 Iteration 160 	 loss 0.9645
+Epoch 19 	 Iteration 180 	 loss 1.0057
+Epoch 19 	 Iteration 200 	 loss 1.0285
+Epoch 19 	 Iteration 220 	 loss 0.9649
+Epoch 19 	 Iteration 240 	 loss 0.9984
+Epoch 19 	 Iteration 260 	 loss 1.0075
+Epoch 19 	 Iteration 280 	 loss 1.0274
+Epoch 19 	 Iteration 300 	 loss 1.0014
+Epoch 19 	 Iteration 320 	 loss 0.9778
+Epoch 19 	 Iteration 340 	 loss 0.9804
+Epoch 19 	 Iteration 360 	 loss 0.9929
+Epoch 19 	 Iteration 380 	 loss 1.0299
+Epoch 19 	 Iteration 400 	 loss 0.9904
+Epoch 19 	 Iteration 420 	 loss 1.0157
+Epoch 19 	 Iteration 440 	 loss 0.9871
+Epoch 19 	 Iteration 460 	 loss 0.9600
+Epoch 19 	 Iteration 480 	 loss 1.0487
+Epoch 19 	 Iteration 500 	 loss 1.0310
+Epoch 19 	 Iteration 520 	 loss 1.0076
+Epoch 19 	 Iteration 540 	 loss 1.0054
+Epoch 19 	 Iteration 560 	 loss 1.0075
+Epoch 19 	 Iteration 580 	 loss 1.0142
+Epoch 19 	 Iteration 600 	 loss 1.0327
+Epoch 19 	 Iteration 620 	 loss 1.0528
+Epoch 19 	 Iteration 640 	 loss 1.0075
+Epoch 19 	 Iteration 660 	 loss 1.0227
+Epoch 19 	 Iteration 680 	 loss 1.0269
+Epoch 19 	 Iteration 700 	 loss 0.9678
+Epoch 19 	 Iteration 720 	 loss 0.9718
+Epoch 19 	 Iteration 740 	 loss 0.9819
+Epoch 19 	 Iteration 760 	 loss 1.0432
+Epoch 19 	 Iteration 780 	 loss 0.9516
+Epoch 19 	 Iteration 800 	 loss 0.9773
+Epoch 19 	 Iteration 820 	 loss 1.0118
+Epoch 19 	 Iteration 840 	 loss 1.0045
+Epoch 19 	 Iteration 860 	 loss 1.0120
+Epoch 19 	 Iteration 880 	 loss 0.9960
+Epoch 19 	 Iteration 900 	 loss 1.0029
+Epoch 19 	 Iteration 920 	 loss 0.9908
+Epoch 19 	 Iteration 940 	 loss 0.9981
+Epoch 19 	 Iteration 960 	 loss 0.9983
+Epoch 19 	 Iteration 980 	 loss 1.0257
+Epoch 19 	 Iteration 1000 	 loss 1.0085
+Epoch 19 	 Iteration 1020 	 loss 0.9748
+Epoch 19 	 Iteration 1040 	 loss 1.0092
+>> valid 	Epoch 19 	 Iteration 0 	 loss 5.0748
+>> valid 	Epoch 19 	 Iteration 20 	 loss 4.8856
+>> valid 	Epoch 19 	 Iteration 40 	 loss 4.9992
+>> valid 	Epoch 19 	 Iteration 60 	 loss 4.9094
+>> valid 	Epoch 19 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 19 	 Iteration 100 	 loss 4.7890
+>> valid 	Epoch 19 	 Iteration 120 	 loss 4.9748
+>> valid 	Epoch 19 	 Iteration 140 	 loss 4.7937
+>> valid 	Epoch 19 	 Iteration 160 	 loss 4.8072
+>> valid 	Epoch 19 	 Iteration 180 	 loss 5.0641
+>> test 	Epoch 19 	 Iteration 0 	 loss 5.6120
+>> test 	Epoch 19 	 Iteration 20 	 loss 5.1225
+>> test 	Epoch 19 	 Iteration 40 	 loss 4.8989
+>> test 	Epoch 19 	 Iteration 60 	 loss 4.8667
+>> test 	Epoch 19 	 Iteration 80 	 loss 5.0286
+>> test 	Epoch 19 	 Iteration 100 	 loss 4.7580
+>> test 	Epoch 19 	 Iteration 120 	 loss 4.7931
+Val loss: 4.8875 	 test loss: 4.9372 	 epoch 19
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 20 	 Iteration 0 	 loss 0.9751
+Epoch 20 	 Iteration 20 	 loss 1.0433
+Epoch 20 	 Iteration 40 	 loss 1.0395
+Epoch 20 	 Iteration 60 	 loss 0.9363
+Epoch 20 	 Iteration 80 	 loss 1.0320
+Epoch 20 	 Iteration 100 	 loss 1.0138
+Epoch 20 	 Iteration 120 	 loss 1.0105
+Epoch 20 	 Iteration 140 	 loss 1.0290
+Epoch 20 	 Iteration 160 	 loss 0.9926
+Epoch 20 	 Iteration 180 	 loss 1.0127
+Epoch 20 	 Iteration 200 	 loss 1.0341
+Epoch 20 	 Iteration 220 	 loss 0.9648
+Epoch 20 	 Iteration 240 	 loss 0.9785
+Epoch 20 	 Iteration 260 	 loss 0.9579
+Epoch 20 	 Iteration 280 	 loss 0.9739
+Epoch 20 	 Iteration 300 	 loss 1.0138
+Epoch 20 	 Iteration 320 	 loss 0.9936
+Epoch 20 	 Iteration 340 	 loss 0.9555
+Epoch 20 	 Iteration 360 	 loss 1.0224
+Epoch 20 	 Iteration 380 	 loss 1.0048
+Epoch 20 	 Iteration 400 	 loss 0.9820
+Epoch 20 	 Iteration 420 	 loss 0.9589
+Epoch 20 	 Iteration 440 	 loss 0.9955
+Epoch 20 	 Iteration 460 	 loss 0.9743
+Epoch 20 	 Iteration 480 	 loss 0.9619
+Epoch 20 	 Iteration 500 	 loss 1.0130
+Epoch 20 	 Iteration 520 	 loss 1.0246
+Epoch 20 	 Iteration 540 	 loss 0.9823
+Epoch 20 	 Iteration 560 	 loss 1.0183
+Epoch 20 	 Iteration 580 	 loss 0.9947
+Epoch 20 	 Iteration 600 	 loss 1.0120
+Epoch 20 	 Iteration 620 	 loss 1.0342
+Epoch 20 	 Iteration 640 	 loss 1.0035
+Epoch 20 	 Iteration 660 	 loss 0.9491
+Epoch 20 	 Iteration 680 	 loss 1.0073
+Epoch 20 	 Iteration 700 	 loss 1.0170
+Epoch 20 	 Iteration 720 	 loss 1.0234
+Epoch 20 	 Iteration 740 	 loss 1.0178
+Epoch 20 	 Iteration 760 	 loss 0.9875
+Epoch 20 	 Iteration 780 	 loss 0.9883
+Epoch 20 	 Iteration 800 	 loss 1.0284
+Epoch 20 	 Iteration 820 	 loss 1.0342
+Epoch 20 	 Iteration 840 	 loss 1.0564
+Epoch 20 	 Iteration 860 	 loss 1.0201
+Epoch 20 	 Iteration 880 	 loss 1.0222
+Epoch 20 	 Iteration 900 	 loss 1.0008
+Epoch 20 	 Iteration 920 	 loss 0.9756
+Epoch 20 	 Iteration 940 	 loss 1.0241
+Epoch 20 	 Iteration 960 	 loss 1.0115
+Epoch 20 	 Iteration 980 	 loss 1.0164
+Epoch 20 	 Iteration 1000 	 loss 1.0188
+Epoch 20 	 Iteration 1020 	 loss 0.9698
+Epoch 20 	 Iteration 1040 	 loss 0.9914
+>> valid 	Epoch 20 	 Iteration 0 	 loss 5.0760
+>> valid 	Epoch 20 	 Iteration 20 	 loss 4.8825
+>> valid 	Epoch 20 	 Iteration 40 	 loss 4.9966
+>> valid 	Epoch 20 	 Iteration 60 	 loss 4.9088
+>> valid 	Epoch 20 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 20 	 Iteration 100 	 loss 4.7881
+>> valid 	Epoch 20 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 20 	 Iteration 140 	 loss 4.7923
+>> valid 	Epoch 20 	 Iteration 160 	 loss 4.8057
+>> valid 	Epoch 20 	 Iteration 180 	 loss 5.0628
+>> test 	Epoch 20 	 Iteration 0 	 loss 5.6157
+>> test 	Epoch 20 	 Iteration 20 	 loss 5.1241
+>> test 	Epoch 20 	 Iteration 40 	 loss 4.8976
+>> test 	Epoch 20 	 Iteration 60 	 loss 4.8689
+>> test 	Epoch 20 	 Iteration 80 	 loss 5.0269
+>> test 	Epoch 20 	 Iteration 100 	 loss 4.7561
+>> test 	Epoch 20 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8870 	 test loss: 4.9370 	 epoch 20
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 21 	 Iteration 0 	 loss 0.9240
+Epoch 21 	 Iteration 20 	 loss 0.9999
+Epoch 21 	 Iteration 40 	 loss 1.0180
+Epoch 21 	 Iteration 60 	 loss 0.9702
+Epoch 21 	 Iteration 80 	 loss 0.9863
+Epoch 21 	 Iteration 100 	 loss 0.9824
+Epoch 21 	 Iteration 120 	 loss 0.9940
+Epoch 21 	 Iteration 140 	 loss 1.0156
+Epoch 21 	 Iteration 160 	 loss 0.9727
+Epoch 21 	 Iteration 180 	 loss 0.9867
+Epoch 21 	 Iteration 200 	 loss 0.9991
+Epoch 21 	 Iteration 220 	 loss 0.9853
+Epoch 21 	 Iteration 240 	 loss 1.0168
+Epoch 21 	 Iteration 260 	 loss 1.0141
+Epoch 21 	 Iteration 280 	 loss 1.0117
+Epoch 21 	 Iteration 300 	 loss 0.9860
+Epoch 21 	 Iteration 320 	 loss 1.0066
+Epoch 21 	 Iteration 340 	 loss 0.9715
+Epoch 21 	 Iteration 360 	 loss 1.0146
+Epoch 21 	 Iteration 380 	 loss 0.9535
+Epoch 21 	 Iteration 400 	 loss 0.9826
+Epoch 21 	 Iteration 420 	 loss 0.9903
+Epoch 21 	 Iteration 440 	 loss 1.0107
+Epoch 21 	 Iteration 460 	 loss 0.9893
+Epoch 21 	 Iteration 480 	 loss 0.9998
+Epoch 21 	 Iteration 500 	 loss 1.0192
+Epoch 21 	 Iteration 520 	 loss 0.9793
+Epoch 21 	 Iteration 540 	 loss 0.9721
+Epoch 21 	 Iteration 560 	 loss 1.0102
+Epoch 21 	 Iteration 580 	 loss 1.0306
+Epoch 21 	 Iteration 600 	 loss 0.9997
+Epoch 21 	 Iteration 620 	 loss 0.9687
+Epoch 21 	 Iteration 640 	 loss 0.9711
+Epoch 21 	 Iteration 660 	 loss 1.0139
+Epoch 21 	 Iteration 680 	 loss 1.0200
+Epoch 21 	 Iteration 700 	 loss 0.9694
+Epoch 21 	 Iteration 720 	 loss 1.0172
+Epoch 21 	 Iteration 740 	 loss 1.0262
+Epoch 21 	 Iteration 760 	 loss 1.0235
+Epoch 21 	 Iteration 780 	 loss 1.0107
+Epoch 21 	 Iteration 800 	 loss 1.0071
+Epoch 21 	 Iteration 820 	 loss 1.0465
+Epoch 21 	 Iteration 840 	 loss 1.0244
+Epoch 21 	 Iteration 860 	 loss 1.0807
+Epoch 21 	 Iteration 880 	 loss 1.0527
+Epoch 21 	 Iteration 900 	 loss 0.9963
+Epoch 21 	 Iteration 920 	 loss 0.9323
+Epoch 21 	 Iteration 940 	 loss 1.0332
+Epoch 21 	 Iteration 960 	 loss 0.9918
+Epoch 21 	 Iteration 980 	 loss 0.9890
+Epoch 21 	 Iteration 1000 	 loss 1.0297
+Epoch 21 	 Iteration 1020 	 loss 0.9815
+Epoch 21 	 Iteration 1040 	 loss 0.9788
+>> valid 	Epoch 21 	 Iteration 0 	 loss 5.0746
+>> valid 	Epoch 21 	 Iteration 20 	 loss 4.8860
+>> valid 	Epoch 21 	 Iteration 40 	 loss 4.9997
+>> valid 	Epoch 21 	 Iteration 60 	 loss 4.9095
+>> valid 	Epoch 21 	 Iteration 80 	 loss 4.6680
+>> valid 	Epoch 21 	 Iteration 100 	 loss 4.7891
+>> valid 	Epoch 21 	 Iteration 120 	 loss 4.9749
+>> valid 	Epoch 21 	 Iteration 140 	 loss 4.7939
+>> valid 	Epoch 21 	 Iteration 160 	 loss 4.8075
+>> valid 	Epoch 21 	 Iteration 180 	 loss 5.0643
+>> test 	Epoch 21 	 Iteration 0 	 loss 5.6115
+>> test 	Epoch 21 	 Iteration 20 	 loss 5.1224
+>> test 	Epoch 21 	 Iteration 40 	 loss 4.8991
+>> test 	Epoch 21 	 Iteration 60 	 loss 4.8665
+>> test 	Epoch 21 	 Iteration 80 	 loss 5.0289
+>> test 	Epoch 21 	 Iteration 100 	 loss 4.7582
+>> test 	Epoch 21 	 Iteration 120 	 loss 4.7932
+Val loss: 4.8876 	 test loss: 4.9373 	 epoch 21
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 22 	 Iteration 0 	 loss 1.0835
+Epoch 22 	 Iteration 20 	 loss 0.9909
+Epoch 22 	 Iteration 40 	 loss 1.0264
+Epoch 22 	 Iteration 60 	 loss 1.0051
+Epoch 22 	 Iteration 80 	 loss 0.9887
+Epoch 22 	 Iteration 100 	 loss 1.0181
+Epoch 22 	 Iteration 120 	 loss 1.0088
+Epoch 22 	 Iteration 140 	 loss 0.9653
+Epoch 22 	 Iteration 160 	 loss 1.0040
+Epoch 22 	 Iteration 180 	 loss 0.9811
+Epoch 22 	 Iteration 200 	 loss 1.0157
+Epoch 22 	 Iteration 220 	 loss 1.0072
+Epoch 22 	 Iteration 240 	 loss 1.0029
+Epoch 22 	 Iteration 260 	 loss 1.0140
+Epoch 22 	 Iteration 280 	 loss 1.0063
+Epoch 22 	 Iteration 300 	 loss 1.0109
+Epoch 22 	 Iteration 320 	 loss 1.0217
+Epoch 22 	 Iteration 340 	 loss 1.0058
+Epoch 22 	 Iteration 360 	 loss 1.0395
+Epoch 22 	 Iteration 380 	 loss 1.0142
+Epoch 22 	 Iteration 400 	 loss 0.9768
+Epoch 22 	 Iteration 420 	 loss 1.0173
+Epoch 22 	 Iteration 440 	 loss 1.0053
+Epoch 22 	 Iteration 460 	 loss 0.9960
+Epoch 22 	 Iteration 480 	 loss 0.9974
+Epoch 22 	 Iteration 500 	 loss 0.9839
+Epoch 22 	 Iteration 520 	 loss 0.9672
+Epoch 22 	 Iteration 540 	 loss 1.0017
+Epoch 22 	 Iteration 560 	 loss 0.9687
+Epoch 22 	 Iteration 580 	 loss 0.9786
+Epoch 22 	 Iteration 600 	 loss 0.9917
+Epoch 22 	 Iteration 620 	 loss 1.0194
+Epoch 22 	 Iteration 640 	 loss 0.9976
+Epoch 22 	 Iteration 660 	 loss 1.0041
+Epoch 22 	 Iteration 680 	 loss 0.9867
+Epoch 22 	 Iteration 700 	 loss 1.0150
+Epoch 22 	 Iteration 720 	 loss 0.9840
+Epoch 22 	 Iteration 740 	 loss 0.9756
+Epoch 22 	 Iteration 760 	 loss 0.9963
+Epoch 22 	 Iteration 780 	 loss 0.9731
+Epoch 22 	 Iteration 800 	 loss 1.0369
+Epoch 22 	 Iteration 820 	 loss 0.9972
+Epoch 22 	 Iteration 840 	 loss 0.9955
+Epoch 22 	 Iteration 860 	 loss 0.9700
+Epoch 22 	 Iteration 880 	 loss 0.9901
+Epoch 22 	 Iteration 900 	 loss 1.0152
+Epoch 22 	 Iteration 920 	 loss 1.0262
+Epoch 22 	 Iteration 940 	 loss 0.9931
+Epoch 22 	 Iteration 960 	 loss 1.0265
+Epoch 22 	 Iteration 980 	 loss 1.0443
+Epoch 22 	 Iteration 1000 	 loss 1.0338
+Epoch 22 	 Iteration 1020 	 loss 0.9795
+Epoch 22 	 Iteration 1040 	 loss 1.0246
+>> valid 	Epoch 22 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 22 	 Iteration 20 	 loss 4.8845
+>> valid 	Epoch 22 	 Iteration 40 	 loss 4.9982
+>> valid 	Epoch 22 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 22 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 22 	 Iteration 100 	 loss 4.7886
+>> valid 	Epoch 22 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 22 	 Iteration 140 	 loss 4.7931
+>> valid 	Epoch 22 	 Iteration 160 	 loss 4.8066
+>> valid 	Epoch 22 	 Iteration 180 	 loss 5.0636
+>> test 	Epoch 22 	 Iteration 0 	 loss 5.6133
+>> test 	Epoch 22 	 Iteration 20 	 loss 5.1230
+>> test 	Epoch 22 	 Iteration 40 	 loss 4.8984
+>> test 	Epoch 22 	 Iteration 60 	 loss 4.8675
+>> test 	Epoch 22 	 Iteration 80 	 loss 5.0279
+>> test 	Epoch 22 	 Iteration 100 	 loss 4.7573
+>> test 	Epoch 22 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 22
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 23 	 Iteration 0 	 loss 1.0696
+Epoch 23 	 Iteration 20 	 loss 0.9929
+Epoch 23 	 Iteration 40 	 loss 0.9931
+Epoch 23 	 Iteration 60 	 loss 0.9743
+Epoch 23 	 Iteration 80 	 loss 1.0093
+Epoch 23 	 Iteration 100 	 loss 0.9880
+Epoch 23 	 Iteration 120 	 loss 1.0174
+Epoch 23 	 Iteration 140 	 loss 0.9821
+Epoch 23 	 Iteration 160 	 loss 0.9968
+Epoch 23 	 Iteration 180 	 loss 0.9893
+Epoch 23 	 Iteration 200 	 loss 0.9903
+Epoch 23 	 Iteration 220 	 loss 0.9726
+Epoch 23 	 Iteration 240 	 loss 0.9782
+Epoch 23 	 Iteration 260 	 loss 1.0355
+Epoch 23 	 Iteration 280 	 loss 1.0381
+Epoch 23 	 Iteration 300 	 loss 0.9523
+Epoch 23 	 Iteration 320 	 loss 1.0406
+Epoch 23 	 Iteration 340 	 loss 1.0027
+Epoch 23 	 Iteration 360 	 loss 0.9799
+Epoch 23 	 Iteration 380 	 loss 1.0244
+Epoch 23 	 Iteration 400 	 loss 0.9877
+Epoch 23 	 Iteration 420 	 loss 1.0434
+Epoch 23 	 Iteration 440 	 loss 0.9758
+Epoch 23 	 Iteration 460 	 loss 1.0078
+Epoch 23 	 Iteration 480 	 loss 1.0011
+Epoch 23 	 Iteration 500 	 loss 0.9790
+Epoch 23 	 Iteration 520 	 loss 1.0088
+Epoch 23 	 Iteration 540 	 loss 0.9669
+Epoch 23 	 Iteration 560 	 loss 0.9909
+Epoch 23 	 Iteration 580 	 loss 1.0055
+Epoch 23 	 Iteration 600 	 loss 0.9486
+Epoch 23 	 Iteration 620 	 loss 1.0228
+Epoch 23 	 Iteration 640 	 loss 1.0341
+Epoch 23 	 Iteration 660 	 loss 0.9924
+Epoch 23 	 Iteration 680 	 loss 1.0255
+Epoch 23 	 Iteration 700 	 loss 1.0039
+Epoch 23 	 Iteration 720 	 loss 0.9633
+Epoch 23 	 Iteration 740 	 loss 0.9517
+Epoch 23 	 Iteration 760 	 loss 0.9920
+Epoch 23 	 Iteration 780 	 loss 0.9911
+Epoch 23 	 Iteration 800 	 loss 1.0006
+Epoch 23 	 Iteration 820 	 loss 1.0441
+Epoch 23 	 Iteration 840 	 loss 1.0350
+Epoch 23 	 Iteration 860 	 loss 0.9662
+Epoch 23 	 Iteration 880 	 loss 1.0357
+Epoch 23 	 Iteration 900 	 loss 1.0009
+Epoch 23 	 Iteration 920 	 loss 0.9973
+Epoch 23 	 Iteration 940 	 loss 1.0130
+Epoch 23 	 Iteration 960 	 loss 0.9858
+Epoch 23 	 Iteration 980 	 loss 1.0856
+Epoch 23 	 Iteration 1000 	 loss 1.0481
+Epoch 23 	 Iteration 1020 	 loss 0.9783
+Epoch 23 	 Iteration 1040 	 loss 0.9983
+>> valid 	Epoch 23 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 23 	 Iteration 20 	 loss 4.8845
+>> valid 	Epoch 23 	 Iteration 40 	 loss 4.9982
+>> valid 	Epoch 23 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 23 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 23 	 Iteration 100 	 loss 4.7885
+>> valid 	Epoch 23 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 23 	 Iteration 140 	 loss 4.7931
+>> valid 	Epoch 23 	 Iteration 160 	 loss 4.8066
+>> valid 	Epoch 23 	 Iteration 180 	 loss 5.0636
+>> test 	Epoch 23 	 Iteration 0 	 loss 5.6133
+>> test 	Epoch 23 	 Iteration 20 	 loss 5.1230
+>> test 	Epoch 23 	 Iteration 40 	 loss 4.8984
+>> test 	Epoch 23 	 Iteration 60 	 loss 4.8675
+>> test 	Epoch 23 	 Iteration 80 	 loss 5.0279
+>> test 	Epoch 23 	 Iteration 100 	 loss 4.7573
+>> test 	Epoch 23 	 Iteration 120 	 loss 4.7928
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 23
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 24 	 Iteration 0 	 loss 0.9857
+Epoch 24 	 Iteration 20 	 loss 1.0172
+Epoch 24 	 Iteration 40 	 loss 0.9835
+Epoch 24 	 Iteration 60 	 loss 1.0482
+Epoch 24 	 Iteration 80 	 loss 0.9960
+Epoch 24 	 Iteration 100 	 loss 0.9827
+Epoch 24 	 Iteration 120 	 loss 0.9841
+Epoch 24 	 Iteration 140 	 loss 1.0099
+Epoch 24 	 Iteration 160 	 loss 0.9991
+Epoch 24 	 Iteration 180 	 loss 0.9900
+Epoch 24 	 Iteration 200 	 loss 0.9857
+Epoch 24 	 Iteration 220 	 loss 0.9771
+Epoch 24 	 Iteration 240 	 loss 1.0209
+Epoch 24 	 Iteration 260 	 loss 1.0002
+Epoch 24 	 Iteration 280 	 loss 0.9957
+Epoch 24 	 Iteration 300 	 loss 1.0217
+Epoch 24 	 Iteration 320 	 loss 0.9712
+Epoch 24 	 Iteration 340 	 loss 0.9976
+Epoch 24 	 Iteration 360 	 loss 1.0022
+Epoch 24 	 Iteration 380 	 loss 0.9861
+Epoch 24 	 Iteration 400 	 loss 0.9949
+Epoch 24 	 Iteration 420 	 loss 0.9973
+Epoch 24 	 Iteration 440 	 loss 0.9752
+Epoch 24 	 Iteration 460 	 loss 0.9961
+Epoch 24 	 Iteration 480 	 loss 1.0193
+Epoch 24 	 Iteration 500 	 loss 0.9668
+Epoch 24 	 Iteration 520 	 loss 1.0172
+Epoch 24 	 Iteration 540 	 loss 1.0282
+Epoch 24 	 Iteration 560 	 loss 0.9442
+Epoch 24 	 Iteration 580 	 loss 1.0092
+Epoch 24 	 Iteration 600 	 loss 1.0138
+Epoch 24 	 Iteration 620 	 loss 0.9949
+Epoch 24 	 Iteration 640 	 loss 1.0170
+Epoch 24 	 Iteration 660 	 loss 1.0374
+Epoch 24 	 Iteration 680 	 loss 1.0104
+Epoch 24 	 Iteration 700 	 loss 1.0223
+Epoch 24 	 Iteration 720 	 loss 1.0157
+Epoch 24 	 Iteration 740 	 loss 1.0045
+Epoch 24 	 Iteration 760 	 loss 0.9821
+Epoch 24 	 Iteration 780 	 loss 0.9783
+Epoch 24 	 Iteration 800 	 loss 0.9768
+Epoch 24 	 Iteration 820 	 loss 1.0151
+Epoch 24 	 Iteration 840 	 loss 1.0321
+Epoch 24 	 Iteration 860 	 loss 0.9817
+Epoch 24 	 Iteration 880 	 loss 0.9771
+Epoch 24 	 Iteration 900 	 loss 1.0288
+Epoch 24 	 Iteration 920 	 loss 1.0078
+Epoch 24 	 Iteration 940 	 loss 1.0053
+Epoch 24 	 Iteration 960 	 loss 1.0003
+Epoch 24 	 Iteration 980 	 loss 1.0718
+Epoch 24 	 Iteration 1000 	 loss 0.9823
+Epoch 24 	 Iteration 1020 	 loss 0.9854
+Epoch 24 	 Iteration 1040 	 loss 0.9981
+>> valid 	Epoch 24 	 Iteration 0 	 loss 5.0759
+>> valid 	Epoch 24 	 Iteration 20 	 loss 4.8828
+>> valid 	Epoch 24 	 Iteration 40 	 loss 4.9968
+>> valid 	Epoch 24 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 24 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 24 	 Iteration 100 	 loss 4.7881
+>> valid 	Epoch 24 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 24 	 Iteration 140 	 loss 4.7924
+>> valid 	Epoch 24 	 Iteration 160 	 loss 4.8058
+>> valid 	Epoch 24 	 Iteration 180 	 loss 5.0629
+>> test 	Epoch 24 	 Iteration 0 	 loss 5.6154
+>> test 	Epoch 24 	 Iteration 20 	 loss 5.1239
+>> test 	Epoch 24 	 Iteration 40 	 loss 4.8977
+>> test 	Epoch 24 	 Iteration 60 	 loss 4.8687
+>> test 	Epoch 24 	 Iteration 80 	 loss 5.0270
+>> test 	Epoch 24 	 Iteration 100 	 loss 4.7562
+>> test 	Epoch 24 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8870 	 test loss: 4.9370 	 epoch 24
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 25 	 Iteration 0 	 loss 1.0784
+Epoch 25 	 Iteration 20 	 loss 1.0038
+Epoch 25 	 Iteration 40 	 loss 1.0100
+Epoch 25 	 Iteration 60 	 loss 1.0330
+Epoch 25 	 Iteration 80 	 loss 1.0261
+Epoch 25 	 Iteration 100 	 loss 0.9886
+Epoch 25 	 Iteration 120 	 loss 1.0007
+Epoch 25 	 Iteration 140 	 loss 1.0010
+Epoch 25 	 Iteration 160 	 loss 0.9860
+Epoch 25 	 Iteration 180 	 loss 0.9736
+Epoch 25 	 Iteration 200 	 loss 0.9823
+Epoch 25 	 Iteration 220 	 loss 1.0050
+Epoch 25 	 Iteration 240 	 loss 0.9960
+Epoch 25 	 Iteration 260 	 loss 0.9919
+Epoch 25 	 Iteration 280 	 loss 1.0057
+Epoch 25 	 Iteration 300 	 loss 0.9957
+Epoch 25 	 Iteration 320 	 loss 1.0081
+Epoch 25 	 Iteration 340 	 loss 0.9639
+Epoch 25 	 Iteration 360 	 loss 1.0049
+Epoch 25 	 Iteration 380 	 loss 0.9886
+Epoch 25 	 Iteration 400 	 loss 0.9995
+Epoch 25 	 Iteration 420 	 loss 1.0356
+Epoch 25 	 Iteration 440 	 loss 0.9998
+Epoch 25 	 Iteration 460 	 loss 0.9940
+Epoch 25 	 Iteration 480 	 loss 0.9886
+Epoch 25 	 Iteration 500 	 loss 0.9780
+Epoch 25 	 Iteration 520 	 loss 1.0302
+Epoch 25 	 Iteration 540 	 loss 0.9768
+Epoch 25 	 Iteration 560 	 loss 1.0222
+Epoch 25 	 Iteration 580 	 loss 1.0086
+Epoch 25 	 Iteration 600 	 loss 1.0104
+Epoch 25 	 Iteration 620 	 loss 1.0228
+Epoch 25 	 Iteration 640 	 loss 1.0309
+Epoch 25 	 Iteration 660 	 loss 0.9809
+Epoch 25 	 Iteration 680 	 loss 0.9616
+Epoch 25 	 Iteration 700 	 loss 0.9920
+Epoch 25 	 Iteration 720 	 loss 1.0091
+Epoch 25 	 Iteration 740 	 loss 0.9782
+Epoch 25 	 Iteration 760 	 loss 1.0070
+Epoch 25 	 Iteration 780 	 loss 0.9969
+Epoch 25 	 Iteration 800 	 loss 1.0229
+Epoch 25 	 Iteration 820 	 loss 0.9841
+Epoch 25 	 Iteration 840 	 loss 1.0574
+Epoch 25 	 Iteration 860 	 loss 0.9900
+Epoch 25 	 Iteration 880 	 loss 1.0014
+Epoch 25 	 Iteration 900 	 loss 0.9985
+Epoch 25 	 Iteration 920 	 loss 1.0126
+Epoch 25 	 Iteration 940 	 loss 1.0066
+Epoch 25 	 Iteration 960 	 loss 1.0148
+Epoch 25 	 Iteration 980 	 loss 0.9672
+Epoch 25 	 Iteration 1000 	 loss 1.0001
+Epoch 25 	 Iteration 1020 	 loss 0.9830
+Epoch 25 	 Iteration 1040 	 loss 1.0191
+>> valid 	Epoch 25 	 Iteration 0 	 loss 5.0745
+>> valid 	Epoch 25 	 Iteration 20 	 loss 4.8864
+>> valid 	Epoch 25 	 Iteration 40 	 loss 5.0001
+>> valid 	Epoch 25 	 Iteration 60 	 loss 4.9097
+>> valid 	Epoch 25 	 Iteration 80 	 loss 4.6680
+>> valid 	Epoch 25 	 Iteration 100 	 loss 4.7893
+>> valid 	Epoch 25 	 Iteration 120 	 loss 4.9749
+>> valid 	Epoch 25 	 Iteration 140 	 loss 4.7942
+>> valid 	Epoch 25 	 Iteration 160 	 loss 4.8077
+>> valid 	Epoch 25 	 Iteration 180 	 loss 5.0645
+>> test 	Epoch 25 	 Iteration 0 	 loss 5.6111
+>> test 	Epoch 25 	 Iteration 20 	 loss 5.1222
+>> test 	Epoch 25 	 Iteration 40 	 loss 4.8993
+>> test 	Epoch 25 	 Iteration 60 	 loss 4.8662
+>> test 	Epoch 25 	 Iteration 80 	 loss 5.0291
+>> test 	Epoch 25 	 Iteration 100 	 loss 4.7585
+>> test 	Epoch 25 	 Iteration 120 	 loss 4.7933
+Val loss: 4.8877 	 test loss: 4.9373 	 epoch 25
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 26 	 Iteration 0 	 loss 1.1273
+Epoch 26 	 Iteration 20 	 loss 0.9715
+Epoch 26 	 Iteration 40 	 loss 0.9441
+Epoch 26 	 Iteration 60 	 loss 0.9668
+Epoch 26 	 Iteration 80 	 loss 0.9968
+Epoch 26 	 Iteration 100 	 loss 0.9833
+Epoch 26 	 Iteration 120 	 loss 1.0178
+Epoch 26 	 Iteration 140 	 loss 0.9648
+Epoch 26 	 Iteration 160 	 loss 1.0001
+Epoch 26 	 Iteration 180 	 loss 1.0321
+Epoch 26 	 Iteration 200 	 loss 0.9884
+Epoch 26 	 Iteration 220 	 loss 0.9635
+Epoch 26 	 Iteration 240 	 loss 0.9551
+Epoch 26 	 Iteration 260 	 loss 0.9765
+Epoch 26 	 Iteration 280 	 loss 0.9896
+Epoch 26 	 Iteration 300 	 loss 0.9985
+Epoch 26 	 Iteration 320 	 loss 0.9808
+Epoch 26 	 Iteration 340 	 loss 0.9906
+Epoch 26 	 Iteration 360 	 loss 1.0258
+Epoch 26 	 Iteration 380 	 loss 1.0307
+Epoch 26 	 Iteration 400 	 loss 1.0079
+Epoch 26 	 Iteration 420 	 loss 1.0107
+Epoch 26 	 Iteration 440 	 loss 1.0349
+Epoch 26 	 Iteration 460 	 loss 0.9840
+Epoch 26 	 Iteration 480 	 loss 1.0031
+Epoch 26 	 Iteration 500 	 loss 1.0254
+Epoch 26 	 Iteration 520 	 loss 1.0314
+Epoch 26 	 Iteration 540 	 loss 0.9715
+Epoch 26 	 Iteration 560 	 loss 0.9860
+Epoch 26 	 Iteration 580 	 loss 1.0007
+Epoch 26 	 Iteration 600 	 loss 1.0189
+Epoch 26 	 Iteration 620 	 loss 1.0118
+Epoch 26 	 Iteration 640 	 loss 0.9808
+Epoch 26 	 Iteration 660 	 loss 0.9989
+Epoch 26 	 Iteration 680 	 loss 0.9644
+Epoch 26 	 Iteration 700 	 loss 1.0295
+Epoch 26 	 Iteration 720 	 loss 0.9896
+Epoch 26 	 Iteration 740 	 loss 1.0275
+Epoch 26 	 Iteration 760 	 loss 0.9918
+Epoch 26 	 Iteration 780 	 loss 1.0187
+Epoch 26 	 Iteration 800 	 loss 1.0060
+Epoch 26 	 Iteration 820 	 loss 1.0273
+Epoch 26 	 Iteration 840 	 loss 0.9717
+Epoch 26 	 Iteration 860 	 loss 1.0024
+Epoch 26 	 Iteration 880 	 loss 0.9919
+Epoch 26 	 Iteration 900 	 loss 1.0081
+Epoch 26 	 Iteration 920 	 loss 1.0423
+Epoch 26 	 Iteration 940 	 loss 0.9962
+Epoch 26 	 Iteration 960 	 loss 0.9819
+Epoch 26 	 Iteration 980 	 loss 0.9785
+Epoch 26 	 Iteration 1000 	 loss 1.0176
+Epoch 26 	 Iteration 1020 	 loss 0.9432
+Epoch 26 	 Iteration 1040 	 loss 0.9775
+>> valid 	Epoch 26 	 Iteration 0 	 loss 5.0759
+>> valid 	Epoch 26 	 Iteration 20 	 loss 4.8827
+>> valid 	Epoch 26 	 Iteration 40 	 loss 4.9967
+>> valid 	Epoch 26 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 26 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 26 	 Iteration 100 	 loss 4.7881
+>> valid 	Epoch 26 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 26 	 Iteration 140 	 loss 4.7923
+>> valid 	Epoch 26 	 Iteration 160 	 loss 4.8058
+>> valid 	Epoch 26 	 Iteration 180 	 loss 5.0628
+>> test 	Epoch 26 	 Iteration 0 	 loss 5.6154
+>> test 	Epoch 26 	 Iteration 20 	 loss 5.1240
+>> test 	Epoch 26 	 Iteration 40 	 loss 4.8977
+>> test 	Epoch 26 	 Iteration 60 	 loss 4.8688
+>> test 	Epoch 26 	 Iteration 80 	 loss 5.0269
+>> test 	Epoch 26 	 Iteration 100 	 loss 4.7562
+>> test 	Epoch 26 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8870 	 test loss: 4.9370 	 epoch 26
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 27 	 Iteration 0 	 loss 0.9952
+Epoch 27 	 Iteration 20 	 loss 0.9881
+Epoch 27 	 Iteration 40 	 loss 0.9898
+Epoch 27 	 Iteration 60 	 loss 0.9932
+Epoch 27 	 Iteration 80 	 loss 0.9791
+Epoch 27 	 Iteration 100 	 loss 1.0193
+Epoch 27 	 Iteration 120 	 loss 0.9874
+Epoch 27 	 Iteration 140 	 loss 1.0007
+Epoch 27 	 Iteration 160 	 loss 0.9709
+Epoch 27 	 Iteration 180 	 loss 1.0452
+Epoch 27 	 Iteration 200 	 loss 0.9903
+Epoch 27 	 Iteration 220 	 loss 1.0049
+Epoch 27 	 Iteration 240 	 loss 1.0007
+Epoch 27 	 Iteration 260 	 loss 0.9798
+Epoch 27 	 Iteration 280 	 loss 0.9657
+Epoch 27 	 Iteration 300 	 loss 1.0022
+Epoch 27 	 Iteration 320 	 loss 0.9931
+Epoch 27 	 Iteration 340 	 loss 0.9828
+Epoch 27 	 Iteration 360 	 loss 0.9910
+Epoch 27 	 Iteration 380 	 loss 0.9671
+Epoch 27 	 Iteration 400 	 loss 1.0089
+Epoch 27 	 Iteration 420 	 loss 1.0278
+Epoch 27 	 Iteration 440 	 loss 0.9575
+Epoch 27 	 Iteration 460 	 loss 1.0231
+Epoch 27 	 Iteration 480 	 loss 0.9857
+Epoch 27 	 Iteration 500 	 loss 0.9666
+Epoch 27 	 Iteration 520 	 loss 1.0142
+Epoch 27 	 Iteration 540 	 loss 0.9823
+Epoch 27 	 Iteration 560 	 loss 1.0372
+Epoch 27 	 Iteration 580 	 loss 1.0119
+Epoch 27 	 Iteration 600 	 loss 1.0173
+Epoch 27 	 Iteration 620 	 loss 0.9634
+Epoch 27 	 Iteration 640 	 loss 1.0095
+Epoch 27 	 Iteration 660 	 loss 0.9730
+Epoch 27 	 Iteration 680 	 loss 1.0332
+Epoch 27 	 Iteration 700 	 loss 1.0130
+Epoch 27 	 Iteration 720 	 loss 1.0080
+Epoch 27 	 Iteration 740 	 loss 0.9778
+Epoch 27 	 Iteration 760 	 loss 0.9845
+Epoch 27 	 Iteration 780 	 loss 1.0040
+Epoch 27 	 Iteration 800 	 loss 0.9634
+Epoch 27 	 Iteration 820 	 loss 1.0225
+Epoch 27 	 Iteration 840 	 loss 1.0301
+Epoch 27 	 Iteration 860 	 loss 1.0072
+Epoch 27 	 Iteration 880 	 loss 1.0157
+Epoch 27 	 Iteration 900 	 loss 1.0801
+Epoch 27 	 Iteration 920 	 loss 1.0072
+Epoch 27 	 Iteration 940 	 loss 1.0461
+Epoch 27 	 Iteration 960 	 loss 1.4591
+Epoch 27 	 Iteration 980 	 loss 1.1544
+Epoch 27 	 Iteration 1000 	 loss 1.0311
+Epoch 27 	 Iteration 1020 	 loss 0.9652
+Epoch 27 	 Iteration 1040 	 loss 1.0141
+>> valid 	Epoch 27 	 Iteration 0 	 loss 5.0714
+>> valid 	Epoch 27 	 Iteration 20 	 loss 4.8951
+>> valid 	Epoch 27 	 Iteration 40 	 loss 5.0090
+>> valid 	Epoch 27 	 Iteration 60 	 loss 4.9129
+>> valid 	Epoch 27 	 Iteration 80 	 loss 4.6712
+>> valid 	Epoch 27 	 Iteration 100 	 loss 4.7944
+>> valid 	Epoch 27 	 Iteration 120 	 loss 4.9790
+>> valid 	Epoch 27 	 Iteration 140 	 loss 4.8010
+>> valid 	Epoch 27 	 Iteration 160 	 loss 4.8146
+>> valid 	Epoch 27 	 Iteration 180 	 loss 5.0698
+>> test 	Epoch 27 	 Iteration 0 	 loss 5.6020
+>> test 	Epoch 27 	 Iteration 20 	 loss 5.1215
+>> test 	Epoch 27 	 Iteration 40 	 loss 4.9049
+>> test 	Epoch 27 	 Iteration 60 	 loss 4.8621
+>> test 	Epoch 27 	 Iteration 80 	 loss 5.0354
+>> test 	Epoch 27 	 Iteration 100 	 loss 4.7650
+>> test 	Epoch 27 	 Iteration 120 	 loss 4.7968
+Val loss: 4.8916 	 test loss: 4.9402 	 epoch 27
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 28 	 Iteration 0 	 loss 1.0793
+Epoch 28 	 Iteration 20 	 loss 1.0250
+Epoch 28 	 Iteration 40 	 loss 0.9645
+Epoch 28 	 Iteration 60 	 loss 1.0325
+Epoch 28 	 Iteration 80 	 loss 0.9806
+Epoch 28 	 Iteration 100 	 loss 1.0071
+Epoch 28 	 Iteration 120 	 loss 1.0433
+Epoch 28 	 Iteration 140 	 loss 0.9924
+Epoch 28 	 Iteration 160 	 loss 0.9911
+Epoch 28 	 Iteration 180 	 loss 1.0426
+Epoch 28 	 Iteration 200 	 loss 0.9948
+Epoch 28 	 Iteration 220 	 loss 1.0698
+Epoch 28 	 Iteration 240 	 loss 0.9789
+Epoch 28 	 Iteration 260 	 loss 1.0246
+Epoch 28 	 Iteration 280 	 loss 1.0007
+Epoch 28 	 Iteration 300 	 loss 1.2445
+Epoch 28 	 Iteration 320 	 loss 1.0071
+Epoch 28 	 Iteration 340 	 loss 0.9999
+Epoch 28 	 Iteration 360 	 loss 1.0211
+Epoch 28 	 Iteration 380 	 loss 1.0098
+Epoch 28 	 Iteration 400 	 loss 1.0190
+Epoch 28 	 Iteration 420 	 loss 0.9936
+Epoch 28 	 Iteration 440 	 loss 0.9757
+Epoch 28 	 Iteration 460 	 loss 1.0269
+Epoch 28 	 Iteration 480 	 loss 1.0187
+Epoch 28 	 Iteration 500 	 loss 0.9746
+Epoch 28 	 Iteration 520 	 loss 1.0049
+Epoch 28 	 Iteration 540 	 loss 1.0338
+Epoch 28 	 Iteration 560 	 loss 1.0036
+Epoch 28 	 Iteration 580 	 loss 1.0027
+Epoch 28 	 Iteration 600 	 loss 0.9636
+Epoch 28 	 Iteration 620 	 loss 0.9365
+Epoch 28 	 Iteration 640 	 loss 0.9949
+Epoch 28 	 Iteration 660 	 loss 1.0186
+Epoch 28 	 Iteration 680 	 loss 0.9706
+Epoch 28 	 Iteration 700 	 loss 0.9653
+Epoch 28 	 Iteration 720 	 loss 1.0053
+Epoch 28 	 Iteration 740 	 loss 1.0133
+Epoch 28 	 Iteration 760 	 loss 0.9658
+Epoch 28 	 Iteration 780 	 loss 1.0157
+Epoch 28 	 Iteration 800 	 loss 0.9901
+Epoch 28 	 Iteration 820 	 loss 0.9875
+Epoch 28 	 Iteration 840 	 loss 0.9581
+Epoch 28 	 Iteration 860 	 loss 0.9816
+Epoch 28 	 Iteration 880 	 loss 0.9835
+Epoch 28 	 Iteration 900 	 loss 0.9792
+Epoch 28 	 Iteration 920 	 loss 1.0379
+Epoch 28 	 Iteration 940 	 loss 1.0016
+Epoch 28 	 Iteration 960 	 loss 1.0078
+Epoch 28 	 Iteration 980 	 loss 0.9943
+Epoch 28 	 Iteration 1000 	 loss 0.9570
+Epoch 28 	 Iteration 1020 	 loss 0.9770
+Epoch 28 	 Iteration 1040 	 loss 0.9831
+>> valid 	Epoch 28 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 28 	 Iteration 20 	 loss 4.8844
+>> valid 	Epoch 28 	 Iteration 40 	 loss 4.9982
+>> valid 	Epoch 28 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 28 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 28 	 Iteration 100 	 loss 4.7885
+>> valid 	Epoch 28 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 28 	 Iteration 140 	 loss 4.7931
+>> valid 	Epoch 28 	 Iteration 160 	 loss 4.8066
+>> valid 	Epoch 28 	 Iteration 180 	 loss 5.0635
+>> test 	Epoch 28 	 Iteration 0 	 loss 5.6134
+>> test 	Epoch 28 	 Iteration 20 	 loss 5.1230
+>> test 	Epoch 28 	 Iteration 40 	 loss 4.8983
+>> test 	Epoch 28 	 Iteration 60 	 loss 4.8675
+>> test 	Epoch 28 	 Iteration 80 	 loss 5.0279
+>> test 	Epoch 28 	 Iteration 100 	 loss 4.7573
+>> test 	Epoch 28 	 Iteration 120 	 loss 4.7928
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 28
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 29 	 Iteration 0 	 loss 1.0982
+Epoch 29 	 Iteration 20 	 loss 0.9977
+Epoch 29 	 Iteration 40 	 loss 1.0270
+Epoch 29 	 Iteration 60 	 loss 0.9839
+Epoch 29 	 Iteration 80 	 loss 0.9808
+Epoch 29 	 Iteration 100 	 loss 0.9859
+Epoch 29 	 Iteration 120 	 loss 0.9959
+Epoch 29 	 Iteration 140 	 loss 1.0365
+Epoch 29 	 Iteration 160 	 loss 1.0108
+Epoch 29 	 Iteration 180 	 loss 0.9854
+Epoch 29 	 Iteration 200 	 loss 1.0424
+Epoch 29 	 Iteration 220 	 loss 1.0530
+Epoch 29 	 Iteration 240 	 loss 0.9664
+Epoch 29 	 Iteration 260 	 loss 1.0285
+Epoch 29 	 Iteration 280 	 loss 1.0080
+Epoch 29 	 Iteration 300 	 loss 0.9835
+Epoch 29 	 Iteration 320 	 loss 0.9875
+Epoch 29 	 Iteration 340 	 loss 0.9903
+Epoch 29 	 Iteration 360 	 loss 0.9643
+Epoch 29 	 Iteration 380 	 loss 0.9793
+Epoch 29 	 Iteration 400 	 loss 0.9589
+Epoch 29 	 Iteration 420 	 loss 0.9882
+Epoch 29 	 Iteration 440 	 loss 0.9649
+Epoch 29 	 Iteration 460 	 loss 0.9648
+Epoch 29 	 Iteration 480 	 loss 1.1120
+Epoch 29 	 Iteration 500 	 loss 0.9596
+Epoch 29 	 Iteration 520 	 loss 1.0236
+Epoch 29 	 Iteration 540 	 loss 1.0202
+Epoch 29 	 Iteration 560 	 loss 0.9767
+Epoch 29 	 Iteration 580 	 loss 0.9579
+Epoch 29 	 Iteration 600 	 loss 1.0165
+Epoch 29 	 Iteration 620 	 loss 0.9713
+Epoch 29 	 Iteration 640 	 loss 1.0095
+Epoch 29 	 Iteration 660 	 loss 1.0148
+Epoch 29 	 Iteration 680 	 loss 1.0290
+Epoch 29 	 Iteration 700 	 loss 1.0273
+Epoch 29 	 Iteration 720 	 loss 0.9873
+Epoch 29 	 Iteration 740 	 loss 0.9812
+Epoch 29 	 Iteration 760 	 loss 0.9666
+Epoch 29 	 Iteration 780 	 loss 0.9920
+Epoch 29 	 Iteration 800 	 loss 0.9965
+Epoch 29 	 Iteration 820 	 loss 1.0226
+Epoch 29 	 Iteration 840 	 loss 1.0077
+Epoch 29 	 Iteration 860 	 loss 1.0279
+Epoch 29 	 Iteration 880 	 loss 0.9706
+Epoch 29 	 Iteration 900 	 loss 1.0161
+Epoch 29 	 Iteration 920 	 loss 0.9615
+Epoch 29 	 Iteration 940 	 loss 0.9650
+Epoch 29 	 Iteration 960 	 loss 0.9861
+Epoch 29 	 Iteration 980 	 loss 1.0011
+Epoch 29 	 Iteration 1000 	 loss 0.9847
+Epoch 29 	 Iteration 1020 	 loss 1.0004
+Epoch 29 	 Iteration 1040 	 loss 0.9737
+>> valid 	Epoch 29 	 Iteration 0 	 loss 5.0750
+>> valid 	Epoch 29 	 Iteration 20 	 loss 4.8849
+>> valid 	Epoch 29 	 Iteration 40 	 loss 4.9987
+>> valid 	Epoch 29 	 Iteration 60 	 loss 4.9093
+>> valid 	Epoch 29 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 29 	 Iteration 100 	 loss 4.7887
+>> valid 	Epoch 29 	 Iteration 120 	 loss 4.9747
+>> valid 	Epoch 29 	 Iteration 140 	 loss 4.7934
+>> valid 	Epoch 29 	 Iteration 160 	 loss 4.8069
+>> valid 	Epoch 29 	 Iteration 180 	 loss 5.0638
+>> test 	Epoch 29 	 Iteration 0 	 loss 5.6128
+>> test 	Epoch 29 	 Iteration 20 	 loss 5.1228
+>> test 	Epoch 29 	 Iteration 40 	 loss 4.8986
+>> test 	Epoch 29 	 Iteration 60 	 loss 4.8672
+>> test 	Epoch 29 	 Iteration 80 	 loss 5.0282
+>> test 	Epoch 29 	 Iteration 100 	 loss 4.7576
+>> test 	Epoch 29 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8874 	 test loss: 4.9371 	 epoch 29
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 30 	 Iteration 0 	 loss 1.1126
+Epoch 30 	 Iteration 20 	 loss 0.9832
+Epoch 30 	 Iteration 40 	 loss 0.9878
+Epoch 30 	 Iteration 60 	 loss 0.9778
+Epoch 30 	 Iteration 80 	 loss 0.9698
+Epoch 30 	 Iteration 100 	 loss 0.9933
+Epoch 30 	 Iteration 120 	 loss 0.9854
+Epoch 30 	 Iteration 140 	 loss 0.9649
+Epoch 30 	 Iteration 160 	 loss 0.9926
+Epoch 30 	 Iteration 180 	 loss 0.9874
+Epoch 30 	 Iteration 200 	 loss 1.0064
+Epoch 30 	 Iteration 220 	 loss 1.0084
+Epoch 30 	 Iteration 240 	 loss 0.9559
+Epoch 30 	 Iteration 260 	 loss 0.9903
+Epoch 30 	 Iteration 280 	 loss 1.0222
+Epoch 30 	 Iteration 300 	 loss 1.0217
+Epoch 30 	 Iteration 320 	 loss 0.9816
+Epoch 30 	 Iteration 340 	 loss 1.0090
+Epoch 30 	 Iteration 360 	 loss 0.9894
+Epoch 30 	 Iteration 380 	 loss 0.9362
+Epoch 30 	 Iteration 400 	 loss 1.0195
+Epoch 30 	 Iteration 420 	 loss 1.0400
+Epoch 30 	 Iteration 440 	 loss 1.0120
+Epoch 30 	 Iteration 460 	 loss 0.9841
+Epoch 30 	 Iteration 480 	 loss 1.0096
+Epoch 30 	 Iteration 500 	 loss 0.9978
+Epoch 30 	 Iteration 520 	 loss 1.0256
+Epoch 30 	 Iteration 540 	 loss 0.9915
+Epoch 30 	 Iteration 560 	 loss 0.9805
+Epoch 30 	 Iteration 580 	 loss 0.9798
+Epoch 30 	 Iteration 600 	 loss 0.9897
+Epoch 30 	 Iteration 620 	 loss 1.0024
+Epoch 30 	 Iteration 640 	 loss 0.9664
+Epoch 30 	 Iteration 660 	 loss 1.0238
+Epoch 30 	 Iteration 680 	 loss 1.0414
+Epoch 30 	 Iteration 700 	 loss 1.0300
+Epoch 30 	 Iteration 720 	 loss 0.9957
+Epoch 30 	 Iteration 740 	 loss 0.9733
+Epoch 30 	 Iteration 760 	 loss 1.0206
+Epoch 30 	 Iteration 780 	 loss 0.9784
+Epoch 30 	 Iteration 800 	 loss 1.0517
+Epoch 30 	 Iteration 820 	 loss 0.9889
+Epoch 30 	 Iteration 840 	 loss 0.9897
+Epoch 30 	 Iteration 860 	 loss 0.9937
+Epoch 30 	 Iteration 880 	 loss 1.0223
+Epoch 30 	 Iteration 900 	 loss 0.9737
+Epoch 30 	 Iteration 920 	 loss 0.9888
+Epoch 30 	 Iteration 940 	 loss 0.9759
+Epoch 30 	 Iteration 960 	 loss 1.0118
+Epoch 30 	 Iteration 980 	 loss 1.0252
+Epoch 30 	 Iteration 1000 	 loss 0.9978
+Epoch 30 	 Iteration 1020 	 loss 0.9977
+Epoch 30 	 Iteration 1040 	 loss 0.9866
+>> valid 	Epoch 30 	 Iteration 0 	 loss 5.0755
+>> valid 	Epoch 30 	 Iteration 20 	 loss 4.8837
+>> valid 	Epoch 30 	 Iteration 40 	 loss 4.9975
+>> valid 	Epoch 30 	 Iteration 60 	 loss 4.9090
+>> valid 	Epoch 30 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 30 	 Iteration 100 	 loss 4.7883
+>> valid 	Epoch 30 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 30 	 Iteration 140 	 loss 4.7928
+>> valid 	Epoch 30 	 Iteration 160 	 loss 4.8062
+>> valid 	Epoch 30 	 Iteration 180 	 loss 5.0632
+>> test 	Epoch 30 	 Iteration 0 	 loss 5.6142
+>> test 	Epoch 30 	 Iteration 20 	 loss 5.1234
+>> test 	Epoch 30 	 Iteration 40 	 loss 4.8981
+>> test 	Epoch 30 	 Iteration 60 	 loss 4.8680
+>> test 	Epoch 30 	 Iteration 80 	 loss 5.0274
+>> test 	Epoch 30 	 Iteration 100 	 loss 4.7568
+>> test 	Epoch 30 	 Iteration 120 	 loss 4.7927
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 30
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 31 	 Iteration 0 	 loss 1.0142
+Epoch 31 	 Iteration 20 	 loss 0.9888
+Epoch 31 	 Iteration 40 	 loss 0.9835
+Epoch 31 	 Iteration 60 	 loss 0.9788
+Epoch 31 	 Iteration 80 	 loss 0.9817
+Epoch 31 	 Iteration 100 	 loss 1.0004
+Epoch 31 	 Iteration 120 	 loss 0.9740
+Epoch 31 	 Iteration 140 	 loss 1.0595
+Epoch 31 	 Iteration 160 	 loss 0.9633
+Epoch 31 	 Iteration 180 	 loss 1.0054
+Epoch 31 	 Iteration 200 	 loss 0.9964
+Epoch 31 	 Iteration 220 	 loss 0.9719
+Epoch 31 	 Iteration 240 	 loss 0.9485
+Epoch 31 	 Iteration 260 	 loss 0.9759
+Epoch 31 	 Iteration 280 	 loss 1.0031
+Epoch 31 	 Iteration 300 	 loss 1.0093
+Epoch 31 	 Iteration 320 	 loss 0.9760
+Epoch 31 	 Iteration 340 	 loss 0.9568
+Epoch 31 	 Iteration 360 	 loss 1.0285
+Epoch 31 	 Iteration 380 	 loss 1.0100
+Epoch 31 	 Iteration 400 	 loss 1.0207
+Epoch 31 	 Iteration 420 	 loss 1.0178
+Epoch 31 	 Iteration 440 	 loss 0.9992
+Epoch 31 	 Iteration 460 	 loss 1.0265
+Epoch 31 	 Iteration 480 	 loss 1.0280
+Epoch 31 	 Iteration 500 	 loss 1.0178
+Epoch 31 	 Iteration 520 	 loss 1.0193
+Epoch 31 	 Iteration 540 	 loss 1.0275
+Epoch 31 	 Iteration 560 	 loss 0.9939
+Epoch 31 	 Iteration 580 	 loss 0.9780
+Epoch 31 	 Iteration 600 	 loss 0.9687
+Epoch 31 	 Iteration 620 	 loss 1.0037
+Epoch 31 	 Iteration 640 	 loss 0.9970
+Epoch 31 	 Iteration 660 	 loss 1.0384
+Epoch 31 	 Iteration 680 	 loss 0.9709
+Epoch 31 	 Iteration 700 	 loss 0.9944
+Epoch 31 	 Iteration 720 	 loss 0.9788
+Epoch 31 	 Iteration 740 	 loss 0.9966
+Epoch 31 	 Iteration 760 	 loss 0.9698
+Epoch 31 	 Iteration 780 	 loss 0.9679
+Epoch 31 	 Iteration 800 	 loss 1.0180
+Epoch 31 	 Iteration 820 	 loss 0.9668
+Epoch 31 	 Iteration 840 	 loss 1.0436
+Epoch 31 	 Iteration 860 	 loss 1.0212
+Epoch 31 	 Iteration 880 	 loss 0.9820
+Epoch 31 	 Iteration 900 	 loss 0.9910
+Epoch 31 	 Iteration 920 	 loss 1.0161
+Epoch 31 	 Iteration 940 	 loss 0.9807
+Epoch 31 	 Iteration 960 	 loss 0.9964
+Epoch 31 	 Iteration 980 	 loss 0.9955
+Epoch 31 	 Iteration 1000 	 loss 1.0089
+Epoch 31 	 Iteration 1020 	 loss 1.0036
+Epoch 31 	 Iteration 1040 	 loss 1.0004
+>> valid 	Epoch 31 	 Iteration 0 	 loss 5.0757
+>> valid 	Epoch 31 	 Iteration 20 	 loss 4.8834
+>> valid 	Epoch 31 	 Iteration 40 	 loss 4.9973
+>> valid 	Epoch 31 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 31 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 31 	 Iteration 100 	 loss 4.7883
+>> valid 	Epoch 31 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 31 	 Iteration 140 	 loss 4.7926
+>> valid 	Epoch 31 	 Iteration 160 	 loss 4.8061
+>> valid 	Epoch 31 	 Iteration 180 	 loss 5.0631
+>> test 	Epoch 31 	 Iteration 0 	 loss 5.6147
+>> test 	Epoch 31 	 Iteration 20 	 loss 5.1236
+>> test 	Epoch 31 	 Iteration 40 	 loss 4.8979
+>> test 	Epoch 31 	 Iteration 60 	 loss 4.8683
+>> test 	Epoch 31 	 Iteration 80 	 loss 5.0273
+>> test 	Epoch 31 	 Iteration 100 	 loss 4.7566
+>> test 	Epoch 31 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 31
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 32 	 Iteration 0 	 loss 0.9992
+Epoch 32 	 Iteration 20 	 loss 1.0227
+Epoch 32 	 Iteration 40 	 loss 0.9911
+Epoch 32 	 Iteration 60 	 loss 1.0084
+Epoch 32 	 Iteration 80 	 loss 1.0480
+Epoch 32 	 Iteration 100 	 loss 0.9769
+Epoch 32 	 Iteration 120 	 loss 0.9946
+Epoch 32 	 Iteration 140 	 loss 0.9899
+Epoch 32 	 Iteration 160 	 loss 1.0072
+Epoch 32 	 Iteration 180 	 loss 0.9847
+Epoch 32 	 Iteration 200 	 loss 1.0234
+Epoch 32 	 Iteration 220 	 loss 0.9918
+Epoch 32 	 Iteration 240 	 loss 0.9850
+Epoch 32 	 Iteration 260 	 loss 1.0172
+Epoch 32 	 Iteration 280 	 loss 0.9758
+Epoch 32 	 Iteration 300 	 loss 0.9801
+Epoch 32 	 Iteration 320 	 loss 0.9743
+Epoch 32 	 Iteration 340 	 loss 1.0069
+Epoch 32 	 Iteration 360 	 loss 0.9704
+Epoch 32 	 Iteration 380 	 loss 0.9855
+Epoch 32 	 Iteration 400 	 loss 0.9646
+Epoch 32 	 Iteration 420 	 loss 1.0038
+Epoch 32 	 Iteration 440 	 loss 0.9518
+Epoch 32 	 Iteration 460 	 loss 0.9966
+Epoch 32 	 Iteration 480 	 loss 1.0017
+Epoch 32 	 Iteration 500 	 loss 1.0033
+Epoch 32 	 Iteration 520 	 loss 0.9931
+Epoch 32 	 Iteration 540 	 loss 1.0009
+Epoch 32 	 Iteration 560 	 loss 1.0101
+Epoch 32 	 Iteration 580 	 loss 1.0165
+Epoch 32 	 Iteration 600 	 loss 1.0245
+Epoch 32 	 Iteration 620 	 loss 0.9877
+Epoch 32 	 Iteration 640 	 loss 0.9443
+Epoch 32 	 Iteration 660 	 loss 1.0141
+Epoch 32 	 Iteration 680 	 loss 1.0078
+Epoch 32 	 Iteration 700 	 loss 0.9597
+Epoch 32 	 Iteration 720 	 loss 1.0083
+Epoch 32 	 Iteration 740 	 loss 0.9654
+Epoch 32 	 Iteration 760 	 loss 1.0061
+Epoch 32 	 Iteration 780 	 loss 0.9835
+Epoch 32 	 Iteration 800 	 loss 0.9922
+Epoch 32 	 Iteration 820 	 loss 1.0224
+Epoch 32 	 Iteration 840 	 loss 0.9755
+Epoch 32 	 Iteration 860 	 loss 0.9719
+Epoch 32 	 Iteration 880 	 loss 1.0216
+Epoch 32 	 Iteration 900 	 loss 1.0492
+Epoch 32 	 Iteration 920 	 loss 0.9787
+Epoch 32 	 Iteration 940 	 loss 1.0214
+Epoch 32 	 Iteration 960 	 loss 0.9803
+Epoch 32 	 Iteration 980 	 loss 1.0284
+Epoch 32 	 Iteration 1000 	 loss 0.9912
+Epoch 32 	 Iteration 1020 	 loss 1.0319
+Epoch 32 	 Iteration 1040 	 loss 0.9899
+>> valid 	Epoch 32 	 Iteration 0 	 loss 5.0757
+>> valid 	Epoch 32 	 Iteration 20 	 loss 4.8834
+>> valid 	Epoch 32 	 Iteration 40 	 loss 4.9973
+>> valid 	Epoch 32 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 32 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 32 	 Iteration 100 	 loss 4.7883
+>> valid 	Epoch 32 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 32 	 Iteration 140 	 loss 4.7926
+>> valid 	Epoch 32 	 Iteration 160 	 loss 4.8061
+>> valid 	Epoch 32 	 Iteration 180 	 loss 5.0631
+>> test 	Epoch 32 	 Iteration 0 	 loss 5.6147
+>> test 	Epoch 32 	 Iteration 20 	 loss 5.1236
+>> test 	Epoch 32 	 Iteration 40 	 loss 4.8979
+>> test 	Epoch 32 	 Iteration 60 	 loss 4.8683
+>> test 	Epoch 32 	 Iteration 80 	 loss 5.0273
+>> test 	Epoch 32 	 Iteration 100 	 loss 4.7566
+>> test 	Epoch 32 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 32
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 33 	 Iteration 0 	 loss 1.0628
+Epoch 33 	 Iteration 20 	 loss 0.9679
+Epoch 33 	 Iteration 40 	 loss 0.9715
+Epoch 33 	 Iteration 60 	 loss 1.0126
+Epoch 33 	 Iteration 80 	 loss 0.9923
+Epoch 33 	 Iteration 100 	 loss 0.9845
+Epoch 33 	 Iteration 120 	 loss 0.9652
+Epoch 33 	 Iteration 140 	 loss 0.9648
+Epoch 33 	 Iteration 160 	 loss 1.0000
+Epoch 33 	 Iteration 180 	 loss 0.9760
+Epoch 33 	 Iteration 200 	 loss 1.0036
+Epoch 33 	 Iteration 220 	 loss 1.0093
+Epoch 33 	 Iteration 240 	 loss 0.9895
+Epoch 33 	 Iteration 260 	 loss 1.0132
+Epoch 33 	 Iteration 280 	 loss 0.9592
+Epoch 33 	 Iteration 300 	 loss 0.9993
+Epoch 33 	 Iteration 320 	 loss 0.9982
+Epoch 33 	 Iteration 340 	 loss 1.0013
+Epoch 33 	 Iteration 360 	 loss 0.9792
+Epoch 33 	 Iteration 380 	 loss 1.0183
+Epoch 33 	 Iteration 400 	 loss 0.9568
+Epoch 33 	 Iteration 420 	 loss 1.0255
+Epoch 33 	 Iteration 440 	 loss 0.9565
+Epoch 33 	 Iteration 460 	 loss 0.9903
+Epoch 33 	 Iteration 480 	 loss 0.9974
+Epoch 33 	 Iteration 500 	 loss 1.0347
+Epoch 33 	 Iteration 520 	 loss 1.0304
+Epoch 33 	 Iteration 540 	 loss 0.9871
+Epoch 33 	 Iteration 560 	 loss 1.0156
+Epoch 33 	 Iteration 580 	 loss 1.0112
+Epoch 33 	 Iteration 600 	 loss 0.9979
+Epoch 33 	 Iteration 620 	 loss 1.0328
+Epoch 33 	 Iteration 640 	 loss 0.9717
+Epoch 33 	 Iteration 660 	 loss 0.9744
+Epoch 33 	 Iteration 680 	 loss 1.0523
+Epoch 33 	 Iteration 700 	 loss 1.0225
+Epoch 33 	 Iteration 720 	 loss 1.0047
+Epoch 33 	 Iteration 740 	 loss 1.0092
+Epoch 33 	 Iteration 760 	 loss 0.9916
+Epoch 33 	 Iteration 780 	 loss 1.0115
+Epoch 33 	 Iteration 800 	 loss 0.9812
+Epoch 33 	 Iteration 820 	 loss 1.0087
+Epoch 33 	 Iteration 840 	 loss 0.9864
+Epoch 33 	 Iteration 860 	 loss 0.9874
+Epoch 33 	 Iteration 880 	 loss 0.9968
+Epoch 33 	 Iteration 900 	 loss 0.9907
+Epoch 33 	 Iteration 920 	 loss 0.9737
+Epoch 33 	 Iteration 940 	 loss 1.0175
+Epoch 33 	 Iteration 960 	 loss 0.9840
+Epoch 33 	 Iteration 980 	 loss 0.9999
+Epoch 33 	 Iteration 1000 	 loss 0.9928
+Epoch 33 	 Iteration 1020 	 loss 0.9822
+Epoch 33 	 Iteration 1040 	 loss 1.0015
+>> valid 	Epoch 33 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 33 	 Iteration 20 	 loss 4.8844
+>> valid 	Epoch 33 	 Iteration 40 	 loss 4.9982
+>> valid 	Epoch 33 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 33 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 33 	 Iteration 100 	 loss 4.7885
+>> valid 	Epoch 33 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 33 	 Iteration 140 	 loss 4.7931
+>> valid 	Epoch 33 	 Iteration 160 	 loss 4.8066
+>> valid 	Epoch 33 	 Iteration 180 	 loss 5.0635
+>> test 	Epoch 33 	 Iteration 0 	 loss 5.6134
+>> test 	Epoch 33 	 Iteration 20 	 loss 5.1230
+>> test 	Epoch 33 	 Iteration 40 	 loss 4.8983
+>> test 	Epoch 33 	 Iteration 60 	 loss 4.8675
+>> test 	Epoch 33 	 Iteration 80 	 loss 5.0279
+>> test 	Epoch 33 	 Iteration 100 	 loss 4.7573
+>> test 	Epoch 33 	 Iteration 120 	 loss 4.7928
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 33
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 34 	 Iteration 0 	 loss 1.0925
+Epoch 34 	 Iteration 20 	 loss 0.9896
+Epoch 34 	 Iteration 40 	 loss 0.9923
+Epoch 34 	 Iteration 60 	 loss 0.9713
+Epoch 34 	 Iteration 80 	 loss 0.9960
+Epoch 34 	 Iteration 100 	 loss 1.0161
+Epoch 34 	 Iteration 120 	 loss 1.0065
+Epoch 34 	 Iteration 140 	 loss 0.9828
+Epoch 34 	 Iteration 160 	 loss 1.0499
+Epoch 34 	 Iteration 180 	 loss 1.0008
+Epoch 34 	 Iteration 200 	 loss 0.9767
+Epoch 34 	 Iteration 220 	 loss 0.9826
+Epoch 34 	 Iteration 240 	 loss 0.9758
+Epoch 34 	 Iteration 260 	 loss 0.9956
+Epoch 34 	 Iteration 280 	 loss 0.9618
+Epoch 34 	 Iteration 300 	 loss 0.9476
+Epoch 34 	 Iteration 320 	 loss 1.0184
+Epoch 34 	 Iteration 340 	 loss 0.9515
+Epoch 34 	 Iteration 360 	 loss 0.9756
+Epoch 34 	 Iteration 380 	 loss 1.0114
+Epoch 34 	 Iteration 400 	 loss 1.0045
+Epoch 34 	 Iteration 420 	 loss 0.9934
+Epoch 34 	 Iteration 440 	 loss 1.0247
+Epoch 34 	 Iteration 460 	 loss 0.9808
+Epoch 34 	 Iteration 480 	 loss 0.9842
+Epoch 34 	 Iteration 500 	 loss 1.0461
+Epoch 34 	 Iteration 520 	 loss 0.9689
+Epoch 34 	 Iteration 540 	 loss 0.9816
+Epoch 34 	 Iteration 560 	 loss 1.0471
+Epoch 34 	 Iteration 580 	 loss 1.0154
+Epoch 34 	 Iteration 600 	 loss 1.0114
+Epoch 34 	 Iteration 620 	 loss 0.9989
+Epoch 34 	 Iteration 640 	 loss 1.0117
+Epoch 34 	 Iteration 660 	 loss 1.0226
+Epoch 34 	 Iteration 680 	 loss 0.9675
+Epoch 34 	 Iteration 700 	 loss 0.9930
+Epoch 34 	 Iteration 720 	 loss 1.0203
+Epoch 34 	 Iteration 740 	 loss 0.9983
+Epoch 34 	 Iteration 760 	 loss 0.9813
+Epoch 34 	 Iteration 780 	 loss 1.0257
+Epoch 34 	 Iteration 800 	 loss 0.9889
+Epoch 34 	 Iteration 820 	 loss 1.0411
+Epoch 34 	 Iteration 840 	 loss 0.9944
+Epoch 34 	 Iteration 860 	 loss 0.9633
+Epoch 34 	 Iteration 880 	 loss 0.9822
+Epoch 34 	 Iteration 900 	 loss 1.0012
+Epoch 34 	 Iteration 920 	 loss 0.9669
+Epoch 34 	 Iteration 940 	 loss 1.0044
+Epoch 34 	 Iteration 960 	 loss 1.0132
+Epoch 34 	 Iteration 980 	 loss 1.0083
+Epoch 34 	 Iteration 1000 	 loss 0.9895
+Epoch 34 	 Iteration 1020 	 loss 0.9887
+Epoch 34 	 Iteration 1040 	 loss 0.9591
+>> valid 	Epoch 34 	 Iteration 0 	 loss 5.0758
+>> valid 	Epoch 34 	 Iteration 20 	 loss 4.8829
+>> valid 	Epoch 34 	 Iteration 40 	 loss 4.9969
+>> valid 	Epoch 34 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 34 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 34 	 Iteration 100 	 loss 4.7882
+>> valid 	Epoch 34 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 34 	 Iteration 140 	 loss 4.7924
+>> valid 	Epoch 34 	 Iteration 160 	 loss 4.8059
+>> valid 	Epoch 34 	 Iteration 180 	 loss 5.0629
+>> test 	Epoch 34 	 Iteration 0 	 loss 5.6152
+>> test 	Epoch 34 	 Iteration 20 	 loss 5.1239
+>> test 	Epoch 34 	 Iteration 40 	 loss 4.8978
+>> test 	Epoch 34 	 Iteration 60 	 loss 4.8686
+>> test 	Epoch 34 	 Iteration 80 	 loss 5.0270
+>> test 	Epoch 34 	 Iteration 100 	 loss 4.7563
+>> test 	Epoch 34 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8870 	 test loss: 4.9370 	 epoch 34
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 35 	 Iteration 0 	 loss 1.1067
+Epoch 35 	 Iteration 20 	 loss 1.0421
+Epoch 35 	 Iteration 40 	 loss 1.0231
+Epoch 35 	 Iteration 60 	 loss 1.0237
+Epoch 35 	 Iteration 80 	 loss 0.9869
+Epoch 35 	 Iteration 100 	 loss 0.9443
+Epoch 35 	 Iteration 120 	 loss 0.9986
+Epoch 35 	 Iteration 140 	 loss 1.0076
+Epoch 35 	 Iteration 160 	 loss 0.9925
+Epoch 35 	 Iteration 180 	 loss 1.0682
+Epoch 35 	 Iteration 200 	 loss 0.9998
+Epoch 35 	 Iteration 220 	 loss 0.9943
+Epoch 35 	 Iteration 240 	 loss 0.9802
+Epoch 35 	 Iteration 260 	 loss 0.9434
+Epoch 35 	 Iteration 280 	 loss 1.0006
+Epoch 35 	 Iteration 300 	 loss 0.9852
+Epoch 35 	 Iteration 320 	 loss 0.9550
+Epoch 35 	 Iteration 340 	 loss 1.0020
+Epoch 35 	 Iteration 360 	 loss 0.9857
+Epoch 35 	 Iteration 380 	 loss 0.9834
+Epoch 35 	 Iteration 400 	 loss 0.9984
+Epoch 35 	 Iteration 420 	 loss 0.9906
+Epoch 35 	 Iteration 440 	 loss 0.9691
+Epoch 35 	 Iteration 460 	 loss 0.9636
+Epoch 35 	 Iteration 480 	 loss 0.9689
+Epoch 35 	 Iteration 500 	 loss 0.9987
+Epoch 35 	 Iteration 520 	 loss 0.9927
+Epoch 35 	 Iteration 540 	 loss 0.9693
+Epoch 35 	 Iteration 560 	 loss 1.0377
+Epoch 35 	 Iteration 580 	 loss 0.9799
+Epoch 35 	 Iteration 600 	 loss 1.0229
+Epoch 35 	 Iteration 620 	 loss 0.9989
+Epoch 35 	 Iteration 640 	 loss 0.9606
+Epoch 35 	 Iteration 660 	 loss 1.0174
+Epoch 35 	 Iteration 680 	 loss 1.0116
+Epoch 35 	 Iteration 700 	 loss 0.9738
+Epoch 35 	 Iteration 720 	 loss 1.0067
+Epoch 35 	 Iteration 740 	 loss 1.0182
+Epoch 35 	 Iteration 760 	 loss 1.0334
+Epoch 35 	 Iteration 780 	 loss 0.9881
+Epoch 35 	 Iteration 800 	 loss 1.0109
+Epoch 35 	 Iteration 820 	 loss 1.0313
+Epoch 35 	 Iteration 840 	 loss 0.9787
+Epoch 35 	 Iteration 860 	 loss 1.0330
+Epoch 35 	 Iteration 880 	 loss 1.0214
+Epoch 35 	 Iteration 900 	 loss 1.0280
+Epoch 35 	 Iteration 920 	 loss 1.0121
+Epoch 35 	 Iteration 940 	 loss 1.0170
+Epoch 35 	 Iteration 960 	 loss 1.0446
+Epoch 35 	 Iteration 980 	 loss 0.9824
+Epoch 35 	 Iteration 1000 	 loss 1.0105
+Epoch 35 	 Iteration 1020 	 loss 1.0251
+Epoch 35 	 Iteration 1040 	 loss 1.0039
+>> valid 	Epoch 35 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 35 	 Iteration 20 	 loss 4.8846
+>> valid 	Epoch 35 	 Iteration 40 	 loss 4.9983
+>> valid 	Epoch 35 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 35 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 35 	 Iteration 100 	 loss 4.7886
+>> valid 	Epoch 35 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 35 	 Iteration 140 	 loss 4.7932
+>> valid 	Epoch 35 	 Iteration 160 	 loss 4.8067
+>> valid 	Epoch 35 	 Iteration 180 	 loss 5.0636
+>> test 	Epoch 35 	 Iteration 0 	 loss 5.6132
+>> test 	Epoch 35 	 Iteration 20 	 loss 5.1229
+>> test 	Epoch 35 	 Iteration 40 	 loss 4.8984
+>> test 	Epoch 35 	 Iteration 60 	 loss 4.8674
+>> test 	Epoch 35 	 Iteration 80 	 loss 5.0280
+>> test 	Epoch 35 	 Iteration 100 	 loss 4.7574
+>> test 	Epoch 35 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 35
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 36 	 Iteration 0 	 loss 1.0052
+Epoch 36 	 Iteration 20 	 loss 1.0025
+Epoch 36 	 Iteration 40 	 loss 1.0383
+Epoch 36 	 Iteration 60 	 loss 0.9929
+Epoch 36 	 Iteration 80 	 loss 1.0030
+Epoch 36 	 Iteration 100 	 loss 1.0219
+Epoch 36 	 Iteration 120 	 loss 0.9596
+Epoch 36 	 Iteration 140 	 loss 0.9784
+Epoch 36 	 Iteration 160 	 loss 1.0055
+Epoch 36 	 Iteration 180 	 loss 1.0088
+Epoch 36 	 Iteration 200 	 loss 0.9854
+Epoch 36 	 Iteration 220 	 loss 0.9604
+Epoch 36 	 Iteration 240 	 loss 0.9968
+Epoch 36 	 Iteration 260 	 loss 1.0594
+Epoch 36 	 Iteration 280 	 loss 1.0038
+Epoch 36 	 Iteration 300 	 loss 1.0375
+Epoch 36 	 Iteration 320 	 loss 0.9769
+Epoch 36 	 Iteration 340 	 loss 0.9980
+Epoch 36 	 Iteration 360 	 loss 0.9734
+Epoch 36 	 Iteration 380 	 loss 1.0119
+Epoch 36 	 Iteration 400 	 loss 0.9870
+Epoch 36 	 Iteration 420 	 loss 1.0180
+Epoch 36 	 Iteration 440 	 loss 1.0123
+Epoch 36 	 Iteration 460 	 loss 1.0093
+Epoch 36 	 Iteration 480 	 loss 0.9974
+Epoch 36 	 Iteration 500 	 loss 0.9997
+Epoch 36 	 Iteration 520 	 loss 1.0091
+Epoch 36 	 Iteration 540 	 loss 1.0320
+Epoch 36 	 Iteration 560 	 loss 1.0063
+Epoch 36 	 Iteration 580 	 loss 0.9752
+Epoch 36 	 Iteration 600 	 loss 1.0136
+Epoch 36 	 Iteration 620 	 loss 0.9825
+Epoch 36 	 Iteration 640 	 loss 1.0162
+Epoch 36 	 Iteration 660 	 loss 0.9932
+Epoch 36 	 Iteration 680 	 loss 1.0399
+Epoch 36 	 Iteration 700 	 loss 0.9795
+Epoch 36 	 Iteration 720 	 loss 1.0404
+Epoch 36 	 Iteration 740 	 loss 1.0275
+Epoch 36 	 Iteration 760 	 loss 0.9997
+Epoch 36 	 Iteration 780 	 loss 0.9598
+Epoch 36 	 Iteration 800 	 loss 1.0112
+Epoch 36 	 Iteration 820 	 loss 1.0326
+Epoch 36 	 Iteration 840 	 loss 1.0157
+Epoch 36 	 Iteration 860 	 loss 0.9734
+Epoch 36 	 Iteration 880 	 loss 0.9531
+Epoch 36 	 Iteration 900 	 loss 0.9913
+Epoch 36 	 Iteration 920 	 loss 0.9868
+Epoch 36 	 Iteration 940 	 loss 1.0081
+Epoch 36 	 Iteration 960 	 loss 1.0441
+Epoch 36 	 Iteration 980 	 loss 1.0004
+Epoch 36 	 Iteration 1000 	 loss 1.0154
+Epoch 36 	 Iteration 1020 	 loss 0.9754
+Epoch 36 	 Iteration 1040 	 loss 1.0150
+>> valid 	Epoch 36 	 Iteration 0 	 loss 5.0757
+>> valid 	Epoch 36 	 Iteration 20 	 loss 4.8833
+>> valid 	Epoch 36 	 Iteration 40 	 loss 4.9972
+>> valid 	Epoch 36 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 36 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 36 	 Iteration 100 	 loss 4.7882
+>> valid 	Epoch 36 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 36 	 Iteration 140 	 loss 4.7926
+>> valid 	Epoch 36 	 Iteration 160 	 loss 4.8060
+>> valid 	Epoch 36 	 Iteration 180 	 loss 5.0630
+>> test 	Epoch 36 	 Iteration 0 	 loss 5.6148
+>> test 	Epoch 36 	 Iteration 20 	 loss 5.1237
+>> test 	Epoch 36 	 Iteration 40 	 loss 4.8979
+>> test 	Epoch 36 	 Iteration 60 	 loss 4.8684
+>> test 	Epoch 36 	 Iteration 80 	 loss 5.0272
+>> test 	Epoch 36 	 Iteration 100 	 loss 4.7565
+>> test 	Epoch 36 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 36
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 37 	 Iteration 0 	 loss 1.0537
+Epoch 37 	 Iteration 20 	 loss 0.9934
+Epoch 37 	 Iteration 40 	 loss 0.9589
+Epoch 37 	 Iteration 60 	 loss 0.9975
+Epoch 37 	 Iteration 80 	 loss 0.9802
+Epoch 37 	 Iteration 100 	 loss 0.9981
+Epoch 37 	 Iteration 120 	 loss 1.0009
+Epoch 37 	 Iteration 140 	 loss 1.0523
+Epoch 37 	 Iteration 160 	 loss 0.9954
+Epoch 37 	 Iteration 180 	 loss 0.9662
+Epoch 37 	 Iteration 200 	 loss 1.0528
+Epoch 37 	 Iteration 220 	 loss 1.0126
+Epoch 37 	 Iteration 240 	 loss 1.0022
+Epoch 37 	 Iteration 260 	 loss 0.9997
+Epoch 37 	 Iteration 280 	 loss 1.0074
+Epoch 37 	 Iteration 300 	 loss 1.0186
+Epoch 37 	 Iteration 320 	 loss 1.0646
+Epoch 37 	 Iteration 340 	 loss 0.9996
+Epoch 37 	 Iteration 360 	 loss 0.9640
+Epoch 37 	 Iteration 380 	 loss 0.9783
+Epoch 37 	 Iteration 400 	 loss 1.0017
+Epoch 37 	 Iteration 420 	 loss 0.9721
+Epoch 37 	 Iteration 440 	 loss 0.9824
+Epoch 37 	 Iteration 460 	 loss 0.9945
+Epoch 37 	 Iteration 480 	 loss 0.9819
+Epoch 37 	 Iteration 500 	 loss 1.0142
+Epoch 37 	 Iteration 520 	 loss 0.9725
+Epoch 37 	 Iteration 540 	 loss 0.9857
+Epoch 37 	 Iteration 560 	 loss 0.9974
+Epoch 37 	 Iteration 580 	 loss 1.0056
+Epoch 37 	 Iteration 600 	 loss 1.0061
+Epoch 37 	 Iteration 620 	 loss 1.0248
+Epoch 37 	 Iteration 640 	 loss 1.0223
+Epoch 37 	 Iteration 660 	 loss 0.9824
+Epoch 37 	 Iteration 680 	 loss 1.0096
+Epoch 37 	 Iteration 700 	 loss 1.0232
+Epoch 37 	 Iteration 720 	 loss 1.0521
+Epoch 37 	 Iteration 740 	 loss 0.9976
+Epoch 37 	 Iteration 760 	 loss 1.0086
+Epoch 37 	 Iteration 780 	 loss 0.9756
+Epoch 37 	 Iteration 800 	 loss 0.9865
+Epoch 37 	 Iteration 820 	 loss 1.0447
+Epoch 37 	 Iteration 840 	 loss 1.0277
+Epoch 37 	 Iteration 860 	 loss 1.0066
+Epoch 37 	 Iteration 880 	 loss 1.0394
+Epoch 37 	 Iteration 900 	 loss 1.0219
+Epoch 37 	 Iteration 920 	 loss 1.0063
+Epoch 37 	 Iteration 940 	 loss 1.0213
+Epoch 37 	 Iteration 960 	 loss 1.0325
+Epoch 37 	 Iteration 980 	 loss 1.0033
+Epoch 37 	 Iteration 1000 	 loss 0.9816
+Epoch 37 	 Iteration 1020 	 loss 1.0041
+Epoch 37 	 Iteration 1040 	 loss 0.9920
+>> valid 	Epoch 37 	 Iteration 0 	 loss 5.0756
+>> valid 	Epoch 37 	 Iteration 20 	 loss 4.8834
+>> valid 	Epoch 37 	 Iteration 40 	 loss 4.9973
+>> valid 	Epoch 37 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 37 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 37 	 Iteration 100 	 loss 4.7883
+>> valid 	Epoch 37 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 37 	 Iteration 140 	 loss 4.7926
+>> valid 	Epoch 37 	 Iteration 160 	 loss 4.8061
+>> valid 	Epoch 37 	 Iteration 180 	 loss 5.0631
+>> test 	Epoch 37 	 Iteration 0 	 loss 5.6146
+>> test 	Epoch 37 	 Iteration 20 	 loss 5.1236
+>> test 	Epoch 37 	 Iteration 40 	 loss 4.8980
+>> test 	Epoch 37 	 Iteration 60 	 loss 4.8682
+>> test 	Epoch 37 	 Iteration 80 	 loss 5.0273
+>> test 	Epoch 37 	 Iteration 100 	 loss 4.7566
+>> test 	Epoch 37 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 37
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 38 	 Iteration 0 	 loss 0.9007
+Epoch 38 	 Iteration 20 	 loss 1.0275
+Epoch 38 	 Iteration 40 	 loss 1.0076
+Epoch 38 	 Iteration 60 	 loss 1.0276
+Epoch 38 	 Iteration 80 	 loss 0.9658
+Epoch 38 	 Iteration 100 	 loss 1.0020
+Epoch 38 	 Iteration 120 	 loss 1.0125
+Epoch 38 	 Iteration 140 	 loss 1.0081
+Epoch 38 	 Iteration 160 	 loss 1.0110
+Epoch 38 	 Iteration 180 	 loss 1.0102
+Epoch 38 	 Iteration 200 	 loss 0.9614
+Epoch 38 	 Iteration 220 	 loss 0.9936
+Epoch 38 	 Iteration 240 	 loss 0.9978
+Epoch 38 	 Iteration 260 	 loss 1.0396
+Epoch 38 	 Iteration 280 	 loss 0.9896
+Epoch 38 	 Iteration 300 	 loss 0.9756
+Epoch 38 	 Iteration 320 	 loss 1.0095
+Epoch 38 	 Iteration 340 	 loss 1.0055
+Epoch 38 	 Iteration 360 	 loss 0.9745
+Epoch 38 	 Iteration 380 	 loss 1.0258
+Epoch 38 	 Iteration 400 	 loss 1.0303
+Epoch 38 	 Iteration 420 	 loss 0.9597
+Epoch 38 	 Iteration 440 	 loss 0.9893
+Epoch 38 	 Iteration 460 	 loss 0.9715
+Epoch 38 	 Iteration 480 	 loss 0.9725
+Epoch 38 	 Iteration 500 	 loss 0.9620
+Epoch 38 	 Iteration 520 	 loss 1.0033
+Epoch 38 	 Iteration 540 	 loss 0.9618
+Epoch 38 	 Iteration 560 	 loss 0.9975
+Epoch 38 	 Iteration 580 	 loss 0.9904
+Epoch 38 	 Iteration 600 	 loss 0.9707
+Epoch 38 	 Iteration 620 	 loss 1.0242
+Epoch 38 	 Iteration 640 	 loss 0.9986
+Epoch 38 	 Iteration 660 	 loss 0.9795
+Epoch 38 	 Iteration 680 	 loss 1.0229
+Epoch 38 	 Iteration 700 	 loss 1.0067
+Epoch 38 	 Iteration 720 	 loss 1.0067
+Epoch 38 	 Iteration 740 	 loss 1.0157
+Epoch 38 	 Iteration 760 	 loss 1.0098
+Epoch 38 	 Iteration 780 	 loss 1.0147
+Epoch 38 	 Iteration 800 	 loss 0.9992
+Epoch 38 	 Iteration 820 	 loss 1.0103
+Epoch 38 	 Iteration 840 	 loss 0.9940
+Epoch 38 	 Iteration 860 	 loss 1.0303
+Epoch 38 	 Iteration 880 	 loss 1.0202
+Epoch 38 	 Iteration 900 	 loss 1.0066
+Epoch 38 	 Iteration 920 	 loss 1.0320
+Epoch 38 	 Iteration 940 	 loss 0.9925
+Epoch 38 	 Iteration 960 	 loss 0.9864
+Epoch 38 	 Iteration 980 	 loss 0.9783
+Epoch 38 	 Iteration 1000 	 loss 1.0457
+Epoch 38 	 Iteration 1020 	 loss 1.0121
+Epoch 38 	 Iteration 1040 	 loss 1.0206
+>> valid 	Epoch 38 	 Iteration 0 	 loss 5.0747
+>> valid 	Epoch 38 	 Iteration 20 	 loss 4.8858
+>> valid 	Epoch 38 	 Iteration 40 	 loss 4.9995
+>> valid 	Epoch 38 	 Iteration 60 	 loss 4.9095
+>> valid 	Epoch 38 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 38 	 Iteration 100 	 loss 4.7891
+>> valid 	Epoch 38 	 Iteration 120 	 loss 4.9748
+>> valid 	Epoch 38 	 Iteration 140 	 loss 4.7938
+>> valid 	Epoch 38 	 Iteration 160 	 loss 4.8074
+>> valid 	Epoch 38 	 Iteration 180 	 loss 5.0642
+>> test 	Epoch 38 	 Iteration 0 	 loss 5.6117
+>> test 	Epoch 38 	 Iteration 20 	 loss 5.1224
+>> test 	Epoch 38 	 Iteration 40 	 loss 4.8990
+>> test 	Epoch 38 	 Iteration 60 	 loss 4.8666
+>> test 	Epoch 38 	 Iteration 80 	 loss 5.0288
+>> test 	Epoch 38 	 Iteration 100 	 loss 4.7581
+>> test 	Epoch 38 	 Iteration 120 	 loss 4.7931
+Val loss: 4.8876 	 test loss: 4.9373 	 epoch 38
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 39 	 Iteration 0 	 loss 1.0125
+Epoch 39 	 Iteration 20 	 loss 0.9874
+Epoch 39 	 Iteration 40 	 loss 1.0184
+Epoch 39 	 Iteration 60 	 loss 1.0281
+Epoch 39 	 Iteration 80 	 loss 0.9841
+Epoch 39 	 Iteration 100 	 loss 1.0027
+Epoch 39 	 Iteration 120 	 loss 0.9870
+Epoch 39 	 Iteration 140 	 loss 0.9839
+Epoch 39 	 Iteration 160 	 loss 0.9854
+Epoch 39 	 Iteration 180 	 loss 1.0145
+Epoch 39 	 Iteration 200 	 loss 1.0409
+Epoch 39 	 Iteration 220 	 loss 0.9999
+Epoch 39 	 Iteration 240 	 loss 1.0204
+Epoch 39 	 Iteration 260 	 loss 0.9650
+Epoch 39 	 Iteration 280 	 loss 0.9407
+Epoch 39 	 Iteration 300 	 loss 0.9906
+Epoch 39 	 Iteration 320 	 loss 1.0172
+Epoch 39 	 Iteration 340 	 loss 1.0008
+Epoch 39 	 Iteration 360 	 loss 0.9900
+Epoch 39 	 Iteration 380 	 loss 0.9945
+Epoch 39 	 Iteration 400 	 loss 1.0016
+Epoch 39 	 Iteration 420 	 loss 1.0267
+Epoch 39 	 Iteration 440 	 loss 1.0351
+Epoch 39 	 Iteration 460 	 loss 1.0190
+Epoch 39 	 Iteration 480 	 loss 0.9428
+Epoch 39 	 Iteration 500 	 loss 0.9740
+Epoch 39 	 Iteration 520 	 loss 1.0063
+Epoch 39 	 Iteration 540 	 loss 1.0315
+Epoch 39 	 Iteration 560 	 loss 1.0251
+Epoch 39 	 Iteration 580 	 loss 1.0494
+Epoch 39 	 Iteration 600 	 loss 0.9830
+Epoch 39 	 Iteration 620 	 loss 0.9886
+Epoch 39 	 Iteration 640 	 loss 1.0274
+Epoch 39 	 Iteration 660 	 loss 0.9691
+Epoch 39 	 Iteration 680 	 loss 1.0143
+Epoch 39 	 Iteration 700 	 loss 1.0110
+Epoch 39 	 Iteration 720 	 loss 1.0086
+Epoch 39 	 Iteration 740 	 loss 0.9893
+Epoch 39 	 Iteration 760 	 loss 0.9856
+Epoch 39 	 Iteration 780 	 loss 0.9773
+Epoch 39 	 Iteration 800 	 loss 0.9975
+Epoch 39 	 Iteration 820 	 loss 0.9884
+Epoch 39 	 Iteration 840 	 loss 1.0134
+Epoch 39 	 Iteration 860 	 loss 1.0022
+Epoch 39 	 Iteration 880 	 loss 1.0346
+Epoch 39 	 Iteration 900 	 loss 0.9612
+Epoch 39 	 Iteration 920 	 loss 0.9716
+Epoch 39 	 Iteration 940 	 loss 0.9830
+Epoch 39 	 Iteration 960 	 loss 0.9804
+Epoch 39 	 Iteration 980 	 loss 0.9882
+Epoch 39 	 Iteration 1000 	 loss 0.9815
+Epoch 39 	 Iteration 1020 	 loss 1.0078
+Epoch 39 	 Iteration 1040 	 loss 0.9938
+>> valid 	Epoch 39 	 Iteration 0 	 loss 5.0759
+>> valid 	Epoch 39 	 Iteration 20 	 loss 4.8828
+>> valid 	Epoch 39 	 Iteration 40 	 loss 4.9968
+>> valid 	Epoch 39 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 39 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 39 	 Iteration 100 	 loss 4.7881
+>> valid 	Epoch 39 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 39 	 Iteration 140 	 loss 4.7924
+>> valid 	Epoch 39 	 Iteration 160 	 loss 4.8058
+>> valid 	Epoch 39 	 Iteration 180 	 loss 5.0629
+>> test 	Epoch 39 	 Iteration 0 	 loss 5.6154
+>> test 	Epoch 39 	 Iteration 20 	 loss 5.1239
+>> test 	Epoch 39 	 Iteration 40 	 loss 4.8977
+>> test 	Epoch 39 	 Iteration 60 	 loss 4.8687
+>> test 	Epoch 39 	 Iteration 80 	 loss 5.0270
+>> test 	Epoch 39 	 Iteration 100 	 loss 4.7562
+>> test 	Epoch 39 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8870 	 test loss: 4.9370 	 epoch 39
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 40 	 Iteration 0 	 loss 1.0361
+Epoch 40 	 Iteration 20 	 loss 0.9844
+Epoch 40 	 Iteration 40 	 loss 1.0023
+Epoch 40 	 Iteration 60 	 loss 0.9554
+Epoch 40 	 Iteration 80 	 loss 1.0117
+Epoch 40 	 Iteration 100 	 loss 1.0437
+Epoch 40 	 Iteration 120 	 loss 1.0295
+Epoch 40 	 Iteration 140 	 loss 0.9789
+Epoch 40 	 Iteration 160 	 loss 0.9758
+Epoch 40 	 Iteration 180 	 loss 1.0153
+Epoch 40 	 Iteration 200 	 loss 0.9966
+Epoch 40 	 Iteration 220 	 loss 0.9879
+Epoch 40 	 Iteration 240 	 loss 1.0089
+Epoch 40 	 Iteration 260 	 loss 1.0061
+Epoch 40 	 Iteration 280 	 loss 1.0249
+Epoch 40 	 Iteration 300 	 loss 1.0253
+Epoch 40 	 Iteration 320 	 loss 0.9531
+Epoch 40 	 Iteration 340 	 loss 1.0472
+Epoch 40 	 Iteration 360 	 loss 0.9704
+Epoch 40 	 Iteration 380 	 loss 0.9799
+Epoch 40 	 Iteration 400 	 loss 1.0017
+Epoch 40 	 Iteration 420 	 loss 0.9982
+Epoch 40 	 Iteration 440 	 loss 0.9926
+Epoch 40 	 Iteration 460 	 loss 0.9659
+Epoch 40 	 Iteration 480 	 loss 1.0061
+Epoch 40 	 Iteration 500 	 loss 1.0022
+Epoch 40 	 Iteration 520 	 loss 1.0233
+Epoch 40 	 Iteration 540 	 loss 0.9891
+Epoch 40 	 Iteration 560 	 loss 0.9512
+Epoch 40 	 Iteration 580 	 loss 0.9848
+Epoch 40 	 Iteration 600 	 loss 1.0109
+Epoch 40 	 Iteration 620 	 loss 1.0276
+Epoch 40 	 Iteration 640 	 loss 0.9953
+Epoch 40 	 Iteration 660 	 loss 0.9903
+Epoch 40 	 Iteration 680 	 loss 1.0138
+Epoch 40 	 Iteration 700 	 loss 0.9706
+Epoch 40 	 Iteration 720 	 loss 1.0199
+Epoch 40 	 Iteration 740 	 loss 1.0086
+Epoch 40 	 Iteration 760 	 loss 0.9951
+Epoch 40 	 Iteration 780 	 loss 1.0488
+Epoch 40 	 Iteration 800 	 loss 0.9841
+Epoch 40 	 Iteration 820 	 loss 0.9817
+Epoch 40 	 Iteration 840 	 loss 0.9959
+Epoch 40 	 Iteration 860 	 loss 0.9845
+Epoch 40 	 Iteration 880 	 loss 0.9869
+Epoch 40 	 Iteration 900 	 loss 1.0253
+Epoch 40 	 Iteration 920 	 loss 0.9766
+Epoch 40 	 Iteration 940 	 loss 0.9883
+Epoch 40 	 Iteration 960 	 loss 0.9863
+Epoch 40 	 Iteration 980 	 loss 0.9955
+Epoch 40 	 Iteration 1000 	 loss 1.0199
+Epoch 40 	 Iteration 1020 	 loss 1.0399
+Epoch 40 	 Iteration 1040 	 loss 1.0084
+>> valid 	Epoch 40 	 Iteration 0 	 loss 5.0756
+>> valid 	Epoch 40 	 Iteration 20 	 loss 4.8836
+>> valid 	Epoch 40 	 Iteration 40 	 loss 4.9974
+>> valid 	Epoch 40 	 Iteration 60 	 loss 4.9090
+>> valid 	Epoch 40 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 40 	 Iteration 100 	 loss 4.7883
+>> valid 	Epoch 40 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 40 	 Iteration 140 	 loss 4.7927
+>> valid 	Epoch 40 	 Iteration 160 	 loss 4.8062
+>> valid 	Epoch 40 	 Iteration 180 	 loss 5.0632
+>> test 	Epoch 40 	 Iteration 0 	 loss 5.6144
+>> test 	Epoch 40 	 Iteration 20 	 loss 5.1235
+>> test 	Epoch 40 	 Iteration 40 	 loss 4.8980
+>> test 	Epoch 40 	 Iteration 60 	 loss 4.8681
+>> test 	Epoch 40 	 Iteration 80 	 loss 5.0274
+>> test 	Epoch 40 	 Iteration 100 	 loss 4.7567
+>> test 	Epoch 40 	 Iteration 120 	 loss 4.7927
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 40
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 41 	 Iteration 0 	 loss 0.9877
+Epoch 41 	 Iteration 20 	 loss 1.0061
+Epoch 41 	 Iteration 40 	 loss 1.0178
+Epoch 41 	 Iteration 60 	 loss 0.9975
+Epoch 41 	 Iteration 80 	 loss 1.0216
+Epoch 41 	 Iteration 100 	 loss 0.9747
+Epoch 41 	 Iteration 120 	 loss 1.0251
+Epoch 41 	 Iteration 140 	 loss 0.9823
+Epoch 41 	 Iteration 160 	 loss 0.9877
+Epoch 41 	 Iteration 180 	 loss 0.9722
+Epoch 41 	 Iteration 200 	 loss 0.9901
+Epoch 41 	 Iteration 220 	 loss 1.0273
+Epoch 41 	 Iteration 240 	 loss 0.9916
+Epoch 41 	 Iteration 260 	 loss 0.9771
+Epoch 41 	 Iteration 280 	 loss 1.0066
+Epoch 41 	 Iteration 300 	 loss 0.9999
+Epoch 41 	 Iteration 320 	 loss 1.0158
+Epoch 41 	 Iteration 340 	 loss 1.0147
+Epoch 41 	 Iteration 360 	 loss 1.0462
+Epoch 41 	 Iteration 380 	 loss 0.9857
+Epoch 41 	 Iteration 400 	 loss 1.0264
+Epoch 41 	 Iteration 420 	 loss 1.0126
+Epoch 41 	 Iteration 440 	 loss 0.9839
+Epoch 41 	 Iteration 460 	 loss 1.0280
+Epoch 41 	 Iteration 480 	 loss 1.0150
+Epoch 41 	 Iteration 500 	 loss 1.0111
+Epoch 41 	 Iteration 520 	 loss 0.9736
+Epoch 41 	 Iteration 540 	 loss 0.9881
+Epoch 41 	 Iteration 560 	 loss 0.9796
+Epoch 41 	 Iteration 580 	 loss 0.9670
+Epoch 41 	 Iteration 600 	 loss 0.9574
+Epoch 41 	 Iteration 620 	 loss 0.9938
+Epoch 41 	 Iteration 640 	 loss 1.0024
+Epoch 41 	 Iteration 660 	 loss 0.9919
+Epoch 41 	 Iteration 680 	 loss 1.0070
+Epoch 41 	 Iteration 700 	 loss 0.9756
+Epoch 41 	 Iteration 720 	 loss 1.0086
+Epoch 41 	 Iteration 740 	 loss 0.9714
+Epoch 41 	 Iteration 760 	 loss 0.9858
+Epoch 41 	 Iteration 780 	 loss 0.9860
+Epoch 41 	 Iteration 800 	 loss 1.0073
+Epoch 41 	 Iteration 820 	 loss 0.9984
+Epoch 41 	 Iteration 840 	 loss 0.9888
+Epoch 41 	 Iteration 860 	 loss 0.9637
+Epoch 41 	 Iteration 880 	 loss 0.9799
+Epoch 41 	 Iteration 900 	 loss 0.9521
+Epoch 41 	 Iteration 920 	 loss 1.0084
+Epoch 41 	 Iteration 940 	 loss 1.0125
+Epoch 41 	 Iteration 960 	 loss 1.0228
+Epoch 41 	 Iteration 980 	 loss 1.0045
+Epoch 41 	 Iteration 1000 	 loss 1.0038
+Epoch 41 	 Iteration 1020 	 loss 1.0093
+Epoch 41 	 Iteration 1040 	 loss 1.0223
+>> valid 	Epoch 41 	 Iteration 0 	 loss 5.0755
+>> valid 	Epoch 41 	 Iteration 20 	 loss 4.8838
+>> valid 	Epoch 41 	 Iteration 40 	 loss 4.9976
+>> valid 	Epoch 41 	 Iteration 60 	 loss 4.9090
+>> valid 	Epoch 41 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 41 	 Iteration 100 	 loss 4.7884
+>> valid 	Epoch 41 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 41 	 Iteration 140 	 loss 4.7928
+>> valid 	Epoch 41 	 Iteration 160 	 loss 4.8063
+>> valid 	Epoch 41 	 Iteration 180 	 loss 5.0632
+>> test 	Epoch 41 	 Iteration 0 	 loss 5.6142
+>> test 	Epoch 41 	 Iteration 20 	 loss 5.1234
+>> test 	Epoch 41 	 Iteration 40 	 loss 4.8981
+>> test 	Epoch 41 	 Iteration 60 	 loss 4.8680
+>> test 	Epoch 41 	 Iteration 80 	 loss 5.0275
+>> test 	Epoch 41 	 Iteration 100 	 loss 4.7568
+>> test 	Epoch 41 	 Iteration 120 	 loss 4.7927
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 41
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 42 	 Iteration 0 	 loss 1.0555
+Epoch 42 	 Iteration 20 	 loss 0.9961
+Epoch 42 	 Iteration 40 	 loss 0.9900
+Epoch 42 	 Iteration 60 	 loss 1.0341
+Epoch 42 	 Iteration 80 	 loss 1.0147
+Epoch 42 	 Iteration 100 	 loss 0.9706
+Epoch 42 	 Iteration 120 	 loss 1.0169
+Epoch 42 	 Iteration 140 	 loss 1.0250
+Epoch 42 	 Iteration 160 	 loss 1.0403
+Epoch 42 	 Iteration 180 	 loss 0.9841
+Epoch 42 	 Iteration 200 	 loss 1.0360
+Epoch 42 	 Iteration 220 	 loss 0.9883
+Epoch 42 	 Iteration 240 	 loss 0.9973
+Epoch 42 	 Iteration 260 	 loss 0.9796
+Epoch 42 	 Iteration 280 	 loss 1.0099
+Epoch 42 	 Iteration 300 	 loss 1.0009
+Epoch 42 	 Iteration 320 	 loss 0.9512
+Epoch 42 	 Iteration 340 	 loss 0.9901
+Epoch 42 	 Iteration 360 	 loss 1.0096
+Epoch 42 	 Iteration 380 	 loss 1.0023
+Epoch 42 	 Iteration 400 	 loss 1.0002
+Epoch 42 	 Iteration 420 	 loss 0.9680
+Epoch 42 	 Iteration 440 	 loss 1.0001
+Epoch 42 	 Iteration 460 	 loss 0.9944
+Epoch 42 	 Iteration 480 	 loss 1.0030
+Epoch 42 	 Iteration 500 	 loss 1.0149
+Epoch 42 	 Iteration 520 	 loss 1.0009
+Epoch 42 	 Iteration 540 	 loss 1.0333
+Epoch 42 	 Iteration 560 	 loss 0.9962
+Epoch 42 	 Iteration 580 	 loss 1.0085
+Epoch 42 	 Iteration 600 	 loss 1.0211
+Epoch 42 	 Iteration 620 	 loss 1.0220
+Epoch 42 	 Iteration 640 	 loss 1.0206
+Epoch 42 	 Iteration 660 	 loss 0.9993
+Epoch 42 	 Iteration 680 	 loss 0.9792
+Epoch 42 	 Iteration 700 	 loss 1.0149
+Epoch 42 	 Iteration 720 	 loss 1.0106
+Epoch 42 	 Iteration 740 	 loss 0.9631
+Epoch 42 	 Iteration 760 	 loss 0.9644
+Epoch 42 	 Iteration 780 	 loss 0.9840
+Epoch 42 	 Iteration 800 	 loss 1.0069
+Epoch 42 	 Iteration 820 	 loss 1.0143
+Epoch 42 	 Iteration 840 	 loss 1.0226
+Epoch 42 	 Iteration 860 	 loss 1.0466
+Epoch 42 	 Iteration 880 	 loss 0.9935
+Epoch 42 	 Iteration 900 	 loss 1.0239
+Epoch 42 	 Iteration 920 	 loss 0.9617
+Epoch 42 	 Iteration 940 	 loss 1.0043
+Epoch 42 	 Iteration 960 	 loss 1.0195
+Epoch 42 	 Iteration 980 	 loss 0.9624
+Epoch 42 	 Iteration 1000 	 loss 0.9648
+Epoch 42 	 Iteration 1020 	 loss 1.0029
+Epoch 42 	 Iteration 1040 	 loss 0.9531
+>> valid 	Epoch 42 	 Iteration 0 	 loss 5.0756
+>> valid 	Epoch 42 	 Iteration 20 	 loss 4.8836
+>> valid 	Epoch 42 	 Iteration 40 	 loss 4.9974
+>> valid 	Epoch 42 	 Iteration 60 	 loss 4.9090
+>> valid 	Epoch 42 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 42 	 Iteration 100 	 loss 4.7883
+>> valid 	Epoch 42 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 42 	 Iteration 140 	 loss 4.7927
+>> valid 	Epoch 42 	 Iteration 160 	 loss 4.8062
+>> valid 	Epoch 42 	 Iteration 180 	 loss 5.0632
+>> test 	Epoch 42 	 Iteration 0 	 loss 5.6144
+>> test 	Epoch 42 	 Iteration 20 	 loss 5.1235
+>> test 	Epoch 42 	 Iteration 40 	 loss 4.8980
+>> test 	Epoch 42 	 Iteration 60 	 loss 4.8681
+>> test 	Epoch 42 	 Iteration 80 	 loss 5.0274
+>> test 	Epoch 42 	 Iteration 100 	 loss 4.7567
+>> test 	Epoch 42 	 Iteration 120 	 loss 4.7927
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 42
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 43 	 Iteration 0 	 loss 1.0243
+Epoch 43 	 Iteration 20 	 loss 0.9680
+Epoch 43 	 Iteration 40 	 loss 1.0038
+Epoch 43 	 Iteration 60 	 loss 0.9867
+Epoch 43 	 Iteration 80 	 loss 0.9977
+Epoch 43 	 Iteration 100 	 loss 0.9734
+Epoch 43 	 Iteration 120 	 loss 0.9928
+Epoch 43 	 Iteration 140 	 loss 0.9817
+Epoch 43 	 Iteration 160 	 loss 0.9961
+Epoch 43 	 Iteration 180 	 loss 1.0367
+Epoch 43 	 Iteration 200 	 loss 1.0186
+Epoch 43 	 Iteration 220 	 loss 0.9953
+Epoch 43 	 Iteration 240 	 loss 1.0316
+Epoch 43 	 Iteration 260 	 loss 1.0447
+Epoch 43 	 Iteration 280 	 loss 1.0109
+Epoch 43 	 Iteration 300 	 loss 0.9830
+Epoch 43 	 Iteration 320 	 loss 0.9822
+Epoch 43 	 Iteration 340 	 loss 1.0028
+Epoch 43 	 Iteration 360 	 loss 0.9991
+Epoch 43 	 Iteration 380 	 loss 0.9890
+Epoch 43 	 Iteration 400 	 loss 0.9638
+Epoch 43 	 Iteration 420 	 loss 1.0080
+Epoch 43 	 Iteration 440 	 loss 1.0069
+Epoch 43 	 Iteration 460 	 loss 0.9926
+Epoch 43 	 Iteration 480 	 loss 1.0078
+Epoch 43 	 Iteration 500 	 loss 1.0199
+Epoch 43 	 Iteration 520 	 loss 0.9907
+Epoch 43 	 Iteration 540 	 loss 1.0051
+Epoch 43 	 Iteration 560 	 loss 0.9677
+Epoch 43 	 Iteration 580 	 loss 1.0228
+Epoch 43 	 Iteration 600 	 loss 1.0084
+Epoch 43 	 Iteration 620 	 loss 1.0451
+Epoch 43 	 Iteration 640 	 loss 0.9679
+Epoch 43 	 Iteration 660 	 loss 0.9829
+Epoch 43 	 Iteration 680 	 loss 1.0078
+Epoch 43 	 Iteration 700 	 loss 1.0030
+Epoch 43 	 Iteration 720 	 loss 1.0048
+Epoch 43 	 Iteration 740 	 loss 0.9823
+Epoch 43 	 Iteration 760 	 loss 0.9745
+Epoch 43 	 Iteration 780 	 loss 1.0305
+Epoch 43 	 Iteration 800 	 loss 0.9643
+Epoch 43 	 Iteration 820 	 loss 0.9880
+Epoch 43 	 Iteration 840 	 loss 1.0198
+Epoch 43 	 Iteration 860 	 loss 1.0210
+Epoch 43 	 Iteration 880 	 loss 0.9727
+Epoch 43 	 Iteration 900 	 loss 1.0039
+Epoch 43 	 Iteration 920 	 loss 1.0111
+Epoch 43 	 Iteration 940 	 loss 1.0340
+Epoch 43 	 Iteration 960 	 loss 0.9846
+Epoch 43 	 Iteration 980 	 loss 1.0149
+Epoch 43 	 Iteration 1000 	 loss 1.0168
+Epoch 43 	 Iteration 1020 	 loss 1.0197
+Epoch 43 	 Iteration 1040 	 loss 0.9702
+>> valid 	Epoch 43 	 Iteration 0 	 loss 5.0756
+>> valid 	Epoch 43 	 Iteration 20 	 loss 4.8835
+>> valid 	Epoch 43 	 Iteration 40 	 loss 4.9974
+>> valid 	Epoch 43 	 Iteration 60 	 loss 4.9090
+>> valid 	Epoch 43 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 43 	 Iteration 100 	 loss 4.7883
+>> valid 	Epoch 43 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 43 	 Iteration 140 	 loss 4.7927
+>> valid 	Epoch 43 	 Iteration 160 	 loss 4.8062
+>> valid 	Epoch 43 	 Iteration 180 	 loss 5.0632
+>> test 	Epoch 43 	 Iteration 0 	 loss 5.6144
+>> test 	Epoch 43 	 Iteration 20 	 loss 5.1235
+>> test 	Epoch 43 	 Iteration 40 	 loss 4.8980
+>> test 	Epoch 43 	 Iteration 60 	 loss 4.8682
+>> test 	Epoch 43 	 Iteration 80 	 loss 5.0274
+>> test 	Epoch 43 	 Iteration 100 	 loss 4.7567
+>> test 	Epoch 43 	 Iteration 120 	 loss 4.7927
+Val loss: 4.8871 	 test loss: 4.9370 	 epoch 43
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 44 	 Iteration 0 	 loss 0.9584
+Epoch 44 	 Iteration 20 	 loss 1.0008
+Epoch 44 	 Iteration 40 	 loss 1.0515
+Epoch 44 	 Iteration 60 	 loss 1.0295
+Epoch 44 	 Iteration 80 	 loss 0.9843
+Epoch 44 	 Iteration 100 	 loss 0.9912
+Epoch 44 	 Iteration 120 	 loss 1.0243
+Epoch 44 	 Iteration 140 	 loss 0.9728
+Epoch 44 	 Iteration 160 	 loss 1.0022
+Epoch 44 	 Iteration 180 	 loss 0.9843
+Epoch 44 	 Iteration 200 	 loss 0.9982
+Epoch 44 	 Iteration 220 	 loss 0.9828
+Epoch 44 	 Iteration 240 	 loss 0.9433
+Epoch 44 	 Iteration 260 	 loss 0.9778
+Epoch 44 	 Iteration 280 	 loss 1.0121
+Epoch 44 	 Iteration 300 	 loss 0.9637
+Epoch 44 	 Iteration 320 	 loss 0.9882
+Epoch 44 	 Iteration 340 	 loss 1.0380
+Epoch 44 	 Iteration 360 	 loss 1.0370
+Epoch 44 	 Iteration 380 	 loss 0.9854
+Epoch 44 	 Iteration 400 	 loss 1.0283
+Epoch 44 	 Iteration 420 	 loss 0.9988
+Epoch 44 	 Iteration 440 	 loss 1.0433
+Epoch 44 	 Iteration 460 	 loss 0.9800
+Epoch 44 	 Iteration 480 	 loss 0.9613
+Epoch 44 	 Iteration 500 	 loss 0.9911
+Epoch 44 	 Iteration 520 	 loss 0.9992
+Epoch 44 	 Iteration 540 	 loss 0.9784
+Epoch 44 	 Iteration 560 	 loss 0.9703
+Epoch 44 	 Iteration 580 	 loss 0.9881
+Epoch 44 	 Iteration 600 	 loss 0.9920
+Epoch 44 	 Iteration 620 	 loss 1.0287
+Epoch 44 	 Iteration 640 	 loss 0.9944
+Epoch 44 	 Iteration 660 	 loss 1.0116
+Epoch 44 	 Iteration 680 	 loss 0.9794
+Epoch 44 	 Iteration 700 	 loss 0.9822
+Epoch 44 	 Iteration 720 	 loss 0.9864
+Epoch 44 	 Iteration 740 	 loss 1.0121
+Epoch 44 	 Iteration 760 	 loss 0.9692
+Epoch 44 	 Iteration 780 	 loss 1.0232
+Epoch 44 	 Iteration 800 	 loss 0.9939
+Epoch 44 	 Iteration 820 	 loss 1.0077
+Epoch 44 	 Iteration 840 	 loss 0.9968
+Epoch 44 	 Iteration 860 	 loss 0.9934
+Epoch 44 	 Iteration 880 	 loss 1.0211
+Epoch 44 	 Iteration 900 	 loss 1.0419
+Epoch 44 	 Iteration 920 	 loss 0.9944
+Epoch 44 	 Iteration 940 	 loss 1.0022
+Epoch 44 	 Iteration 960 	 loss 0.9975
+Epoch 44 	 Iteration 980 	 loss 1.0047
+Epoch 44 	 Iteration 1000 	 loss 0.9807
+Epoch 44 	 Iteration 1020 	 loss 1.0103
+Epoch 44 	 Iteration 1040 	 loss 1.0285
+>> valid 	Epoch 44 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 44 	 Iteration 20 	 loss 4.8844
+>> valid 	Epoch 44 	 Iteration 40 	 loss 4.9982
+>> valid 	Epoch 44 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 44 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 44 	 Iteration 100 	 loss 4.7885
+>> valid 	Epoch 44 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 44 	 Iteration 140 	 loss 4.7931
+>> valid 	Epoch 44 	 Iteration 160 	 loss 4.8066
+>> valid 	Epoch 44 	 Iteration 180 	 loss 5.0635
+>> test 	Epoch 44 	 Iteration 0 	 loss 5.6134
+>> test 	Epoch 44 	 Iteration 20 	 loss 5.1230
+>> test 	Epoch 44 	 Iteration 40 	 loss 4.8983
+>> test 	Epoch 44 	 Iteration 60 	 loss 4.8675
+>> test 	Epoch 44 	 Iteration 80 	 loss 5.0279
+>> test 	Epoch 44 	 Iteration 100 	 loss 4.7573
+>> test 	Epoch 44 	 Iteration 120 	 loss 4.7928
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 44
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 45 	 Iteration 0 	 loss 1.0229
+Epoch 45 	 Iteration 20 	 loss 1.0265
+Epoch 45 	 Iteration 40 	 loss 0.9964
+Epoch 45 	 Iteration 60 	 loss 1.0004
+Epoch 45 	 Iteration 80 	 loss 0.9735
+Epoch 45 	 Iteration 100 	 loss 0.9779
+Epoch 45 	 Iteration 120 	 loss 1.0564
+Epoch 45 	 Iteration 140 	 loss 0.9792
+Epoch 45 	 Iteration 160 	 loss 1.0272
+Epoch 45 	 Iteration 180 	 loss 0.9534
+Epoch 45 	 Iteration 200 	 loss 1.0405
+Epoch 45 	 Iteration 220 	 loss 1.0157
+Epoch 45 	 Iteration 240 	 loss 0.9989
+Epoch 45 	 Iteration 260 	 loss 1.0011
+Epoch 45 	 Iteration 280 	 loss 0.9773
+Epoch 45 	 Iteration 300 	 loss 0.9506
+Epoch 45 	 Iteration 320 	 loss 1.0468
+Epoch 45 	 Iteration 340 	 loss 1.0138
+Epoch 45 	 Iteration 360 	 loss 0.9930
+Epoch 45 	 Iteration 380 	 loss 1.0307
+Epoch 45 	 Iteration 400 	 loss 1.0447
+Epoch 45 	 Iteration 420 	 loss 0.9936
+Epoch 45 	 Iteration 440 	 loss 1.0097
+Epoch 45 	 Iteration 460 	 loss 1.0168
+Epoch 45 	 Iteration 480 	 loss 0.9825
+Epoch 45 	 Iteration 500 	 loss 0.9983
+Epoch 45 	 Iteration 520 	 loss 1.0238
+Epoch 45 	 Iteration 540 	 loss 0.9638
+Epoch 45 	 Iteration 560 	 loss 1.0204
+Epoch 45 	 Iteration 580 	 loss 1.0301
+Epoch 45 	 Iteration 600 	 loss 1.0228
+Epoch 45 	 Iteration 620 	 loss 1.0018
+Epoch 45 	 Iteration 640 	 loss 0.9958
+Epoch 45 	 Iteration 660 	 loss 0.9541
+Epoch 45 	 Iteration 680 	 loss 0.9865
+Epoch 45 	 Iteration 700 	 loss 1.0058
+Epoch 45 	 Iteration 720 	 loss 1.0340
+Epoch 45 	 Iteration 740 	 loss 1.0053
+Epoch 45 	 Iteration 760 	 loss 0.9914
+Epoch 45 	 Iteration 780 	 loss 1.0393
+Epoch 45 	 Iteration 800 	 loss 1.0162
+Epoch 45 	 Iteration 820 	 loss 0.9733
+Epoch 45 	 Iteration 840 	 loss 1.0293
+Epoch 45 	 Iteration 860 	 loss 1.0288
+Epoch 45 	 Iteration 880 	 loss 0.9720
+Epoch 45 	 Iteration 900 	 loss 0.9911
+Epoch 45 	 Iteration 920 	 loss 0.9930
+Epoch 45 	 Iteration 940 	 loss 1.0091
+Epoch 45 	 Iteration 960 	 loss 0.9771
+Epoch 45 	 Iteration 980 	 loss 1.0012
+Epoch 45 	 Iteration 1000 	 loss 1.0099
+Epoch 45 	 Iteration 1020 	 loss 0.9669
+Epoch 45 	 Iteration 1040 	 loss 0.9977
+>> valid 	Epoch 45 	 Iteration 0 	 loss 5.0748
+>> valid 	Epoch 45 	 Iteration 20 	 loss 4.8856
+>> valid 	Epoch 45 	 Iteration 40 	 loss 4.9993
+>> valid 	Epoch 45 	 Iteration 60 	 loss 4.9094
+>> valid 	Epoch 45 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 45 	 Iteration 100 	 loss 4.7890
+>> valid 	Epoch 45 	 Iteration 120 	 loss 4.9748
+>> valid 	Epoch 45 	 Iteration 140 	 loss 4.7937
+>> valid 	Epoch 45 	 Iteration 160 	 loss 4.8072
+>> valid 	Epoch 45 	 Iteration 180 	 loss 5.0641
+>> test 	Epoch 45 	 Iteration 0 	 loss 5.6120
+>> test 	Epoch 45 	 Iteration 20 	 loss 5.1225
+>> test 	Epoch 45 	 Iteration 40 	 loss 4.8989
+>> test 	Epoch 45 	 Iteration 60 	 loss 4.8667
+>> test 	Epoch 45 	 Iteration 80 	 loss 5.0286
+>> test 	Epoch 45 	 Iteration 100 	 loss 4.7580
+>> test 	Epoch 45 	 Iteration 120 	 loss 4.7931
+Val loss: 4.8875 	 test loss: 4.9372 	 epoch 45
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 46 	 Iteration 0 	 loss 0.9294
+Epoch 46 	 Iteration 20 	 loss 1.0205
+Epoch 46 	 Iteration 40 	 loss 1.0125
+Epoch 46 	 Iteration 60 	 loss 0.9976
+Epoch 46 	 Iteration 80 	 loss 1.0183
+Epoch 46 	 Iteration 100 	 loss 1.0049
+Epoch 46 	 Iteration 120 	 loss 1.0057
+Epoch 46 	 Iteration 140 	 loss 0.9973
+Epoch 46 	 Iteration 160 	 loss 0.9799
+Epoch 46 	 Iteration 180 	 loss 1.0093
+Epoch 46 	 Iteration 200 	 loss 1.0093
+Epoch 46 	 Iteration 220 	 loss 0.9290
+Epoch 46 	 Iteration 240 	 loss 1.0259
+Epoch 46 	 Iteration 260 	 loss 1.0864
+Epoch 46 	 Iteration 280 	 loss 0.9480
+Epoch 46 	 Iteration 300 	 loss 1.0162
+Epoch 46 	 Iteration 320 	 loss 1.0451
+Epoch 46 	 Iteration 340 	 loss 1.0419
+Epoch 46 	 Iteration 360 	 loss 0.9572
+Epoch 46 	 Iteration 380 	 loss 0.9995
+Epoch 46 	 Iteration 400 	 loss 1.0213
+Epoch 46 	 Iteration 420 	 loss 1.0053
+Epoch 46 	 Iteration 440 	 loss 0.9916
+Epoch 46 	 Iteration 460 	 loss 1.0022
+Epoch 46 	 Iteration 480 	 loss 0.9829
+Epoch 46 	 Iteration 500 	 loss 1.0224
+Epoch 46 	 Iteration 520 	 loss 0.9834
+Epoch 46 	 Iteration 540 	 loss 0.9847
+Epoch 46 	 Iteration 560 	 loss 0.9778
+Epoch 46 	 Iteration 580 	 loss 0.9838
+Epoch 46 	 Iteration 600 	 loss 0.9749
+Epoch 46 	 Iteration 620 	 loss 1.0043
+Epoch 46 	 Iteration 640 	 loss 0.9800
+Epoch 46 	 Iteration 660 	 loss 1.0264
+Epoch 46 	 Iteration 680 	 loss 1.0079
+Epoch 46 	 Iteration 700 	 loss 1.0033
+Epoch 46 	 Iteration 720 	 loss 0.9533
+Epoch 46 	 Iteration 740 	 loss 0.9969
+Epoch 46 	 Iteration 760 	 loss 0.9966
+Epoch 46 	 Iteration 780 	 loss 0.9995
+Epoch 46 	 Iteration 800 	 loss 1.0121
+Epoch 46 	 Iteration 820 	 loss 0.9629
+Epoch 46 	 Iteration 840 	 loss 1.0110
+Epoch 46 	 Iteration 860 	 loss 0.9938
+Epoch 46 	 Iteration 880 	 loss 0.9769
+Epoch 46 	 Iteration 900 	 loss 1.0031
+Epoch 46 	 Iteration 920 	 loss 0.9790
+Epoch 46 	 Iteration 940 	 loss 1.0397
+Epoch 46 	 Iteration 960 	 loss 1.0168
+Epoch 46 	 Iteration 980 	 loss 0.9784
+Epoch 46 	 Iteration 1000 	 loss 0.9551
+Epoch 46 	 Iteration 1020 	 loss 0.9666
+Epoch 46 	 Iteration 1040 	 loss 0.9915
+>> valid 	Epoch 46 	 Iteration 0 	 loss 5.0743
+>> valid 	Epoch 46 	 Iteration 20 	 loss 4.8869
+>> valid 	Epoch 46 	 Iteration 40 	 loss 5.0006
+>> valid 	Epoch 46 	 Iteration 60 	 loss 4.9098
+>> valid 	Epoch 46 	 Iteration 80 	 loss 4.6681
+>> valid 	Epoch 46 	 Iteration 100 	 loss 4.7896
+>> valid 	Epoch 46 	 Iteration 120 	 loss 4.9750
+>> valid 	Epoch 46 	 Iteration 140 	 loss 4.7945
+>> valid 	Epoch 46 	 Iteration 160 	 loss 4.8080
+>> valid 	Epoch 46 	 Iteration 180 	 loss 5.0648
+>> test 	Epoch 46 	 Iteration 0 	 loss 5.6105
+>> test 	Epoch 46 	 Iteration 20 	 loss 5.1221
+>> test 	Epoch 46 	 Iteration 40 	 loss 4.8995
+>> test 	Epoch 46 	 Iteration 60 	 loss 4.8660
+>> test 	Epoch 46 	 Iteration 80 	 loss 5.0295
+>> test 	Epoch 46 	 Iteration 100 	 loss 4.7588
+>> test 	Epoch 46 	 Iteration 120 	 loss 4.7934
+Val loss: 4.8879 	 test loss: 4.9374 	 epoch 46
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 47 	 Iteration 0 	 loss 1.1143
+Epoch 47 	 Iteration 20 	 loss 0.9805
+Epoch 47 	 Iteration 40 	 loss 1.0151
+Epoch 47 	 Iteration 60 	 loss 0.9763
+Epoch 47 	 Iteration 80 	 loss 0.9985
+Epoch 47 	 Iteration 100 	 loss 0.9651
+Epoch 47 	 Iteration 120 	 loss 0.9940
+Epoch 47 	 Iteration 140 	 loss 1.0107
+Epoch 47 	 Iteration 160 	 loss 1.0146
+Epoch 47 	 Iteration 180 	 loss 0.9902
+Epoch 47 	 Iteration 200 	 loss 0.9947
+Epoch 47 	 Iteration 220 	 loss 1.0187
+Epoch 47 	 Iteration 240 	 loss 0.9390
+Epoch 47 	 Iteration 260 	 loss 1.0368
+Epoch 47 	 Iteration 280 	 loss 0.9984
+Epoch 47 	 Iteration 300 	 loss 0.9980
+Epoch 47 	 Iteration 320 	 loss 1.0417
+Epoch 47 	 Iteration 340 	 loss 0.9792
+Epoch 47 	 Iteration 360 	 loss 1.0020
+Epoch 47 	 Iteration 380 	 loss 0.9737
+Epoch 47 	 Iteration 400 	 loss 1.0225
+Epoch 47 	 Iteration 420 	 loss 1.0004
+Epoch 47 	 Iteration 440 	 loss 1.0054
+Epoch 47 	 Iteration 460 	 loss 0.9882
+Epoch 47 	 Iteration 480 	 loss 1.0094
+Epoch 47 	 Iteration 500 	 loss 1.0120
+Epoch 47 	 Iteration 520 	 loss 0.9925
+Epoch 47 	 Iteration 540 	 loss 1.0478
+Epoch 47 	 Iteration 560 	 loss 1.0183
+Epoch 47 	 Iteration 580 	 loss 1.0158
+Epoch 47 	 Iteration 600 	 loss 0.9972
+Epoch 47 	 Iteration 620 	 loss 1.0084
+Epoch 47 	 Iteration 640 	 loss 1.0166
+Epoch 47 	 Iteration 660 	 loss 0.9840
+Epoch 47 	 Iteration 680 	 loss 1.0225
+Epoch 47 	 Iteration 700 	 loss 1.0202
+Epoch 47 	 Iteration 720 	 loss 0.9936
+Epoch 47 	 Iteration 740 	 loss 0.9479
+Epoch 47 	 Iteration 760 	 loss 1.0074
+Epoch 47 	 Iteration 780 	 loss 1.0215
+Epoch 47 	 Iteration 800 	 loss 0.9995
+Epoch 47 	 Iteration 820 	 loss 0.9859
+Epoch 47 	 Iteration 840 	 loss 0.9623
+Epoch 47 	 Iteration 860 	 loss 1.0290
+Epoch 47 	 Iteration 880 	 loss 0.9390
+Epoch 47 	 Iteration 900 	 loss 0.9725
+Epoch 47 	 Iteration 920 	 loss 0.9538
+Epoch 47 	 Iteration 940 	 loss 1.0082
+Epoch 47 	 Iteration 960 	 loss 0.9537
+Epoch 47 	 Iteration 980 	 loss 1.0104
+Epoch 47 	 Iteration 1000 	 loss 0.9692
+Epoch 47 	 Iteration 1020 	 loss 0.9864
+Epoch 47 	 Iteration 1040 	 loss 0.9663
+>> valid 	Epoch 47 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 47 	 Iteration 20 	 loss 4.8846
+>> valid 	Epoch 47 	 Iteration 40 	 loss 4.9984
+>> valid 	Epoch 47 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 47 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 47 	 Iteration 100 	 loss 4.7886
+>> valid 	Epoch 47 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 47 	 Iteration 140 	 loss 4.7932
+>> valid 	Epoch 47 	 Iteration 160 	 loss 4.8067
+>> valid 	Epoch 47 	 Iteration 180 	 loss 5.0636
+>> test 	Epoch 47 	 Iteration 0 	 loss 5.6131
+>> test 	Epoch 47 	 Iteration 20 	 loss 5.1229
+>> test 	Epoch 47 	 Iteration 40 	 loss 4.8984
+>> test 	Epoch 47 	 Iteration 60 	 loss 4.8674
+>> test 	Epoch 47 	 Iteration 80 	 loss 5.0280
+>> test 	Epoch 47 	 Iteration 100 	 loss 4.7574
+>> test 	Epoch 47 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 47
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 48 	 Iteration 0 	 loss 0.9905
+Epoch 48 	 Iteration 20 	 loss 0.9775
+Epoch 48 	 Iteration 40 	 loss 1.0252
+Epoch 48 	 Iteration 60 	 loss 0.9875
+Epoch 48 	 Iteration 80 	 loss 1.0308
+Epoch 48 	 Iteration 100 	 loss 1.0228
+Epoch 48 	 Iteration 120 	 loss 1.0002
+Epoch 48 	 Iteration 140 	 loss 0.9453
+Epoch 48 	 Iteration 160 	 loss 1.0269
+Epoch 48 	 Iteration 180 	 loss 0.9722
+Epoch 48 	 Iteration 200 	 loss 0.9861
+Epoch 48 	 Iteration 220 	 loss 0.9982
+Epoch 48 	 Iteration 240 	 loss 1.0127
+Epoch 48 	 Iteration 260 	 loss 1.0563
+Epoch 48 	 Iteration 280 	 loss 1.0369
+Epoch 48 	 Iteration 300 	 loss 1.0139
+Epoch 48 	 Iteration 320 	 loss 0.9916
+Epoch 48 	 Iteration 340 	 loss 1.0448
+Epoch 48 	 Iteration 360 	 loss 0.9961
+Epoch 48 	 Iteration 380 	 loss 0.9826
+Epoch 48 	 Iteration 400 	 loss 1.0271
+Epoch 48 	 Iteration 420 	 loss 0.9824
+Epoch 48 	 Iteration 440 	 loss 1.0287
+Epoch 48 	 Iteration 460 	 loss 1.0014
+Epoch 48 	 Iteration 480 	 loss 0.9929
+Epoch 48 	 Iteration 500 	 loss 1.0082
+Epoch 48 	 Iteration 520 	 loss 0.9845
+Epoch 48 	 Iteration 540 	 loss 0.9795
+Epoch 48 	 Iteration 560 	 loss 1.0217
+Epoch 48 	 Iteration 580 	 loss 0.9829
+Epoch 48 	 Iteration 600 	 loss 0.9927
+Epoch 48 	 Iteration 620 	 loss 1.0365
+Epoch 48 	 Iteration 640 	 loss 0.9682
+Epoch 48 	 Iteration 660 	 loss 1.0038
+Epoch 48 	 Iteration 680 	 loss 1.0036
+Epoch 48 	 Iteration 700 	 loss 1.0089
+Epoch 48 	 Iteration 720 	 loss 1.0421
+Epoch 48 	 Iteration 740 	 loss 1.0085
+Epoch 48 	 Iteration 760 	 loss 1.0494
+Epoch 48 	 Iteration 780 	 loss 0.9709
+Epoch 48 	 Iteration 800 	 loss 1.0163
+Epoch 48 	 Iteration 820 	 loss 1.0036
+Epoch 48 	 Iteration 840 	 loss 1.0022
+Epoch 48 	 Iteration 860 	 loss 0.9401
+Epoch 48 	 Iteration 880 	 loss 0.9626
+Epoch 48 	 Iteration 900 	 loss 1.0026
+Epoch 48 	 Iteration 920 	 loss 0.9636
+Epoch 48 	 Iteration 940 	 loss 0.9905
+Epoch 48 	 Iteration 960 	 loss 0.9728
+Epoch 48 	 Iteration 980 	 loss 0.9898
+Epoch 48 	 Iteration 1000 	 loss 0.9901
+Epoch 48 	 Iteration 1020 	 loss 1.0183
+Epoch 48 	 Iteration 1040 	 loss 1.0107
+>> valid 	Epoch 48 	 Iteration 0 	 loss 5.0765
+>> valid 	Epoch 48 	 Iteration 20 	 loss 4.8815
+>> valid 	Epoch 48 	 Iteration 40 	 loss 4.9956
+>> valid 	Epoch 48 	 Iteration 60 	 loss 4.9088
+>> valid 	Epoch 48 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 48 	 Iteration 100 	 loss 4.7878
+>> valid 	Epoch 48 	 Iteration 120 	 loss 4.9744
+>> valid 	Epoch 48 	 Iteration 140 	 loss 4.7918
+>> valid 	Epoch 48 	 Iteration 160 	 loss 4.8052
+>> valid 	Epoch 48 	 Iteration 180 	 loss 5.0624
+>> test 	Epoch 48 	 Iteration 0 	 loss 5.6171
+>> test 	Epoch 48 	 Iteration 20 	 loss 5.1248
+>> test 	Epoch 48 	 Iteration 40 	 loss 4.8972
+>> test 	Epoch 48 	 Iteration 60 	 loss 4.8699
+>> test 	Epoch 48 	 Iteration 80 	 loss 5.0264
+>> test 	Epoch 48 	 Iteration 100 	 loss 4.7555
+>> test 	Epoch 48 	 Iteration 120 	 loss 4.7925
+Val loss: 4.8868 	 test loss: 4.9370 	 epoch 48
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 49 	 Iteration 0 	 loss 0.8471
+Epoch 49 	 Iteration 20 	 loss 0.9885
+Epoch 49 	 Iteration 40 	 loss 1.0281
+Epoch 49 	 Iteration 60 	 loss 1.0105
+Epoch 49 	 Iteration 80 	 loss 1.0008
+Epoch 49 	 Iteration 100 	 loss 1.0152
+Epoch 49 	 Iteration 120 	 loss 0.9875
+Epoch 49 	 Iteration 140 	 loss 0.9755
+Epoch 49 	 Iteration 160 	 loss 0.9775
+Epoch 49 	 Iteration 180 	 loss 0.9849
+Epoch 49 	 Iteration 200 	 loss 1.0152
+Epoch 49 	 Iteration 220 	 loss 0.9813
+Epoch 49 	 Iteration 240 	 loss 1.0096
+Epoch 49 	 Iteration 260 	 loss 1.0168
+Epoch 49 	 Iteration 280 	 loss 0.9879
+Epoch 49 	 Iteration 300 	 loss 0.9917
+Epoch 49 	 Iteration 320 	 loss 0.9934
+Epoch 49 	 Iteration 340 	 loss 1.0468
+Epoch 49 	 Iteration 360 	 loss 0.9838
+Epoch 49 	 Iteration 380 	 loss 1.0162
+Epoch 49 	 Iteration 400 	 loss 0.9704
+Epoch 49 	 Iteration 420 	 loss 1.0189
+Epoch 49 	 Iteration 440 	 loss 0.9789
+Epoch 49 	 Iteration 460 	 loss 1.0136
+Epoch 49 	 Iteration 480 	 loss 1.0004
+Epoch 49 	 Iteration 500 	 loss 0.9991
+Epoch 49 	 Iteration 520 	 loss 1.0381
+Epoch 49 	 Iteration 540 	 loss 0.9926
+Epoch 49 	 Iteration 560 	 loss 0.9691
+Epoch 49 	 Iteration 580 	 loss 0.9822
+Epoch 49 	 Iteration 600 	 loss 0.9377
+Epoch 49 	 Iteration 620 	 loss 1.0032
+Epoch 49 	 Iteration 640 	 loss 0.9984
+Epoch 49 	 Iteration 660 	 loss 0.9841
+Epoch 49 	 Iteration 680 	 loss 0.9876
+Epoch 49 	 Iteration 700 	 loss 1.0022
+Epoch 49 	 Iteration 720 	 loss 1.0019
+Epoch 49 	 Iteration 740 	 loss 1.0015
+Epoch 49 	 Iteration 760 	 loss 0.9947
+Epoch 49 	 Iteration 780 	 loss 1.0410
+Epoch 49 	 Iteration 800 	 loss 0.9998
+Epoch 49 	 Iteration 820 	 loss 1.0011
+Epoch 49 	 Iteration 840 	 loss 0.9677
+Epoch 49 	 Iteration 860 	 loss 0.9888
+Epoch 49 	 Iteration 880 	 loss 1.0131
+Epoch 49 	 Iteration 900 	 loss 1.0321
+Epoch 49 	 Iteration 920 	 loss 0.9838
+Epoch 49 	 Iteration 940 	 loss 1.0186
+Epoch 49 	 Iteration 960 	 loss 0.9936
+Epoch 49 	 Iteration 980 	 loss 1.0111
+Epoch 49 	 Iteration 1000 	 loss 1.0203
+Epoch 49 	 Iteration 1020 	 loss 0.9594
+Epoch 49 	 Iteration 1040 	 loss 1.0043
+>> valid 	Epoch 49 	 Iteration 0 	 loss 5.0757
+>> valid 	Epoch 49 	 Iteration 20 	 loss 4.8832
+>> valid 	Epoch 49 	 Iteration 40 	 loss 4.9971
+>> valid 	Epoch 49 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 49 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 49 	 Iteration 100 	 loss 4.7882
+>> valid 	Epoch 49 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 49 	 Iteration 140 	 loss 4.7925
+>> valid 	Epoch 49 	 Iteration 160 	 loss 4.8060
+>> valid 	Epoch 49 	 Iteration 180 	 loss 5.0630
+>> test 	Epoch 49 	 Iteration 0 	 loss 5.6149
+>> test 	Epoch 49 	 Iteration 20 	 loss 5.1237
+>> test 	Epoch 49 	 Iteration 40 	 loss 4.8979
+>> test 	Epoch 49 	 Iteration 60 	 loss 4.8684
+>> test 	Epoch 49 	 Iteration 80 	 loss 5.0272
+>> test 	Epoch 49 	 Iteration 100 	 loss 4.7565
+>> test 	Epoch 49 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8870 	 test loss: 4.9370 	 epoch 49
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 50 	 Iteration 0 	 loss 1.0469
+Epoch 50 	 Iteration 20 	 loss 0.9957
+Epoch 50 	 Iteration 40 	 loss 1.0273
+Epoch 50 	 Iteration 60 	 loss 0.9817
+Epoch 50 	 Iteration 80 	 loss 1.0057
+Epoch 50 	 Iteration 100 	 loss 1.0313
+Epoch 50 	 Iteration 120 	 loss 0.9688
+Epoch 50 	 Iteration 140 	 loss 1.0288
+Epoch 50 	 Iteration 160 	 loss 0.9487
+Epoch 50 	 Iteration 180 	 loss 0.9736
+Epoch 50 	 Iteration 200 	 loss 0.9833
+Epoch 50 	 Iteration 220 	 loss 0.9637
+Epoch 50 	 Iteration 240 	 loss 1.0018
+Epoch 50 	 Iteration 260 	 loss 1.0260
+Epoch 50 	 Iteration 280 	 loss 0.9897
+Epoch 50 	 Iteration 300 	 loss 0.9985
+Epoch 50 	 Iteration 320 	 loss 0.9710
+Epoch 50 	 Iteration 340 	 loss 0.9830
+Epoch 50 	 Iteration 360 	 loss 1.0319
+Epoch 50 	 Iteration 380 	 loss 1.0197
+Epoch 50 	 Iteration 400 	 loss 0.9748
+Epoch 50 	 Iteration 420 	 loss 0.9955
+Epoch 50 	 Iteration 440 	 loss 0.9862
+Epoch 50 	 Iteration 460 	 loss 1.0026
+Epoch 50 	 Iteration 480 	 loss 0.9639
+Epoch 50 	 Iteration 500 	 loss 0.9542
+Epoch 50 	 Iteration 520 	 loss 1.0387
+Epoch 50 	 Iteration 540 	 loss 0.9810
+Epoch 50 	 Iteration 560 	 loss 1.0101
+Epoch 50 	 Iteration 580 	 loss 0.9866
+Epoch 50 	 Iteration 600 	 loss 1.0171
+Epoch 50 	 Iteration 620 	 loss 1.0213
+Epoch 50 	 Iteration 640 	 loss 1.0007
+Epoch 50 	 Iteration 660 	 loss 0.9749
+Epoch 50 	 Iteration 680 	 loss 0.9847
+Epoch 50 	 Iteration 700 	 loss 1.0241
+Epoch 50 	 Iteration 720 	 loss 0.9577
+Epoch 50 	 Iteration 740 	 loss 1.0087
+Epoch 50 	 Iteration 760 	 loss 0.9592
+Epoch 50 	 Iteration 780 	 loss 0.9770
+Epoch 50 	 Iteration 800 	 loss 1.0267
+Epoch 50 	 Iteration 820 	 loss 0.9952
+Epoch 50 	 Iteration 840 	 loss 1.0014
+Epoch 50 	 Iteration 860 	 loss 1.0206
+Epoch 50 	 Iteration 880 	 loss 1.0027
+Epoch 50 	 Iteration 900 	 loss 0.9906
+Epoch 50 	 Iteration 920 	 loss 1.0302
+Epoch 50 	 Iteration 940 	 loss 1.0168
+Epoch 50 	 Iteration 960 	 loss 1.0253
+Epoch 50 	 Iteration 980 	 loss 1.0098
+Epoch 50 	 Iteration 1000 	 loss 1.0133
+Epoch 50 	 Iteration 1020 	 loss 1.0060
+Epoch 50 	 Iteration 1040 	 loss 0.9781
+>> valid 	Epoch 50 	 Iteration 0 	 loss 5.0749
+>> valid 	Epoch 50 	 Iteration 20 	 loss 4.8853
+>> valid 	Epoch 50 	 Iteration 40 	 loss 4.9990
+>> valid 	Epoch 50 	 Iteration 60 	 loss 4.9094
+>> valid 	Epoch 50 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 50 	 Iteration 100 	 loss 4.7889
+>> valid 	Epoch 50 	 Iteration 120 	 loss 4.9748
+>> valid 	Epoch 50 	 Iteration 140 	 loss 4.7935
+>> valid 	Epoch 50 	 Iteration 160 	 loss 4.8071
+>> valid 	Epoch 50 	 Iteration 180 	 loss 5.0640
+>> test 	Epoch 50 	 Iteration 0 	 loss 5.6123
+>> test 	Epoch 50 	 Iteration 20 	 loss 5.1226
+>> test 	Epoch 50 	 Iteration 40 	 loss 4.8987
+>> test 	Epoch 50 	 Iteration 60 	 loss 4.8669
+>> test 	Epoch 50 	 Iteration 80 	 loss 5.0284
+>> test 	Epoch 50 	 Iteration 100 	 loss 4.7578
+>> test 	Epoch 50 	 Iteration 120 	 loss 4.7930
+Val loss: 4.8875 	 test loss: 4.9372 	 epoch 50
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 51 	 Iteration 0 	 loss 1.0473
+Epoch 51 	 Iteration 20 	 loss 0.9728
+Epoch 51 	 Iteration 40 	 loss 1.0411
+Epoch 51 	 Iteration 60 	 loss 1.0311
+Epoch 51 	 Iteration 80 	 loss 0.9860
+Epoch 51 	 Iteration 100 	 loss 0.9965
+Epoch 51 	 Iteration 120 	 loss 1.0145
+Epoch 51 	 Iteration 140 	 loss 1.0125
+Epoch 51 	 Iteration 160 	 loss 0.9808
+Epoch 51 	 Iteration 180 	 loss 1.0058
+Epoch 51 	 Iteration 200 	 loss 1.0179
+Epoch 51 	 Iteration 220 	 loss 0.9549
+Epoch 51 	 Iteration 240 	 loss 1.0076
+Epoch 51 	 Iteration 260 	 loss 1.0163
+Epoch 51 	 Iteration 280 	 loss 1.0205
+Epoch 51 	 Iteration 300 	 loss 0.9900
+Epoch 51 	 Iteration 320 	 loss 0.9653
+Epoch 51 	 Iteration 340 	 loss 1.0092
+Epoch 51 	 Iteration 360 	 loss 1.0113
+Epoch 51 	 Iteration 380 	 loss 0.9856
+Epoch 51 	 Iteration 400 	 loss 0.9946
+Epoch 51 	 Iteration 420 	 loss 0.9776
+Epoch 51 	 Iteration 440 	 loss 0.9989
+Epoch 51 	 Iteration 460 	 loss 0.9960
+Epoch 51 	 Iteration 480 	 loss 0.9763
+Epoch 51 	 Iteration 500 	 loss 1.0013
+Epoch 51 	 Iteration 520 	 loss 1.0243
+Epoch 51 	 Iteration 540 	 loss 1.0044
+Epoch 51 	 Iteration 560 	 loss 1.0090
+Epoch 51 	 Iteration 580 	 loss 1.0024
+Epoch 51 	 Iteration 600 	 loss 0.9804
+Epoch 51 	 Iteration 620 	 loss 0.9770
+Epoch 51 	 Iteration 640 	 loss 0.9973
+Epoch 51 	 Iteration 660 	 loss 0.9992
+Epoch 51 	 Iteration 680 	 loss 1.0095
+Epoch 51 	 Iteration 700 	 loss 0.9847
+Epoch 51 	 Iteration 720 	 loss 1.0033
+Epoch 51 	 Iteration 740 	 loss 0.9988
+Epoch 51 	 Iteration 760 	 loss 1.0028
+Epoch 51 	 Iteration 780 	 loss 0.9882
+Epoch 51 	 Iteration 800 	 loss 0.9685
+Epoch 51 	 Iteration 820 	 loss 1.0318
+Epoch 51 	 Iteration 840 	 loss 1.0124
+Epoch 51 	 Iteration 860 	 loss 0.9867
+Epoch 51 	 Iteration 880 	 loss 1.0264
+Epoch 51 	 Iteration 900 	 loss 0.9968
+Epoch 51 	 Iteration 920 	 loss 0.9787
+Epoch 51 	 Iteration 940 	 loss 0.9722
+Epoch 51 	 Iteration 960 	 loss 0.9869
+Epoch 51 	 Iteration 980 	 loss 0.9919
+Epoch 51 	 Iteration 1000 	 loss 1.0358
+Epoch 51 	 Iteration 1020 	 loss 0.9841
+Epoch 51 	 Iteration 1040 	 loss 1.0159
+>> valid 	Epoch 51 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 51 	 Iteration 20 	 loss 4.8846
+>> valid 	Epoch 51 	 Iteration 40 	 loss 4.9984
+>> valid 	Epoch 51 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 51 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 51 	 Iteration 100 	 loss 4.7886
+>> valid 	Epoch 51 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 51 	 Iteration 140 	 loss 4.7932
+>> valid 	Epoch 51 	 Iteration 160 	 loss 4.8067
+>> valid 	Epoch 51 	 Iteration 180 	 loss 5.0636
+>> test 	Epoch 51 	 Iteration 0 	 loss 5.6131
+>> test 	Epoch 51 	 Iteration 20 	 loss 5.1229
+>> test 	Epoch 51 	 Iteration 40 	 loss 4.8984
+>> test 	Epoch 51 	 Iteration 60 	 loss 4.8674
+>> test 	Epoch 51 	 Iteration 80 	 loss 5.0280
+>> test 	Epoch 51 	 Iteration 100 	 loss 4.7574
+>> test 	Epoch 51 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 51
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 52 	 Iteration 0 	 loss 0.9372
+Epoch 52 	 Iteration 20 	 loss 0.9814
+Epoch 52 	 Iteration 40 	 loss 1.0140
+Epoch 52 	 Iteration 60 	 loss 0.9778
+Epoch 52 	 Iteration 80 	 loss 1.0148
+Epoch 52 	 Iteration 100 	 loss 1.0125
+Epoch 52 	 Iteration 120 	 loss 0.9675
+Epoch 52 	 Iteration 140 	 loss 0.9650
+Epoch 52 	 Iteration 160 	 loss 1.0001
+Epoch 52 	 Iteration 180 	 loss 1.0012
+Epoch 52 	 Iteration 200 	 loss 0.9803
+Epoch 52 	 Iteration 220 	 loss 0.9957
+Epoch 52 	 Iteration 240 	 loss 0.9853
+Epoch 52 	 Iteration 260 	 loss 0.9886
+Epoch 52 	 Iteration 280 	 loss 1.0378
+Epoch 52 	 Iteration 300 	 loss 0.9835
+Epoch 52 	 Iteration 320 	 loss 1.0289
+Epoch 52 	 Iteration 340 	 loss 1.0386
+Epoch 52 	 Iteration 360 	 loss 1.0044
+Epoch 52 	 Iteration 380 	 loss 1.0181
+Epoch 52 	 Iteration 400 	 loss 1.0252
+Epoch 52 	 Iteration 420 	 loss 1.0041
+Epoch 52 	 Iteration 440 	 loss 0.9697
+Epoch 52 	 Iteration 460 	 loss 0.9940
+Epoch 52 	 Iteration 480 	 loss 0.9968
+Epoch 52 	 Iteration 500 	 loss 1.0019
+Epoch 52 	 Iteration 520 	 loss 0.9885
+Epoch 52 	 Iteration 540 	 loss 0.9895
+Epoch 52 	 Iteration 560 	 loss 1.0031
+Epoch 52 	 Iteration 580 	 loss 0.9484
+Epoch 52 	 Iteration 600 	 loss 1.0073
+Epoch 52 	 Iteration 620 	 loss 1.0305
+Epoch 52 	 Iteration 640 	 loss 0.9789
+Epoch 52 	 Iteration 660 	 loss 0.9726
+Epoch 52 	 Iteration 680 	 loss 1.0325
+Epoch 52 	 Iteration 700 	 loss 0.9742
+Epoch 52 	 Iteration 720 	 loss 0.9523
+Epoch 52 	 Iteration 740 	 loss 0.9839
+Epoch 52 	 Iteration 760 	 loss 0.9814
+Epoch 52 	 Iteration 780 	 loss 1.0255
+Epoch 52 	 Iteration 800 	 loss 1.0125
+Epoch 52 	 Iteration 820 	 loss 1.0185
+Epoch 52 	 Iteration 840 	 loss 1.0024
+Epoch 52 	 Iteration 860 	 loss 1.0067
+Epoch 52 	 Iteration 880 	 loss 0.9685
+Epoch 52 	 Iteration 900 	 loss 0.9496
+Epoch 52 	 Iteration 920 	 loss 0.9973
+Epoch 52 	 Iteration 940 	 loss 1.0305
+Epoch 52 	 Iteration 960 	 loss 1.0112
+Epoch 52 	 Iteration 980 	 loss 1.0126
+Epoch 52 	 Iteration 1000 	 loss 0.9618
+Epoch 52 	 Iteration 1020 	 loss 1.0065
+Epoch 52 	 Iteration 1040 	 loss 1.0120
+>> valid 	Epoch 52 	 Iteration 0 	 loss 5.0751
+>> valid 	Epoch 52 	 Iteration 20 	 loss 4.8848
+>> valid 	Epoch 52 	 Iteration 40 	 loss 4.9985
+>> valid 	Epoch 52 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 52 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 52 	 Iteration 100 	 loss 4.7887
+>> valid 	Epoch 52 	 Iteration 120 	 loss 4.9747
+>> valid 	Epoch 52 	 Iteration 140 	 loss 4.7933
+>> valid 	Epoch 52 	 Iteration 160 	 loss 4.8068
+>> valid 	Epoch 52 	 Iteration 180 	 loss 5.0637
+>> test 	Epoch 52 	 Iteration 0 	 loss 5.6129
+>> test 	Epoch 52 	 Iteration 20 	 loss 5.1228
+>> test 	Epoch 52 	 Iteration 40 	 loss 4.8985
+>> test 	Epoch 52 	 Iteration 60 	 loss 4.8672
+>> test 	Epoch 52 	 Iteration 80 	 loss 5.0281
+>> test 	Epoch 52 	 Iteration 100 	 loss 4.7575
+>> test 	Epoch 52 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 52
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 53 	 Iteration 0 	 loss 0.8700
+Epoch 53 	 Iteration 20 	 loss 1.0122
+Epoch 53 	 Iteration 40 	 loss 0.9926
+Epoch 53 	 Iteration 60 	 loss 1.0175
+Epoch 53 	 Iteration 80 	 loss 1.0260
+Epoch 53 	 Iteration 100 	 loss 1.0010
+Epoch 53 	 Iteration 120 	 loss 0.9776
+Epoch 53 	 Iteration 140 	 loss 0.9906
+Epoch 53 	 Iteration 160 	 loss 1.0222
+Epoch 53 	 Iteration 180 	 loss 1.0054
+Epoch 53 	 Iteration 200 	 loss 1.0162
+Epoch 53 	 Iteration 220 	 loss 1.0141
+Epoch 53 	 Iteration 240 	 loss 1.0267
+Epoch 53 	 Iteration 260 	 loss 1.0349
+Epoch 53 	 Iteration 280 	 loss 1.0117
+Epoch 53 	 Iteration 300 	 loss 1.0192
+Epoch 53 	 Iteration 320 	 loss 1.0322
+Epoch 53 	 Iteration 340 	 loss 1.0167
+Epoch 53 	 Iteration 360 	 loss 0.9963
+Epoch 53 	 Iteration 380 	 loss 0.9726
+Epoch 53 	 Iteration 400 	 loss 1.0212
+Epoch 53 	 Iteration 420 	 loss 1.0039
+Epoch 53 	 Iteration 440 	 loss 1.0149
+Epoch 53 	 Iteration 460 	 loss 1.0143
+Epoch 53 	 Iteration 480 	 loss 0.9933
+Epoch 53 	 Iteration 500 	 loss 0.9621
+Epoch 53 	 Iteration 520 	 loss 1.0573
+Epoch 53 	 Iteration 540 	 loss 0.9893
+Epoch 53 	 Iteration 560 	 loss 1.0399
+Epoch 53 	 Iteration 580 	 loss 1.0252
+Epoch 53 	 Iteration 600 	 loss 1.0234
+Epoch 53 	 Iteration 620 	 loss 0.9804
+Epoch 53 	 Iteration 640 	 loss 0.9918
+Epoch 53 	 Iteration 660 	 loss 0.9841
+Epoch 53 	 Iteration 680 	 loss 0.9861
+Epoch 53 	 Iteration 700 	 loss 1.0268
+Epoch 53 	 Iteration 720 	 loss 0.9585
+Epoch 53 	 Iteration 740 	 loss 1.0242
+Epoch 53 	 Iteration 760 	 loss 0.9826
+Epoch 53 	 Iteration 780 	 loss 1.0199
+Epoch 53 	 Iteration 800 	 loss 0.9678
+Epoch 53 	 Iteration 820 	 loss 0.9535
+Epoch 53 	 Iteration 840 	 loss 0.9776
+Epoch 53 	 Iteration 860 	 loss 0.9834
+Epoch 53 	 Iteration 880 	 loss 0.9956
+Epoch 53 	 Iteration 900 	 loss 1.0099
+Epoch 53 	 Iteration 920 	 loss 0.9766
+Epoch 53 	 Iteration 940 	 loss 1.0015
+Epoch 53 	 Iteration 960 	 loss 0.9909
+Epoch 53 	 Iteration 980 	 loss 1.0194
+Epoch 53 	 Iteration 1000 	 loss 1.0205
+Epoch 53 	 Iteration 1020 	 loss 0.9998
+Epoch 53 	 Iteration 1040 	 loss 1.0271
+>> valid 	Epoch 53 	 Iteration 0 	 loss 5.0762
+>> valid 	Epoch 53 	 Iteration 20 	 loss 4.8821
+>> valid 	Epoch 53 	 Iteration 40 	 loss 4.9962
+>> valid 	Epoch 53 	 Iteration 60 	 loss 4.9088
+>> valid 	Epoch 53 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 53 	 Iteration 100 	 loss 4.7880
+>> valid 	Epoch 53 	 Iteration 120 	 loss 4.9744
+>> valid 	Epoch 53 	 Iteration 140 	 loss 4.7921
+>> valid 	Epoch 53 	 Iteration 160 	 loss 4.8055
+>> valid 	Epoch 53 	 Iteration 180 	 loss 5.0626
+>> test 	Epoch 53 	 Iteration 0 	 loss 5.6162
+>> test 	Epoch 53 	 Iteration 20 	 loss 5.1243
+>> test 	Epoch 53 	 Iteration 40 	 loss 4.8975
+>> test 	Epoch 53 	 Iteration 60 	 loss 4.8692
+>> test 	Epoch 53 	 Iteration 80 	 loss 5.0267
+>> test 	Epoch 53 	 Iteration 100 	 loss 4.7559
+>> test 	Epoch 53 	 Iteration 120 	 loss 4.7925
+Val loss: 4.8869 	 test loss: 4.9370 	 epoch 53
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 54 	 Iteration 0 	 loss 0.8741
+Epoch 54 	 Iteration 20 	 loss 0.9712
+Epoch 54 	 Iteration 40 	 loss 0.9904
+Epoch 54 	 Iteration 60 	 loss 1.0072
+Epoch 54 	 Iteration 80 	 loss 0.9840
+Epoch 54 	 Iteration 100 	 loss 0.9685
+Epoch 54 	 Iteration 120 	 loss 0.9769
+Epoch 54 	 Iteration 140 	 loss 0.9760
+Epoch 54 	 Iteration 160 	 loss 0.9673
+Epoch 54 	 Iteration 180 	 loss 0.9794
+Epoch 54 	 Iteration 200 	 loss 1.0103
+Epoch 54 	 Iteration 220 	 loss 0.9800
+Epoch 54 	 Iteration 240 	 loss 1.0072
+Epoch 54 	 Iteration 260 	 loss 1.0303
+Epoch 54 	 Iteration 280 	 loss 1.0095
+Epoch 54 	 Iteration 300 	 loss 0.9891
+Epoch 54 	 Iteration 320 	 loss 1.0594
+Epoch 54 	 Iteration 340 	 loss 0.9958
+Epoch 54 	 Iteration 360 	 loss 1.0020
+Epoch 54 	 Iteration 380 	 loss 0.9738
+Epoch 54 	 Iteration 400 	 loss 1.0121
+Epoch 54 	 Iteration 420 	 loss 1.0209
+Epoch 54 	 Iteration 440 	 loss 0.9995
+Epoch 54 	 Iteration 460 	 loss 0.9952
+Epoch 54 	 Iteration 480 	 loss 1.0178
+Epoch 54 	 Iteration 500 	 loss 0.9843
+Epoch 54 	 Iteration 520 	 loss 0.9833
+Epoch 54 	 Iteration 540 	 loss 0.9788
+Epoch 54 	 Iteration 560 	 loss 0.9700
+Epoch 54 	 Iteration 580 	 loss 0.9972
+Epoch 54 	 Iteration 600 	 loss 0.9992
+Epoch 54 	 Iteration 620 	 loss 1.0066
+Epoch 54 	 Iteration 640 	 loss 1.0068
+Epoch 54 	 Iteration 660 	 loss 1.0557
+Epoch 54 	 Iteration 680 	 loss 0.9847
+Epoch 54 	 Iteration 700 	 loss 0.9986
+Epoch 54 	 Iteration 720 	 loss 0.9864
+Epoch 54 	 Iteration 740 	 loss 0.9962
+Epoch 54 	 Iteration 760 	 loss 0.9698
+Epoch 54 	 Iteration 780 	 loss 0.9765
+Epoch 54 	 Iteration 800 	 loss 0.9772
+Epoch 54 	 Iteration 820 	 loss 0.9703
+Epoch 54 	 Iteration 840 	 loss 0.9942
+Epoch 54 	 Iteration 860 	 loss 1.0038
+Epoch 54 	 Iteration 880 	 loss 0.9681
+Epoch 54 	 Iteration 900 	 loss 0.9926
+Epoch 54 	 Iteration 920 	 loss 1.0099
+Epoch 54 	 Iteration 940 	 loss 1.0158
+Epoch 54 	 Iteration 960 	 loss 1.0302
+Epoch 54 	 Iteration 980 	 loss 1.0117
+Epoch 54 	 Iteration 1000 	 loss 1.0233
+Epoch 54 	 Iteration 1020 	 loss 0.9806
+Epoch 54 	 Iteration 1040 	 loss 0.9916
+>> valid 	Epoch 54 	 Iteration 0 	 loss 5.0750
+>> valid 	Epoch 54 	 Iteration 20 	 loss 4.8851
+>> valid 	Epoch 54 	 Iteration 40 	 loss 4.9988
+>> valid 	Epoch 54 	 Iteration 60 	 loss 4.9093
+>> valid 	Epoch 54 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 54 	 Iteration 100 	 loss 4.7888
+>> valid 	Epoch 54 	 Iteration 120 	 loss 4.9747
+>> valid 	Epoch 54 	 Iteration 140 	 loss 4.7934
+>> valid 	Epoch 54 	 Iteration 160 	 loss 4.8070
+>> valid 	Epoch 54 	 Iteration 180 	 loss 5.0639
+>> test 	Epoch 54 	 Iteration 0 	 loss 5.6125
+>> test 	Epoch 54 	 Iteration 20 	 loss 5.1227
+>> test 	Epoch 54 	 Iteration 40 	 loss 4.8987
+>> test 	Epoch 54 	 Iteration 60 	 loss 4.8670
+>> test 	Epoch 54 	 Iteration 80 	 loss 5.0283
+>> test 	Epoch 54 	 Iteration 100 	 loss 4.7577
+>> test 	Epoch 54 	 Iteration 120 	 loss 4.7930
+Val loss: 4.8874 	 test loss: 4.9372 	 epoch 54
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 55 	 Iteration 0 	 loss 0.9137
+Epoch 55 	 Iteration 20 	 loss 0.9896
+Epoch 55 	 Iteration 40 	 loss 1.0001
+Epoch 55 	 Iteration 60 	 loss 1.0221
+Epoch 55 	 Iteration 80 	 loss 1.0145
+Epoch 55 	 Iteration 100 	 loss 0.9875
+Epoch 55 	 Iteration 120 	 loss 1.0044
+Epoch 55 	 Iteration 140 	 loss 0.9675
+Epoch 55 	 Iteration 160 	 loss 1.0053
+Epoch 55 	 Iteration 180 	 loss 0.9676
+Epoch 55 	 Iteration 200 	 loss 1.0021
+Epoch 55 	 Iteration 220 	 loss 1.0091
+Epoch 55 	 Iteration 240 	 loss 0.9810
+Epoch 55 	 Iteration 260 	 loss 0.9918
+Epoch 55 	 Iteration 280 	 loss 1.0205
+Epoch 55 	 Iteration 300 	 loss 1.0099
+Epoch 55 	 Iteration 320 	 loss 0.9715
+Epoch 55 	 Iteration 340 	 loss 1.0272
+Epoch 55 	 Iteration 360 	 loss 0.9790
+Epoch 55 	 Iteration 380 	 loss 1.0145
+Epoch 55 	 Iteration 400 	 loss 0.9969
+Epoch 55 	 Iteration 420 	 loss 1.0107
+Epoch 55 	 Iteration 440 	 loss 1.0199
+Epoch 55 	 Iteration 460 	 loss 1.0145
+Epoch 55 	 Iteration 480 	 loss 0.9938
+Epoch 55 	 Iteration 500 	 loss 1.0018
+Epoch 55 	 Iteration 520 	 loss 0.9988
+Epoch 55 	 Iteration 540 	 loss 1.0109
+Epoch 55 	 Iteration 560 	 loss 0.9978
+Epoch 55 	 Iteration 580 	 loss 0.9902
+Epoch 55 	 Iteration 600 	 loss 1.0299
+Epoch 55 	 Iteration 620 	 loss 1.0195
+Epoch 55 	 Iteration 640 	 loss 1.0121
+Epoch 55 	 Iteration 660 	 loss 0.9737
+Epoch 55 	 Iteration 680 	 loss 1.0297
+Epoch 55 	 Iteration 700 	 loss 1.0016
+Epoch 55 	 Iteration 720 	 loss 0.9633
+Epoch 55 	 Iteration 740 	 loss 1.0258
+Epoch 55 	 Iteration 760 	 loss 0.9654
+Epoch 55 	 Iteration 780 	 loss 1.0124
+Epoch 55 	 Iteration 800 	 loss 1.0155
+Epoch 55 	 Iteration 820 	 loss 1.0197
+Epoch 55 	 Iteration 840 	 loss 1.0037
+Epoch 55 	 Iteration 860 	 loss 1.0035
+Epoch 55 	 Iteration 880 	 loss 0.9893
+Epoch 55 	 Iteration 900 	 loss 1.0119
+Epoch 55 	 Iteration 920 	 loss 1.0090
+Epoch 55 	 Iteration 940 	 loss 1.0360
+Epoch 55 	 Iteration 960 	 loss 0.9765
+Epoch 55 	 Iteration 980 	 loss 0.9644
+Epoch 55 	 Iteration 1000 	 loss 0.9800
+Epoch 55 	 Iteration 1020 	 loss 1.0039
+Epoch 55 	 Iteration 1040 	 loss 0.9497
+>> valid 	Epoch 55 	 Iteration 0 	 loss 5.0761
+>> valid 	Epoch 55 	 Iteration 20 	 loss 4.8824
+>> valid 	Epoch 55 	 Iteration 40 	 loss 4.9965
+>> valid 	Epoch 55 	 Iteration 60 	 loss 4.9088
+>> valid 	Epoch 55 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 55 	 Iteration 100 	 loss 4.7880
+>> valid 	Epoch 55 	 Iteration 120 	 loss 4.9744
+>> valid 	Epoch 55 	 Iteration 140 	 loss 4.7922
+>> valid 	Epoch 55 	 Iteration 160 	 loss 4.8057
+>> valid 	Epoch 55 	 Iteration 180 	 loss 5.0627
+>> test 	Epoch 55 	 Iteration 0 	 loss 5.6158
+>> test 	Epoch 55 	 Iteration 20 	 loss 5.1242
+>> test 	Epoch 55 	 Iteration 40 	 loss 4.8976
+>> test 	Epoch 55 	 Iteration 60 	 loss 4.8690
+>> test 	Epoch 55 	 Iteration 80 	 loss 5.0268
+>> test 	Epoch 55 	 Iteration 100 	 loss 4.7560
+>> test 	Epoch 55 	 Iteration 120 	 loss 4.7925
+Val loss: 4.8869 	 test loss: 4.9370 	 epoch 55
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 56 	 Iteration 0 	 loss 0.9895
+Epoch 56 	 Iteration 20 	 loss 0.9613
+Epoch 56 	 Iteration 40 	 loss 0.9939
+Epoch 56 	 Iteration 60 	 loss 0.9728
+Epoch 56 	 Iteration 80 	 loss 0.9889
+Epoch 56 	 Iteration 100 	 loss 1.0203
+Epoch 56 	 Iteration 120 	 loss 0.9694
+Epoch 56 	 Iteration 140 	 loss 0.9941
+Epoch 56 	 Iteration 160 	 loss 0.9757
+Epoch 56 	 Iteration 180 	 loss 0.9570
+Epoch 56 	 Iteration 200 	 loss 0.9959
+Epoch 56 	 Iteration 220 	 loss 1.0413
+Epoch 56 	 Iteration 240 	 loss 0.9934
+Epoch 56 	 Iteration 260 	 loss 0.9804
+Epoch 56 	 Iteration 280 	 loss 1.0083
+Epoch 56 	 Iteration 300 	 loss 1.0056
+Epoch 56 	 Iteration 320 	 loss 1.0169
+Epoch 56 	 Iteration 340 	 loss 0.9862
+Epoch 56 	 Iteration 360 	 loss 0.9815
+Epoch 56 	 Iteration 380 	 loss 0.9800
+Epoch 56 	 Iteration 400 	 loss 0.9767
+Epoch 56 	 Iteration 420 	 loss 1.0090
+Epoch 56 	 Iteration 440 	 loss 1.0118
+Epoch 56 	 Iteration 460 	 loss 1.0302
+Epoch 56 	 Iteration 480 	 loss 0.9674
+Epoch 56 	 Iteration 500 	 loss 0.9923
+Epoch 56 	 Iteration 520 	 loss 0.9808
+Epoch 56 	 Iteration 540 	 loss 0.9772
+Epoch 56 	 Iteration 560 	 loss 1.0061
+Epoch 56 	 Iteration 580 	 loss 0.9424
+Epoch 56 	 Iteration 600 	 loss 0.9859
+Epoch 56 	 Iteration 620 	 loss 0.9966
+Epoch 56 	 Iteration 640 	 loss 1.0318
+Epoch 56 	 Iteration 660 	 loss 0.9956
+Epoch 56 	 Iteration 680 	 loss 1.0057
+Epoch 56 	 Iteration 700 	 loss 0.9757
+Epoch 56 	 Iteration 720 	 loss 0.9971
+Epoch 56 	 Iteration 740 	 loss 1.0040
+Epoch 56 	 Iteration 760 	 loss 1.0400
+Epoch 56 	 Iteration 780 	 loss 1.0166
+Epoch 56 	 Iteration 800 	 loss 1.0006
+Epoch 56 	 Iteration 820 	 loss 1.0124
+Epoch 56 	 Iteration 840 	 loss 1.0070
+Epoch 56 	 Iteration 860 	 loss 0.9453
+Epoch 56 	 Iteration 880 	 loss 1.0355
+Epoch 56 	 Iteration 900 	 loss 0.9779
+Epoch 56 	 Iteration 920 	 loss 0.9927
+Epoch 56 	 Iteration 940 	 loss 1.0154
+Epoch 56 	 Iteration 960 	 loss 1.0467
+Epoch 56 	 Iteration 980 	 loss 1.0131
+Epoch 56 	 Iteration 1000 	 loss 1.0212
+Epoch 56 	 Iteration 1020 	 loss 1.0064
+Epoch 56 	 Iteration 1040 	 loss 1.0018
+>> valid 	Epoch 56 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 56 	 Iteration 20 	 loss 4.8846
+>> valid 	Epoch 56 	 Iteration 40 	 loss 4.9983
+>> valid 	Epoch 56 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 56 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 56 	 Iteration 100 	 loss 4.7886
+>> valid 	Epoch 56 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 56 	 Iteration 140 	 loss 4.7932
+>> valid 	Epoch 56 	 Iteration 160 	 loss 4.8067
+>> valid 	Epoch 56 	 Iteration 180 	 loss 5.0636
+>> test 	Epoch 56 	 Iteration 0 	 loss 5.6132
+>> test 	Epoch 56 	 Iteration 20 	 loss 5.1230
+>> test 	Epoch 56 	 Iteration 40 	 loss 4.8984
+>> test 	Epoch 56 	 Iteration 60 	 loss 4.8674
+>> test 	Epoch 56 	 Iteration 80 	 loss 5.0280
+>> test 	Epoch 56 	 Iteration 100 	 loss 4.7574
+>> test 	Epoch 56 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 56
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 57 	 Iteration 0 	 loss 0.8922
+Epoch 57 	 Iteration 20 	 loss 1.0534
+Epoch 57 	 Iteration 40 	 loss 0.9792
+Epoch 57 	 Iteration 60 	 loss 1.0181
+Epoch 57 	 Iteration 80 	 loss 1.0174
+Epoch 57 	 Iteration 100 	 loss 1.0240
+Epoch 57 	 Iteration 120 	 loss 0.9791
+Epoch 57 	 Iteration 140 	 loss 1.0081
+Epoch 57 	 Iteration 160 	 loss 0.9650
+Epoch 57 	 Iteration 180 	 loss 0.9824
+Epoch 57 	 Iteration 200 	 loss 0.9758
+Epoch 57 	 Iteration 220 	 loss 1.0137
+Epoch 57 	 Iteration 240 	 loss 1.0295
+Epoch 57 	 Iteration 260 	 loss 1.0242
+Epoch 57 	 Iteration 280 	 loss 0.9970
+Epoch 57 	 Iteration 300 	 loss 1.0361
+Epoch 57 	 Iteration 320 	 loss 1.0367
+Epoch 57 	 Iteration 340 	 loss 0.9656
+Epoch 57 	 Iteration 360 	 loss 0.9992
+Epoch 57 	 Iteration 380 	 loss 1.0097
+Epoch 57 	 Iteration 400 	 loss 0.9975
+Epoch 57 	 Iteration 420 	 loss 0.9347
+Epoch 57 	 Iteration 440 	 loss 0.9542
+Epoch 57 	 Iteration 460 	 loss 1.0015
+Epoch 57 	 Iteration 480 	 loss 1.0123
+Epoch 57 	 Iteration 500 	 loss 1.0307
+Epoch 57 	 Iteration 520 	 loss 1.0584
+Epoch 57 	 Iteration 540 	 loss 0.9747
+Epoch 57 	 Iteration 560 	 loss 1.0278
+Epoch 57 	 Iteration 580 	 loss 0.9962
+Epoch 57 	 Iteration 600 	 loss 1.0076
+Epoch 57 	 Iteration 620 	 loss 1.0079
+Epoch 57 	 Iteration 640 	 loss 1.0442
+Epoch 57 	 Iteration 660 	 loss 1.0200
+Epoch 57 	 Iteration 680 	 loss 1.0150
+Epoch 57 	 Iteration 700 	 loss 0.9790
+Epoch 57 	 Iteration 720 	 loss 0.9767
+Epoch 57 	 Iteration 740 	 loss 1.0194
+Epoch 57 	 Iteration 760 	 loss 1.0260
+Epoch 57 	 Iteration 780 	 loss 0.9700
+Epoch 57 	 Iteration 800 	 loss 0.9881
+Epoch 57 	 Iteration 820 	 loss 0.9673
+Epoch 57 	 Iteration 840 	 loss 1.0193
+Epoch 57 	 Iteration 860 	 loss 0.9821
+Epoch 57 	 Iteration 880 	 loss 0.9801
+Epoch 57 	 Iteration 900 	 loss 0.9902
+Epoch 57 	 Iteration 920 	 loss 0.9897
+Epoch 57 	 Iteration 940 	 loss 1.0378
+Epoch 57 	 Iteration 960 	 loss 1.0192
+Epoch 57 	 Iteration 980 	 loss 1.0001
+Epoch 57 	 Iteration 1000 	 loss 0.9794
+Epoch 57 	 Iteration 1020 	 loss 1.0115
+Epoch 57 	 Iteration 1040 	 loss 0.9752
+>> valid 	Epoch 57 	 Iteration 0 	 loss 5.0759
+>> valid 	Epoch 57 	 Iteration 20 	 loss 4.8827
+>> valid 	Epoch 57 	 Iteration 40 	 loss 4.9967
+>> valid 	Epoch 57 	 Iteration 60 	 loss 4.9089
+>> valid 	Epoch 57 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 57 	 Iteration 100 	 loss 4.7881
+>> valid 	Epoch 57 	 Iteration 120 	 loss 4.9745
+>> valid 	Epoch 57 	 Iteration 140 	 loss 4.7923
+>> valid 	Epoch 57 	 Iteration 160 	 loss 4.8058
+>> valid 	Epoch 57 	 Iteration 180 	 loss 5.0628
+>> test 	Epoch 57 	 Iteration 0 	 loss 5.6154
+>> test 	Epoch 57 	 Iteration 20 	 loss 5.1240
+>> test 	Epoch 57 	 Iteration 40 	 loss 4.8977
+>> test 	Epoch 57 	 Iteration 60 	 loss 4.8688
+>> test 	Epoch 57 	 Iteration 80 	 loss 5.0269
+>> test 	Epoch 57 	 Iteration 100 	 loss 4.7562
+>> test 	Epoch 57 	 Iteration 120 	 loss 4.7926
+Val loss: 4.8870 	 test loss: 4.9370 	 epoch 57
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 58 	 Iteration 0 	 loss 0.9802
+Epoch 58 	 Iteration 20 	 loss 1.0280
+Epoch 58 	 Iteration 40 	 loss 0.9987
+Epoch 58 	 Iteration 60 	 loss 1.0117
+Epoch 58 	 Iteration 80 	 loss 0.9998
+Epoch 58 	 Iteration 100 	 loss 0.9647
+Epoch 58 	 Iteration 120 	 loss 1.0115
+Epoch 58 	 Iteration 140 	 loss 1.0026
+Epoch 58 	 Iteration 160 	 loss 1.0065
+Epoch 58 	 Iteration 180 	 loss 1.0052
+Epoch 58 	 Iteration 200 	 loss 0.9892
+Epoch 58 	 Iteration 220 	 loss 1.0101
+Epoch 58 	 Iteration 240 	 loss 1.0094
+Epoch 58 	 Iteration 260 	 loss 1.0080
+Epoch 58 	 Iteration 280 	 loss 0.9656
+Epoch 58 	 Iteration 300 	 loss 1.0639
+Epoch 58 	 Iteration 320 	 loss 1.0283
+Epoch 58 	 Iteration 340 	 loss 0.9984
+Epoch 58 	 Iteration 360 	 loss 1.0657
+Epoch 58 	 Iteration 380 	 loss 0.9817
+Epoch 58 	 Iteration 400 	 loss 0.9966
+Epoch 58 	 Iteration 420 	 loss 0.9648
+Epoch 58 	 Iteration 440 	 loss 0.9786
+Epoch 58 	 Iteration 460 	 loss 0.9909
+Epoch 58 	 Iteration 480 	 loss 0.9813
+Epoch 58 	 Iteration 500 	 loss 0.9661
+Epoch 58 	 Iteration 520 	 loss 1.0348
+Epoch 58 	 Iteration 540 	 loss 1.0239
+Epoch 58 	 Iteration 560 	 loss 1.0143
+Epoch 58 	 Iteration 580 	 loss 0.9668
+Epoch 58 	 Iteration 600 	 loss 1.0290
+Epoch 58 	 Iteration 620 	 loss 0.9681
+Epoch 58 	 Iteration 640 	 loss 0.9655
+Epoch 58 	 Iteration 660 	 loss 0.9836
+Epoch 58 	 Iteration 680 	 loss 1.0090
+Epoch 58 	 Iteration 700 	 loss 0.9741
+Epoch 58 	 Iteration 720 	 loss 0.9953
+Epoch 58 	 Iteration 740 	 loss 1.0072
+Epoch 58 	 Iteration 760 	 loss 0.9944
+Epoch 58 	 Iteration 780 	 loss 1.0102
+Epoch 58 	 Iteration 800 	 loss 0.9938
+Epoch 58 	 Iteration 820 	 loss 1.0037
+Epoch 58 	 Iteration 840 	 loss 0.9881
+Epoch 58 	 Iteration 860 	 loss 1.0378
+Epoch 58 	 Iteration 880 	 loss 1.0029
+Epoch 58 	 Iteration 900 	 loss 1.0071
+Epoch 58 	 Iteration 920 	 loss 0.9954
+Epoch 58 	 Iteration 940 	 loss 1.0228
+Epoch 58 	 Iteration 960 	 loss 0.9802
+Epoch 58 	 Iteration 980 	 loss 0.9956
+Epoch 58 	 Iteration 1000 	 loss 0.9922
+Epoch 58 	 Iteration 1020 	 loss 1.0044
+Epoch 58 	 Iteration 1040 	 loss 0.9874
+>> valid 	Epoch 58 	 Iteration 0 	 loss 5.0751
+>> valid 	Epoch 58 	 Iteration 20 	 loss 4.8848
+>> valid 	Epoch 58 	 Iteration 40 	 loss 4.9986
+>> valid 	Epoch 58 	 Iteration 60 	 loss 4.9093
+>> valid 	Epoch 58 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 58 	 Iteration 100 	 loss 4.7887
+>> valid 	Epoch 58 	 Iteration 120 	 loss 4.9747
+>> valid 	Epoch 58 	 Iteration 140 	 loss 4.7933
+>> valid 	Epoch 58 	 Iteration 160 	 loss 4.8068
+>> valid 	Epoch 58 	 Iteration 180 	 loss 5.0637
+>> test 	Epoch 58 	 Iteration 0 	 loss 5.6129
+>> test 	Epoch 58 	 Iteration 20 	 loss 5.1228
+>> test 	Epoch 58 	 Iteration 40 	 loss 4.8985
+>> test 	Epoch 58 	 Iteration 60 	 loss 4.8672
+>> test 	Epoch 58 	 Iteration 80 	 loss 5.0281
+>> test 	Epoch 58 	 Iteration 100 	 loss 4.7575
+>> test 	Epoch 58 	 Iteration 120 	 loss 4.7929
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 58
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 59 	 Iteration 0 	 loss 0.9808
+Epoch 59 	 Iteration 20 	 loss 0.9952
+Epoch 59 	 Iteration 40 	 loss 1.0220
+Epoch 59 	 Iteration 60 	 loss 0.9972
+Epoch 59 	 Iteration 80 	 loss 0.9928
+Epoch 59 	 Iteration 100 	 loss 1.0276
+Epoch 59 	 Iteration 120 	 loss 1.0139
+Epoch 59 	 Iteration 140 	 loss 0.9731
+Epoch 59 	 Iteration 160 	 loss 1.0113
+Epoch 59 	 Iteration 180 	 loss 0.9939
+Epoch 59 	 Iteration 200 	 loss 0.9829
+Epoch 59 	 Iteration 220 	 loss 1.0448
+Epoch 59 	 Iteration 240 	 loss 1.0160
+Epoch 59 	 Iteration 260 	 loss 1.0061
+Epoch 59 	 Iteration 280 	 loss 0.9652
+Epoch 59 	 Iteration 300 	 loss 1.0103
+Epoch 59 	 Iteration 320 	 loss 0.9850
+Epoch 59 	 Iteration 340 	 loss 1.0008
+Epoch 59 	 Iteration 360 	 loss 0.9650
+Epoch 59 	 Iteration 380 	 loss 1.0204
+Epoch 59 	 Iteration 400 	 loss 0.9790
+Epoch 59 	 Iteration 420 	 loss 0.9968
+Epoch 59 	 Iteration 440 	 loss 0.9829
+Epoch 59 	 Iteration 460 	 loss 1.0053
+Epoch 59 	 Iteration 480 	 loss 0.9895
+Epoch 59 	 Iteration 500 	 loss 0.9961
+Epoch 59 	 Iteration 520 	 loss 0.9917
+Epoch 59 	 Iteration 540 	 loss 0.9646
+Epoch 59 	 Iteration 560 	 loss 0.9832
+Epoch 59 	 Iteration 580 	 loss 1.0302
+Epoch 59 	 Iteration 600 	 loss 1.0106
+Epoch 59 	 Iteration 620 	 loss 1.0059
+Epoch 59 	 Iteration 640 	 loss 1.0055
+Epoch 59 	 Iteration 660 	 loss 1.0132
+Epoch 59 	 Iteration 680 	 loss 0.9777
+Epoch 59 	 Iteration 700 	 loss 0.9872
+Epoch 59 	 Iteration 720 	 loss 1.0226
+Epoch 59 	 Iteration 740 	 loss 0.9704
+Epoch 59 	 Iteration 760 	 loss 1.0013
+Epoch 59 	 Iteration 780 	 loss 0.9976
+Epoch 59 	 Iteration 800 	 loss 0.9755
+Epoch 59 	 Iteration 820 	 loss 0.9559
+Epoch 59 	 Iteration 840 	 loss 1.0106
+Epoch 59 	 Iteration 860 	 loss 1.0095
+Epoch 59 	 Iteration 880 	 loss 0.9897
+Epoch 59 	 Iteration 900 	 loss 1.0158
+Epoch 59 	 Iteration 920 	 loss 0.9956
+Epoch 59 	 Iteration 940 	 loss 1.0392
+Epoch 59 	 Iteration 960 	 loss 0.9665
+Epoch 59 	 Iteration 980 	 loss 1.0158
+Epoch 59 	 Iteration 1000 	 loss 0.9897
+Epoch 59 	 Iteration 1020 	 loss 1.0252
+Epoch 59 	 Iteration 1040 	 loss 1.0168
+>> valid 	Epoch 59 	 Iteration 0 	 loss 5.0753
+>> valid 	Epoch 59 	 Iteration 20 	 loss 4.8842
+>> valid 	Epoch 59 	 Iteration 40 	 loss 4.9979
+>> valid 	Epoch 59 	 Iteration 60 	 loss 4.9091
+>> valid 	Epoch 59 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 59 	 Iteration 100 	 loss 4.7885
+>> valid 	Epoch 59 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 59 	 Iteration 140 	 loss 4.7930
+>> valid 	Epoch 59 	 Iteration 160 	 loss 4.8065
+>> valid 	Epoch 59 	 Iteration 180 	 loss 5.0634
+>> test 	Epoch 59 	 Iteration 0 	 loss 5.6137
+>> test 	Epoch 59 	 Iteration 20 	 loss 5.1232
+>> test 	Epoch 59 	 Iteration 40 	 loss 4.8982
+>> test 	Epoch 59 	 Iteration 60 	 loss 4.8677
+>> test 	Epoch 59 	 Iteration 80 	 loss 5.0277
+>> test 	Epoch 59 	 Iteration 100 	 loss 4.7571
+>> test 	Epoch 59 	 Iteration 120 	 loss 4.7928
+Val loss: 4.8872 	 test loss: 4.9371 	 epoch 59
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 60 	 Iteration 0 	 loss 0.8462
+Epoch 60 	 Iteration 20 	 loss 0.9817
+Epoch 60 	 Iteration 40 	 loss 0.9894
+Epoch 60 	 Iteration 60 	 loss 1.0285
+Epoch 60 	 Iteration 80 	 loss 0.9798
+Epoch 60 	 Iteration 100 	 loss 0.9991
+Epoch 60 	 Iteration 120 	 loss 0.9746
+Epoch 60 	 Iteration 140 	 loss 0.9590
+Epoch 60 	 Iteration 160 	 loss 1.0469
+Epoch 60 	 Iteration 180 	 loss 1.0122
+Epoch 60 	 Iteration 200 	 loss 1.0342
+Epoch 60 	 Iteration 220 	 loss 0.9913
+Epoch 60 	 Iteration 240 	 loss 0.9800
+Epoch 60 	 Iteration 260 	 loss 0.9824
+Epoch 60 	 Iteration 280 	 loss 1.0102
+Epoch 60 	 Iteration 300 	 loss 1.0205
+Epoch 60 	 Iteration 320 	 loss 0.9961
+Epoch 60 	 Iteration 340 	 loss 1.0255
+Epoch 60 	 Iteration 360 	 loss 1.0251
+Epoch 60 	 Iteration 380 	 loss 0.9811
+Epoch 60 	 Iteration 400 	 loss 0.9842
+Epoch 60 	 Iteration 420 	 loss 1.0107
+Epoch 60 	 Iteration 440 	 loss 0.9859
+Epoch 60 	 Iteration 460 	 loss 0.9796
+Epoch 60 	 Iteration 480 	 loss 0.9529
+Epoch 60 	 Iteration 500 	 loss 0.9956
+Epoch 60 	 Iteration 520 	 loss 1.0304
+Epoch 60 	 Iteration 540 	 loss 1.0163
+Epoch 60 	 Iteration 560 	 loss 0.9692
+Epoch 60 	 Iteration 580 	 loss 0.9936
+Epoch 60 	 Iteration 600 	 loss 0.9733
+Epoch 60 	 Iteration 620 	 loss 0.9847
+Epoch 60 	 Iteration 640 	 loss 0.9827
+Epoch 60 	 Iteration 660 	 loss 1.0188
+Epoch 60 	 Iteration 680 	 loss 0.9794
+Epoch 60 	 Iteration 700 	 loss 0.9713
+Epoch 60 	 Iteration 720 	 loss 1.0252
+Epoch 60 	 Iteration 740 	 loss 1.0206
+Epoch 60 	 Iteration 760 	 loss 1.0320
+Epoch 60 	 Iteration 780 	 loss 1.0195
+Epoch 60 	 Iteration 800 	 loss 1.0361
+Epoch 60 	 Iteration 820 	 loss 0.9983
+Epoch 60 	 Iteration 840 	 loss 1.0051
+Epoch 60 	 Iteration 860 	 loss 0.9590
+Epoch 60 	 Iteration 880 	 loss 0.9926
+Epoch 60 	 Iteration 900 	 loss 1.0283
+Epoch 60 	 Iteration 920 	 loss 1.0039
+Epoch 60 	 Iteration 940 	 loss 1.0130
+Epoch 60 	 Iteration 960 	 loss 0.9919
+Epoch 60 	 Iteration 980 	 loss 1.0284
+Epoch 60 	 Iteration 1000 	 loss 0.9750
+Epoch 60 	 Iteration 1020 	 loss 1.0180
+Epoch 60 	 Iteration 1040 	 loss 1.0041
+>> valid 	Epoch 60 	 Iteration 0 	 loss 5.0752
+>> valid 	Epoch 60 	 Iteration 20 	 loss 4.8844
+>> valid 	Epoch 60 	 Iteration 40 	 loss 4.9982
+>> valid 	Epoch 60 	 Iteration 60 	 loss 4.9092
+>> valid 	Epoch 60 	 Iteration 80 	 loss 4.6678
+>> valid 	Epoch 60 	 Iteration 100 	 loss 4.7885
+>> valid 	Epoch 60 	 Iteration 120 	 loss 4.9746
+>> valid 	Epoch 60 	 Iteration 140 	 loss 4.7931
+>> valid 	Epoch 60 	 Iteration 160 	 loss 4.8066
+>> valid 	Epoch 60 	 Iteration 180 	 loss 5.0636
+>> test 	Epoch 60 	 Iteration 0 	 loss 5.6133
+>> test 	Epoch 60 	 Iteration 20 	 loss 5.1230
+>> test 	Epoch 60 	 Iteration 40 	 loss 4.8984
+>> test 	Epoch 60 	 Iteration 60 	 loss 4.8675
+>> test 	Epoch 60 	 Iteration 80 	 loss 5.0279
+>> test 	Epoch 60 	 Iteration 100 	 loss 4.7573
+>> test 	Epoch 60 	 Iteration 120 	 loss 4.7928
+Val loss: 4.8873 	 test loss: 4.9371 	 epoch 60
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Epoch 61 	 Iteration 0 	 loss 1.0539
+Epoch 61 	 Iteration 20 	 loss 0.9789
+Epoch 61 	 Iteration 40 	 loss 0.9946
+Epoch 61 	 Iteration 60 	 loss 1.0350
+Epoch 61 	 Iteration 80 	 loss 0.9967
+Epoch 61 	 Iteration 100 	 loss 1.0360
+Epoch 61 	 Iteration 120 	 loss 0.9800
+Epoch 61 	 Iteration 140 	 loss 1.0107
+Epoch 61 	 Iteration 160 	 loss 1.0351
+Epoch 61 	 Iteration 180 	 loss 1.0641
+Epoch 61 	 Iteration 200 	 loss 0.9598
+Epoch 61 	 Iteration 220 	 loss 0.9782
+Epoch 61 	 Iteration 240 	 loss 0.9710
+Epoch 61 	 Iteration 260 	 loss 0.9994
+Epoch 61 	 Iteration 280 	 loss 0.9902
+Epoch 61 	 Iteration 300 	 loss 0.9695
+Epoch 61 	 Iteration 320 	 loss 1.0166
+Epoch 61 	 Iteration 340 	 loss 1.0199
+Epoch 61 	 Iteration 360 	 loss 0.9760
+Epoch 61 	 Iteration 380 	 loss 0.9909
+Epoch 61 	 Iteration 400 	 loss 0.9917
+Epoch 61 	 Iteration 420 	 loss 1.0223
+Epoch 61 	 Iteration 440 	 loss 1.0118
+Epoch 61 	 Iteration 460 	 loss 1.0270
+Epoch 61 	 Iteration 480 	 loss 1.0440
+Epoch 61 	 Iteration 500 	 loss 0.9754
+Epoch 61 	 Iteration 520 	 loss 0.9883
+Epoch 61 	 Iteration 540 	 loss 0.9936
+Epoch 61 	 Iteration 560 	 loss 1.0038
+Epoch 61 	 Iteration 580 	 loss 1.0195
+Epoch 61 	 Iteration 600 	 loss 1.0076
+Epoch 61 	 Iteration 620 	 loss 0.9926
+Epoch 61 	 Iteration 640 	 loss 0.9736
+Epoch 61 	 Iteration 660 	 loss 1.0168
+Epoch 61 	 Iteration 680 	 loss 0.9755
+Epoch 61 	 Iteration 700 	 loss 0.9884
+Epoch 61 	 Iteration 720 	 loss 1.0173
+Epoch 61 	 Iteration 740 	 loss 1.0074
+Epoch 61 	 Iteration 760 	 loss 1.0015
+Epoch 61 	 Iteration 780 	 loss 0.9799
+Epoch 61 	 Iteration 800 	 loss 1.0110
+Epoch 61 	 Iteration 820 	 loss 0.9745
+Epoch 61 	 Iteration 840 	 loss 0.9962
+Epoch 61 	 Iteration 860 	 loss 1.0532
+Epoch 61 	 Iteration 880 	 loss 1.0124
+Epoch 61 	 Iteration 900 	 loss 0.9996
+Epoch 61 	 Iteration 920 	 loss 0.9958
+Epoch 61 	 Iteration 940 	 loss 0.9821
+Epoch 61 	 Iteration 960 	 loss 1.0234
+Epoch 61 	 Iteration 980 	 loss 0.9859
+Epoch 61 	 Iteration 1000 	 loss 0.9498
+Epoch 61 	 Iteration 1020 	 loss 1.0348
+Epoch 61 	 Iteration 1040 	 loss 1.0172
+>> valid 	Epoch 61 	 Iteration 0 	 loss 5.0762
+>> valid 	Epoch 61 	 Iteration 20 	 loss 4.8822
+>> valid 	Epoch 61 	 Iteration 40 	 loss 4.9963
+>> valid 	Epoch 61 	 Iteration 60 	 loss 4.9088
+>> valid 	Epoch 61 	 Iteration 80 	 loss 4.6679
+>> valid 	Epoch 61 	 Iteration 100 	 loss 4.7880
+>> valid 	Epoch 61 	 Iteration 120 	 loss 4.9744
+>> valid 	Epoch 61 	 Iteration 140 	 loss 4.7921
+>> valid 	Epoch 61 	 Iteration 160 	 loss 4.8055
+>> valid 	Epoch 61 	 Iteration 180 	 loss 5.0626
+>> test 	Epoch 61 	 Iteration 0 	 loss 5.6161
+>> test 	Epoch 61 	 Iteration 20 	 loss 5.1243
+>> test 	Epoch 61 	 Iteration 40 	 loss 4.8975
+>> test 	Epoch 61 	 Iteration 60 	 loss 4.8692
+>> test 	Epoch 61 	 Iteration 80 	 loss 5.0267
+>> test 	Epoch 61 	 Iteration 100 	 loss 4.7559
+>> test 	Epoch 61 	 Iteration 120 	 loss 4.7925
+Val loss: 4.8869 	 test loss: 4.9370 	 epoch 61
+Best: val loss: 0.1559 	 test loss: 0.1566 	 epoch 11
+Early stopping at epoch 61: no val improvement for 50 epochs (best_epoch=11, best_val=0.1559)
