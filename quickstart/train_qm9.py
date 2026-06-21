@@ -433,8 +433,10 @@ class QM9WalkDataset(Dataset):
         n = d.x.shape[0]
         if self.walk_type == "search":
             # RSNN DFS-based search: pad to ``max_len`` and record ``lengths``.
-            # canonical DFS is deterministic; m>1 yields identical walks, force m=1
-            m_eff = 1 if self.canonical else self.m
+            # Deterministic canonical DFS (mode 1) yields identical walks for
+            # any m, so force m=1. Semi-canonical (mode 2) keeps a random tie-
+            # break and therefore a genuine ensemble, so it keeps self.m.
+            m_eff = 1 if self.canonical == 1 else self.m
             d = sample_dfs(d, m_eff, self.w, self.max_len,
                            self.vocab, add_edge_feat=add_ef,
                            max_search_len=self.max_search_len,
@@ -443,7 +445,7 @@ class QM9WalkDataset(Dataset):
                            angle_K=self.angle_K,
                            dihedral_K=self.dihedral_K,
                            vectorize=bool(self.vectorize_quadruplet),
-                           canonical=bool(self.canonical),
+                           canonical=int(self.canonical),
                            emit_xyz=bool(self.emit_xyz),
                            wl_iters=self.wl_iters)
         else:
@@ -495,21 +497,27 @@ def _build_argparser() -> argparse.ArgumentParser:
                         "sample_dfs instead of per-step. Numerically equivalent to the "
                         "scalar path; ~5-10x faster on the angle/dihedral term. Default "
                         "0 keeps the slow path for byte-equivalence with prior runs.")
-    p.add_argument("--canonical", type=int, choices=[0, 1], default=0,
-                   help="If 1, replace the random-start/random-shuffle DFS with a "
-                        "deterministic canonical traversal: WL/Morgan per-atom rank "
-                        "(seeded by atomic number z and degree), start at the rank-"
-                        "minimum atom, push neighbors in canonical order, ties broken "
-                        "by original atom index. Forces m=1 (one walk covers the "
-                        "connected molecule). sample_dfs / walk_type=search only. "
-                        "Default 0 keeps the random DFS (existing sweep behavior).")
+    p.add_argument("--canonical", type=int, choices=[0, 1, 2], default=0,
+                   help="DFS traversal mode (sample_dfs / walk_type=search only). "
+                        "0 = random-start/random-shuffle DFS (existing sweep "
+                        "behavior). 1 = deterministic canonical traversal: "
+                        "WL/Morgan per-atom rank (seeded by atomic number z and "
+                        "degree), start at the rank-minimum atom, push neighbors "
+                        "in canonical order, ties broken by original atom index; "
+                        "forces m=1 (one walk covers the connected molecule). "
+                        "2 = semi-canonical: same WL/Morgan ranks but ties broken "
+                        "RANDOMLY over the WL-equivalent (equal-rank) nodes for "
+                        "both the start and the neighbor order. This makes the "
+                        "walk distribution permutation-invariant while keeping m "
+                        "(unlike mode 1), restoring a multi-walk ensemble. "
+                        "Default 0.")
     p.add_argument("--emit_xyz", type=int, choices=[0, 1], default=0,
                    help="If 1, sample_dfs emits walk_xyz (nw,max_len,3): xyz of the "
                         "atom at each walk position (zeros at padding) for the "
                         "geometric attention bias. Requires data.pos. Default 0.")
     p.add_argument("--wl_iters", type=int, default=3,
                    help="Weisfeiler-Lehman refinement rounds for the canonical rank "
-                        "(only used when --canonical 1). Default 3.")
+                        "(only used when --canonical 1 or 2). Default 3.")
     p.add_argument("--rbf_K", type=int, default=16)
     p.add_argument("--rbf_cutoff", type=float, default=5.0)
     p.add_argument("--seed", type=int, default=42)

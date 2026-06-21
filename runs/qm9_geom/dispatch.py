@@ -57,6 +57,14 @@ CELLS = [
                         "--geom_bias", "1", "--geom_rbf_K", "16",
                         "--geom_angle_K", "8", "--geom_dihedral_K", "4",
                         "--geom_hidden", "32"]),
+    # Tie-break ablation: identical to random_bias except --canonical 2
+    # (semi-canonical: WL/Morgan ranks, random tie-break over WL-equivalent
+    # nodes, m stays 8 -- not forced to 1). Isolates ONLY the permutation-
+    # invariant tie-break vs the fully-random walk start/neighbor order.
+    ("semicanonical_bias", ["--canonical", "2", "--max_search_len", "16",
+                            "--geom_bias", "1", "--geom_rbf_K", "16",
+                            "--geom_angle_K", "8", "--geom_dihedral_K", "4",
+                            "--geom_hidden", "32"]),
 ]
 
 COMMON = [

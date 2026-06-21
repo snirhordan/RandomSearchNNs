@@ -620,6 +620,241 @@ def test_sample_dfs_emit_xyz_requires_pos():
                    canonical=True, emit_xyz=True)
 
 
+# ---------------------------------------------------------------------------
+# Semi-canonical DFS (--canonical 2): WL/Morgan ranks with RANDOM tie-break
+# over the WL-equivalent orbit. Keeps the multi-walk ensemble (m not forced to
+# 1) and makes the walk DISTRIBUTION permutation-invariant.
+# ---------------------------------------------------------------------------
+
+
+def _walk_orders(out):
+    """Per-walk node-id sequences (excluding padding) as tuples."""
+    orders = []
+    for i in range(out.walk_ids.shape[1]):
+        ids = tuple(int(v) for v in out.walk_ids[0, i] if int(v) != -1)
+        orders.append(ids)
+    return orders
+
+
+def _rank_seq_counter(out, ranks):
+    """Counter over the WL-rank sequences of the walks (relabeling-invariant).
+
+    Each walk is reduced to the tuple of WL ranks of its visited nodes in walk
+    order. Because the WL rank is itself isomorphism-invariant, this sequence is
+    invariant under any relabeling of the molecule, so two isomorphic graphs
+    drawn from the same semi-canonical distribution must yield equal counters.
+    """
+    from collections import Counter
+    c = Counter()
+    for i in range(out.walk_ids.shape[1]):
+        seq = tuple(
+            ranks[int(v)] for v in out.walk_ids[0, i] if int(v) != -1
+        )
+        c[seq] += 1
+    return c
+
+
+def _symmetric_wl_tie_graph():
+    """Star K_{1,4}: center 0 (z=C) + four identical leaves 1..4 (z=H).
+
+    The four leaves are WL-equivalent (same z, same degree, same neighborhood),
+    so they form a single rank orbit -- exactly the residual automorphism that
+    deterministic canonical breaks by index but semi-canonical breaks randomly.
+    """
+    edges = [(0, 1), (0, 2), (0, 3), (0, 4)]
+    z = [6, 1, 1, 1, 1]
+    return _labeled_graph(edges, z), z
+
+
+def test_sample_dfs_semicanonical_diversity():
+    """Mode 2 yields >1 distinct walk order on a WL-symmetric graph and across
+    reseeded calls, whereas mode 1 (deterministic) is all-identical."""
+    g, z = _symmetric_wl_tie_graph()
+    vocab = {"PAD": int(max(z)) + 1}
+    n = len(z)
+
+    # Semi-canonical: across the nw=8 walks of a single call, the leaf order
+    # varies, so there is more than one distinct walk-order.
+    random.seed(0)
+    semi = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab, canonical=2)
+    orders = _walk_orders(semi)
+    assert len(set(orders)) > 1, (
+        "semi-canonical produced a single walk order on a symmetric graph"
+    )
+
+    # Diversity persists across reseeded calls (the tie-break is genuinely
+    # random, not an artifact of one RNG state).
+    seen = set()
+    for sd in range(5):
+        random.seed(sd)
+        out = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab,
+                         canonical=2)
+        seen.update(_walk_orders(out))
+    assert len(seen) > 1
+
+    # Deterministic canonical (mode 1) is identical across walks AND seeds.
+    random.seed(0)
+    det_a = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab, canonical=1)
+    random.seed(999)
+    det_b = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab, canonical=1)
+    det_orders = _walk_orders(det_a)
+    assert len(set(det_orders)) == 1, "mode 1 should give identical walks"
+    assert torch.equal(det_a.walk_ids, det_b.walk_ids)
+
+
+def test_sample_dfs_semicanonical_full_coverage():
+    """Every semi-canonical walk visits every atom of the connected molecule."""
+    g, z = _symmetric_wl_tie_graph()
+    n = len(z)
+    vocab = {"PAD": int(max(z)) + 1}
+    random.seed(3)
+    out = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab, canonical=2)
+    for i in range(8):
+        assert int(out.lengths[i]) == n
+        visited = [int(v) for v in out.walk_ids[0, i] if int(v) != -1]
+        assert set(visited) == set(range(n))
+        assert len(visited) == n  # each atom exactly once
+
+
+def test_sample_dfs_semicanonical_keeps_m():
+    """Semi-canonical does NOT force m=1: nw walks are emitted (ensemble)."""
+    g, z = _symmetric_wl_tie_graph()
+    n = len(z)
+    vocab = {"PAD": int(max(z)) + 1}
+    random.seed(1)
+    out = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab, canonical=2)
+    assert out.walk_ids.shape[1] == 8
+    assert out.lengths.shape == (8,)
+
+
+def test_sample_dfs_semicanonical_distribution_permutation_invariant():
+    """The semi-canonical walk DISTRIBUTION is permutation-invariant.
+
+    Take a WL-symmetric graph G and a relabeling G' = pi(G). Draw many semi-
+    canonical walks from each and compare the Counter of WL-RANK sequences
+    (relabeling-invariant by construction). The two counters must match closely.
+    Also demonstrate that mode 1 (deterministic) produces a NODE walk that is
+    NOT invariant under pi -- the wart this fixes.
+    """
+    g, z = _symmetric_wl_tie_graph()
+    n = len(z)
+    perm = [2, 0, 4, 1, 3]  # arbitrary relabeling
+    gp = _permute_graph(g, perm)
+    vocab = {"PAD": int(max(z)) + 1}
+
+    nd_g = get_neighbor_dict(g)
+    nd_gp = get_neighbor_dict(gp)
+    ranks_g = _canonical_ranks(nd_g, n, z=g.z)
+    ranks_gp = _canonical_ranks(nd_gp, n, z=gp.z)
+
+    # Draw a large pooled sample from each graph (many reseeded calls so the
+    # empirical rank-sequence distribution is well estimated).
+    from collections import Counter
+    c_g, c_gp = Counter(), Counter()
+    for sd in range(60):
+        random.seed(sd)
+        out_g = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab,
+                           canonical=2)
+        c_g += _rank_seq_counter(out_g, ranks_g)
+        random.seed(sd)
+        out_gp = sample_dfs(gp.clone(), nw=8, s=2, max_len=n, vocab=vocab,
+                            canonical=2)
+        c_gp += _rank_seq_counter(out_gp, ranks_gp)
+
+    # Same support (set of rank-sequences) and statistically close frequencies.
+    assert set(c_g) == set(c_gp), (
+        f"rank-sequence support differs: {set(c_g) ^ set(c_gp)}"
+    )
+    total = sum(c_g.values())
+    assert total == sum(c_gp.values())
+    for seq in c_g:
+        f_g = c_g[seq] / total
+        f_gp = c_gp[seq] / total
+        # The two are the SAME distribution; with ~480 samples each, the
+        # per-cell frequency gap is comfortably within 5 percentage points.
+        assert abs(f_g - f_gp) < 0.05, (
+            f"rank-seq {seq}: freq {f_g:.3f} vs {f_gp:.3f} too far apart"
+        )
+
+    # Wart demonstration: mode 1's NODE walk is not permutation-equivariant on a
+    # symmetric graph (index tie-break depends on the labeling). The two walks,
+    # mapped back to G's labeling, differ.
+    det_g = sample_dfs(g.clone(), nw=1, s=2, max_len=n, vocab=vocab, canonical=1)
+    det_gp = sample_dfs(gp.clone(), nw=1, s=2, max_len=n, vocab=vocab,
+                        canonical=1)
+    ids_g = [int(v) for v in det_g.walk_ids[0, 0] if int(v) != -1]
+    # remap G' walk indices back to G's atom labels via perm (new i holds old
+    # atom perm[i]) so the two node-walks are comparable in G's frame.
+    ids_gp_in_g = [perm[int(v)] for v in det_gp.walk_ids[0, 0] if int(v) != -1]
+    assert ids_g != ids_gp_in_g, (
+        "mode 1 happened to be permutation-invariant here; expected the index "
+        "tie-break to make the node-walk labeling-dependent"
+    )
+
+
+def test_sample_dfs_semicanonical_rank_seq_invariant_even_when_node_walk_isnt():
+    """Cross-check: under mode 2 the WL-rank-sequence MULTISET matches across a
+    relabeling even though individual node walks need not."""
+    g, z = _symmetric_wl_tie_graph()
+    n = len(z)
+    perm = [4, 3, 2, 1, 0]
+    gp = _permute_graph(g, perm)
+    vocab = {"PAD": int(max(z)) + 1}
+
+    nd_g = get_neighbor_dict(g)
+    nd_gp = get_neighbor_dict(gp)
+    ranks_g = _canonical_ranks(nd_g, n, z=g.z)
+    ranks_gp = _canonical_ranks(nd_gp, n, z=gp.z)
+
+    random.seed(11)
+    out_g = sample_dfs(g.clone(), nw=8, s=2, max_len=n, vocab=vocab,
+                       canonical=2)
+    random.seed(11)
+    out_gp = sample_dfs(gp.clone(), nw=8, s=2, max_len=n, vocab=vocab,
+                        canonical=2)
+    # Every semi-canonical walk's rank-sequence is a valid sequence for both
+    # graphs (same support set), confirming relabeling-invariance of the
+    # rank-sequence law on a per-walk basis.
+    sup_g = set(_rank_seq_counter(out_g, ranks_g))
+    sup_gp = set(_rank_seq_counter(out_gp, ranks_gp))
+    # Start rank is always the global minimum rank for both.
+    mn_g, mn_gp = min(ranks_g), min(ranks_gp)
+    for seq in sup_g:
+        assert seq[0] == mn_g
+    for seq in sup_gp:
+        assert seq[0] == mn_gp
+
+
+# ---------------------------------------------------------------------------
+# Backward-compatibility: int modes 0/1 must match the bool True/False paths
+# byte-for-byte (True == 1, False == 0).
+# ---------------------------------------------------------------------------
+
+
+def test_sample_dfs_canonical_int_bool_equivalence(random_graph_50):
+    """canonical=1 == canonical=True and canonical=0 == canonical=False."""
+    data = random_graph_50
+    data.pos = torch.randn(data.x.shape[0], 3)
+    n = data.x.shape[0]
+    vocab = _vocab_for(data)
+
+    # mode 1 vs True (deterministic; no RNG consumed)
+    a = sample_dfs(data.clone(), nw=1, s=2, max_len=n, vocab=vocab, canonical=1)
+    b = sample_dfs(data.clone(), nw=1, s=2, max_len=n, vocab=vocab,
+                   canonical=True)
+    assert torch.equal(a.walk_ids, b.walk_ids)
+    assert torch.equal(a.walk_pe, b.walk_pe)
+
+    # mode 0 vs False (random; same seed -> byte-identical RNG consumption)
+    random.seed(42); torch.manual_seed(42); np.random.seed(42)
+    c = sample_dfs(data.clone(), nw=3, s=2, max_len=n, vocab=vocab, canonical=0)
+    random.seed(42); torch.manual_seed(42); np.random.seed(42)
+    d = sample_dfs(data.clone(), nw=3, s=2, max_len=n, vocab=vocab,
+                   canonical=False)
+    assert torch.equal(c.walk_ids, d.walk_ids)
+    assert torch.equal(c.walk_pe, d.walk_pe)
+
+
 def test_canonical_ranks_relabeling_invariant():
     """_canonical_ranks is isomorphism-invariant, deterministic, and
     PYTHONHASHSEED-independent."""

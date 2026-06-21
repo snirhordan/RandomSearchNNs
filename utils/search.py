@@ -322,19 +322,31 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
         at each step pos >= 3. Steps with pos < 3 are zero-filled.
       angle_K, dihedral_K : int
         Basis sizes (default 8 / 4 per Gasteiger et al. DimeNet defaults).
-      canonical : bool
-        If True, replace the random start + random.shuffle(neighbors) DFS with a
-        deterministic canonical traversal: a Weisfeiler-Lehman / Morgan per-atom
-        rank (seeded by atomic number z and degree) selects the rank-minimum
-        start atom and orders the neighbor pushes, with the original atom index
-        breaking true automorphism ties. No randomness is consumed on this path.
+      canonical : int
+        DFS traversal mode (``bool`` accepted for backward-compatibility, since
+        ``True == 1`` and ``False == 0``):
+
+        - ``0`` (default): random start + ``random.shuffle(neighbors)``.
+        - ``1`` (deterministic canonical): a Weisfeiler-Lehman / Morgan per-atom
+          rank (seeded by atomic number z and degree) selects the rank-minimum
+          start atom and orders the neighbor pushes, with the original atom
+          index breaking true automorphism ties. No randomness is consumed.
+          Caller typically forces ``nw=1`` (one walk covers the molecule).
+        - ``2`` (semi-canonical): keeps the WL/Morgan ranks but breaks ties
+          RANDOMLY -- uniform over the WL-equivalent (equal-rank) nodes -- for
+          BOTH the start node and the per-node neighbor order. This makes the
+          walk *distribution* permutation-invariant (uniform over the residual
+          automorphism orbit WL could not split) while still restoring an
+          ensemble: the caller keeps ``nw`` (it is NOT forced to 1), so several
+          distinct walks are drawn per molecule. Unlike mode 1, mode 2 consumes
+          randomness via ``random.choice`` / ``random.shuffle``.
       emit_xyz : bool
         If True, emit ``data.walk_xyz`` of shape (nw, max_len, 3): the xyz of the
         atom at each walk position (zeros at padding). Requires data.pos. Orthogonal
         to ``canonical`` (Phase 2 may combine them).
       wl_iters : int
         Weisfeiler-Lehman refinement rounds for the canonical rank (default 3).
-        Only used when ``canonical=True``.
+        Only used when ``canonical`` is truthy (modes 1 and 2).
 
     Requires data.pos (N, 3) for angle/dihedral/emit_xyz features. With
     ``canonical=False emit_xyz=False``, behaviour is byte-for-byte identical to
@@ -435,9 +447,19 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
 
     # For each DFS search:
     for i in range(nw):
-        if canonical:
-            # canonical-minimum atom: lowest WL rank, original index breaks ties
+        if canonical == 1:
+            # deterministic canonical-minimum atom: lowest WL rank, original
+            # index breaks ties. No randomness is consumed on this path.
             start_node = min(range(num_nodes), key=lambda v: (ranks[v], v))
+        elif canonical == 2:
+            # semi-canonical: among the WL rank-minimum atoms (the residual
+            # automorphism orbit WL could not split), pick one uniformly at
+            # random. This makes the start-node distribution permutation-
+            # invariant instead of tie-broken by the (non-invariant) index.
+            mn = min(ranks)
+            start_node = random.choice(
+                [v for v in range(num_nodes) if ranks[v] == mn]
+            )
         else:
             start_node = random.randint(0, num_nodes - 1)
         visited = set()
@@ -504,10 +526,19 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
 
             # Push unvisited neighbors onto the stack.
             neighbors = list(neighbor_dict[node])
-            if canonical:
-                # push so the canonical-minimum neighbor is popped (visited)
-                # first; stack is LIFO, so sort descending by (rank, index)
+            if canonical == 1:
+                # deterministic: push so the canonical-minimum neighbor is
+                # popped (visited) first; stack is LIFO, so sort descending by
+                # (rank, index).
                 neighbors.sort(key=lambda v: (ranks[v], v), reverse=True)
+            elif canonical == 2:
+                # semi-canonical: order by WL rank (descending, so the rank-
+                # minimum neighbor is popped first), but break ties RANDOMLY
+                # among equal-rank neighbors. Python's sort is stable, so
+                # shuffling first then a rank-only sort yields a uniform random
+                # order within each equal-rank block (permutation-invariant).
+                random.shuffle(neighbors)
+                neighbors.sort(key=lambda v: ranks[v], reverse=True)
             else:
                 random.shuffle(neighbors)
             for nb in neighbors:
