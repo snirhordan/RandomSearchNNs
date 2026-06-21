@@ -134,7 +134,62 @@ def get_neighbor_dict(data):
         
     data._neighbor_dict = neighbor_dict
     return neighbor_dict
-    
+
+
+def _canonical_ranks(neighbor_dict, num_nodes, z=None, n_iters=3):
+    """Weisfeiler-Lehman / Morgan canonical per-node ranks.
+
+    Iteratively refines an integer color per node, seeded by atom invariants
+    (atomic number z and degree), by hashing the multiset of neighbor colors.
+    Colors are compressed to dense ranks 0..K-1 each round (sorted by the raw
+    color tuple) so the labels stay small and the refinement is reproducible.
+
+    Parameters
+    ----------
+    neighbor_dict : dict[int, set[int]]
+        Adjacency as produced by ``get_neighbor_dict``.
+    num_nodes : int
+        Node count (graph may be the whole connected molecule).
+    z : torch.Tensor or None
+        Atomic numbers (N,). If None, the atomic-number invariant is dropped
+        and only degree seeds the refinement.
+    n_iters : int
+        Number of refinement rounds (default 3; WL converges on QM9-size graphs).
+
+    Returns
+    -------
+    list[int]
+        ``rank[node]`` = canonical color id. Equal ranks are true refinement
+        ties (candidate automorphisms) and MUST be broken downstream by the
+        original node index for full determinism.
+    """
+    # Seed color per node from its invariants. Sorting the distinct seed tuples
+    # makes the initial labels canonical (relabeling-invariant).
+    seeds = [
+        (int(z[v]) if z is not None else 0, len(neighbor_dict[v]))
+        for v in range(num_nodes)
+    ]
+    seed_lut = {s: i for i, s in enumerate(sorted(set(seeds)))}
+    colors = [seed_lut[s] for s in seeds]
+
+    for _ in range(n_iters):
+        # signature = (own color, sorted neighbor-color multiset). Every set is
+        # consumed via sorted(...), so iteration order never leaks.
+        sigs = [
+            (colors[v], tuple(sorted(colors[u] for u in neighbor_dict[v])))
+            for v in range(num_nodes)
+        ]
+        # Compress signatures to dense ints via a sorted LUT (hash-free, so the
+        # output is independent of PYTHONHASHSEED).
+        lut = {s: i for i, s in enumerate(sorted(set(sigs)))}
+        new_colors = [lut[s] for s in sigs]
+        if new_colors == colors:
+            break  # stable refinement reached
+        colors = new_colors
+
+    return colors
+
+
 def sample_bfs(data, nw, s, max_len, vocab, add_edge_feat=None):
     """
     Performs optimized BFS-based searches on the graph and computes the edge encoding on the fly.
@@ -250,7 +305,8 @@ def sample_bfs(data, nw, s, max_len, vocab, add_edge_feat=None):
 
 def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
                max_search_len=None, angles=False, dihedrals=False,
-               angle_K=8, dihedral_K=4, vectorize=False):
+               angle_K=8, dihedral_K=4, vectorize=False,
+               canonical=False, emit_xyz=False, wl_iters=3):
     """
     Performs DFS-based searches on the graph and computes the edge encoding on the fly.
 
@@ -266,9 +322,24 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
         at each step pos >= 3. Steps with pos < 3 are zero-filled.
       angle_K, dihedral_K : int
         Basis sizes (default 8 / 4 per Gasteiger et al. DimeNet defaults).
+      canonical : bool
+        If True, replace the random start + random.shuffle(neighbors) DFS with a
+        deterministic canonical traversal: a Weisfeiler-Lehman / Morgan per-atom
+        rank (seeded by atomic number z and degree) selects the rank-minimum
+        start atom and orders the neighbor pushes, with the original atom index
+        breaking true automorphism ties. No randomness is consumed on this path.
+      emit_xyz : bool
+        If True, emit ``data.walk_xyz`` of shape (nw, max_len, 3): the xyz of the
+        atom at each walk position (zeros at padding). Requires data.pos. Orthogonal
+        to ``canonical`` (Phase 2 may combine them).
+      wl_iters : int
+        Weisfeiler-Lehman refinement rounds for the canonical rank (default 3).
+        Only used when ``canonical=True``.
 
-    Requires data.pos (N, 3) for angle/dihedral features. Without those flags,
-    behaviour is byte-for-byte identical to the original function.
+    Requires data.pos (N, 3) for angle/dihedral/emit_xyz features. With
+    ``canonical=False emit_xyz=False``, behaviour is byte-for-byte identical to
+    the original function (the random.randint / random.shuffle calls stay on the
+    exact same code paths, so the global RNG stream is consumed identically).
 
     For each DFS search:
       - A random starting node is chosen.
@@ -306,6 +377,12 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
     # Use the precomputed neighbor dictionary (or compute & store it if not present).
     neighbor_dict = get_neighbor_dict(data)  # get_neighbor_dict returns a dict with sets.
 
+    # Canonical WL/Morgan ranks (computed once per molecule, not per walk).
+    ranks = None
+    if canonical:
+        z = getattr(data, "z", None)
+        ranks = _canonical_ranks(neighbor_dict, num_nodes, z=z, n_iters=int(wl_iters))
+
     # Pre-allocate tensors for DFS searches.
     searches_emb = torch.full((nw, max_len), vocab['PAD'], dtype=torch.long)
     searches = torch.full((nw, max_len), -1, dtype=torch.long)
@@ -325,11 +402,13 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
     else:
         walk_pe_extra = None
 
-    # Quadruplet geometric features (per Gasteiger et al. DimeNet). Allocated
-    # only when requested; require data.pos.
-    if angles or dihedrals:
+    # Quadruplet geometric features (per Gasteiger et al. DimeNet) and the
+    # per-walk-position xyz (Phase 2). Allocated only when requested; require
+    # data.pos for any of them.
+    need_pos = angles or dihedrals or emit_xyz
+    if need_pos:
         if not hasattr(data, "pos") or data.pos is None:
-            raise ValueError("angles/dihedrals=True requires data.pos (N, 3) coordinates.")
+            raise ValueError("angles/dihedrals/emit_xyz require data.pos (N, 3).")
         pos_xyz = data.pos
     walk_pe_angle = (
         torch.zeros((nw, max_len, angle_K), dtype=torch.float)
@@ -338,6 +417,10 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
     walk_pe_dihedral = (
         torch.zeros((nw, max_len, 2 * dihedral_K), dtype=torch.float)
         if dihedrals else None
+    )
+    walk_xyz = (
+        torch.zeros((nw, max_len, 3), dtype=torch.float)
+        if emit_xyz else None
     )
 
     # Effective per-walk length cap (search-length, separate from max_len padding).
@@ -352,7 +435,11 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
 
     # For each DFS search:
     for i in range(nw):
-        start_node = random.randint(0, num_nodes - 1)
+        if canonical:
+            # canonical-minimum atom: lowest WL rank, original index breaks ties
+            start_node = min(range(num_nodes), key=lambda v: (ranks[v], v))
+        else:
+            start_node = random.randint(0, num_nodes - 1)
         visited = set()
         stack = [start_node]
         order = []  # To store the raw node indices in the DFS order.
@@ -367,7 +454,9 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
             # Record the embedding id (from data.x_emb via vocab) and the raw node id.
             searches_emb[i, pos] = data.x_emb[node]
             searches[i, pos] = node
-            
+            if walk_xyz is not None:
+                walk_xyz[i, pos] = pos_xyz[node]
+
             # Compute edge encoding on the fly for this node:
             for d in range(1, min(s, pos) + 1):
                 prev_node = order[pos - d]
@@ -413,9 +502,14 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
                     walk_pe_dihedral[i, pos] = _dihedral_basis(phi, dihedral_K)
             pos += 1
 
-            # Push unvisited neighbors onto the stack in randomized order.
+            # Push unvisited neighbors onto the stack.
             neighbors = list(neighbor_dict[node])
-            random.shuffle(neighbors)
+            if canonical:
+                # push so the canonical-minimum neighbor is popped (visited)
+                # first; stack is LIFO, so sort descending by (rank, index)
+                neighbors.sort(key=lambda v: (ranks[v], v), reverse=True)
+            else:
+                random.shuffle(neighbors)
             for nb in neighbors:
                 if nb not in visited:
                     stack.append(nb)
@@ -453,6 +547,8 @@ def sample_dfs(data, nw, s, max_len, vocab, add_edge_feat=None,
         parts.append(walk_pe_dihedral)
     data.walk_pe = parts[0] if len(parts) == 1 else torch.cat(parts, dim=-1)
     data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_xyz is not None:
+        data.walk_xyz = walk_xyz
     return data
 
 def sample_walks(data, nw, l, s, non_backtracking, add_edge_feat=None):
