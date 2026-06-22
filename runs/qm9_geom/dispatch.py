@@ -65,6 +65,15 @@ CELLS = [
                             "--geom_bias", "1", "--geom_rbf_K", "16",
                             "--geom_angle_K", "8", "--geom_dihedral_K", "4",
                             "--geom_hidden", "32"]),
+    # CORRECTED: semi-canonical at FULL coverage (no --max_search_len cap). The
+    # cap-16 cell above was confounded -- canonical-ordered walks share a prefix,
+    # so a 16-step cap truncates the SAME tail atoms in every walk (a systematic
+    # coverage blind spot random never has). This cell isolates the WL-orbit
+    # tie-break at full coverage; m stays 8 (mode 2 does not force m=1).
+    ("semicanonical_full_bias", ["--canonical", "2",
+                                 "--geom_bias", "1", "--geom_rbf_K", "16",
+                                 "--geom_angle_K", "8", "--geom_dihedral_K", "4",
+                                 "--geom_hidden", "32"]),
 ]
 
 COMMON = [

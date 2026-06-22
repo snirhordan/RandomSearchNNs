@@ -11,14 +11,14 @@ from pathlib import Path
 OUT_ROOT = Path(__file__).resolve().parent
 SEEDS = [42, 43, 44]
 CELLS = ["base_random", "canonical_only", "canonical_bias", "random_bias",
-         "semicanonical_bias"]
+         "semicanonical_bias", "semicanonical_full_bias"]
 LABELS = {
     "base_random": "random multi-walk (m=8), no bias  [baseline]",
     "canonical_only": "canonical single walk, no bias",
     "canonical_bias": "canonical walk + geometric attn bias",
     "random_bias": "random multi-walk (m=8) + geometric attn bias",
-    "semicanonical_bias": "random multi-walk (m=8) + geom bias, WL-orbit "
-                          "tie-break (semi-canonical)",
+    "semicanonical_bias": "semi-canonical + bias, cap16 [CONFOUNDED: blind spot]",
+    "semicanonical_full_bias": "semi-canonical + bias, full coverage (WL-orbit)",
 }
 
 
