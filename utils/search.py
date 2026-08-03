@@ -1,5 +1,6 @@
 import torch
 import random
+import warnings
 from collections import deque
 
 
@@ -1433,3 +1434,541 @@ def dfs_edges(data):
                 stack.append((nb, node))
 
     return edges
+
+
+# Sentinel segment id for a ligand-walk block under
+# ``sample_protein_ligand``'s ``protein_order='torsion'`` path -- guaranteed
+# distinct from every protein segment id, which are non-negative integers
+# assigned by ``generation.pdbbind.build_protein_torsion_order``.
+_TORSION_LIGAND_SEG_ID = -1
+
+
+def sample_protein_ligand(data, m, s, max_len, vocab, add_edge_feat=None,
+                          ligand_max_len=None, angles=False, dihedrals=False,
+                          angle_K=8, dihedral_K=4, vectorize=False,
+                          emit_xyz=False, ligand_graph='distance',
+                          protein_order='allatom'):
+    """
+    Samples protein-ligand complex sequences for RSNN-style transformer input.
+
+    Adapts ``sample_dfs`` to protein-ligand complexes (``data.segment`` == 0
+    for protein-pocket atoms, == 1 for ligand atoms). Proteins have a
+    natural residue order (``data.residue_id`` increases N->C along the
+    chain for protein atoms; ligand atoms use -1), so the protein part is
+    emitted DETERMINISTICALLY; the ligand has no canonical atom order, so
+    ``m`` independent random DFS walks are drawn over the ligand subgraph.
+    Each of the ``m`` output sequences is
+        [deterministic protein prefix] ++ [one random ligand DFS walk]
+    so that within-walk transformer attention mixes protein and ligand
+    context (binding interaction). The SAME protein prefix is repeated
+    across all m walks by design -- downstream node-state aggregation
+    scatter-means repeated occurrences of the same node.
+
+    Sequence construction (per walk i in 0..m-1)
+    ---------------------------------------------
+    1. Protein prefix (identical for every walk): all atoms with
+       ``segment == 0``, ordered by ``(residue_id, original_atom_index)``
+       ascending (``residue_id`` is already N->C sequence order for
+       protein atoms).
+    2. Ligand walk i (random): a random DFS (no revisits) over the ligand
+       SUBGRAPH (nodes with ``segment == 1``; edges restricted to
+       ligand-ligand pairs from ``get_neighbor_dict``). The start node is
+       uniformly random among ligand atoms; neighbor push order uses
+       ``random.shuffle`` (mirrors ``sample_dfs``'s ``canonical=0`` path,
+       i.e. random start + random.shuffle(neighbors)). Capped at
+       ``min(ligand_max_len, max_len)``.
+    3. Truncation policy: let ``lig_len`` be the realized ligand-walk
+       length and ``prefix_cap = max_len - lig_len``. The ligand walk is
+       NEVER truncated to make room for the protein prefix (dropping
+       ligand atoms is worse than dropping non-interface protein atoms).
+       If the full protein prefix does not fit
+       (``len(prefix) > prefix_cap``), keep the ``prefix_cap`` protein
+       atoms with the SMALLEST minimum Euclidean distance to any ligand
+       atom (the binding-interface atoms), then RE-SORT the kept atoms by
+       ``(residue_id, atom_index)`` so chain order is preserved among the
+       survivors. If the prefix already fits, it is used whole (already
+       sorted).
+    4. ``order_i = kept_prefix ++ ligand_walk_i`` (defensively truncated to
+       ``max_len``).
+
+    Per-position encoding (mirrors ``sample_dfs`` exactly):
+      - ``encoding_edge[i, pos, d - 1] = 1`` for ``d`` in ``1..min(s, pos)``
+        iff ``order[pos]`` and ``order[pos - d]`` are adjacent in
+        ``get_neighbor_dict`` (either direction). This window spans the
+        protein->ligand boundary by construction -- that is intended: it
+        encodes protein-ligand interface contacts within the window.
+      - Optional per-step edge feature (when ``add_edge_feat is not
+        None``): for ``pos > 0``,
+        ``walk_pe_extra[i, pos] = add_edge_feat[order[pos - 1], order[pos]]``
+        -- unconditional (not gated on graph-adjacency), mirroring
+        ``sample_dfs``'s DFS path.
+      - Optional bond-angle Fourier features (``angles=True``) at
+        ``pos >= 2``, from ``(order[pos-2], order[pos-1], order[pos])``.
+      - Optional dihedral Fourier features (``dihedrals=True``) at
+        ``pos >= 3``, from ``(order[pos-3], order[pos-2], order[pos-1],
+        order[pos])``.
+      - Positions below those thresholds, and all padding positions, are
+        zero-filled.
+
+    Requires ``data.pos`` (N, 3) UNCONDITIONALLY: it is used for the
+    interface-distance protein-prefix truncation policy above (step 3),
+    and additionally for angles/dihedrals/emit_xyz when requested.
+
+    Parameters
+    ----------
+    data : torch_geometric.data.Data
+        Must provide ``x_emb`` (N,), ``pos`` (N, 3), ``edge_index``
+        (2, E, undirected -- both (i, j) and (j, i) present), ``segment``
+        (N,) with 0 = protein-pocket atom / 1 = ligand atom, and
+        ``residue_id`` (N,) with protein atoms numbered 0, 1, 2, ... in
+        N->C sequence order (ligand atoms use -1, ignored here).
+    m : int
+        Number of walks (= number of independent random ligand DFS draws;
+        each gets the shared deterministic protein prefix). Referred to as
+        ``nw`` in ``sample_dfs``.
+    s : int
+        Window size for the edge encoding (as in ``sample_dfs``).
+    max_len : int
+        Total padded sequence length (protein prefix + ligand walk).
+    vocab : dict
+        Mapping from tokens to embedding ids; must include a ``'PAD'``
+        entry.
+    add_edge_feat : Tensor or None
+        Optional (N, N, d_edge) per-edge feature, same semantics as in
+        ``sample_dfs``.
+    ligand_max_len : int or None
+        Cap on the ligand DFS walk length. Defaults to
+        ``min(max_len, 32)``.
+    angles, dihedrals : bool
+        Same semantics as in ``sample_dfs``.
+    angle_K, dihedral_K : int
+        Basis sizes (default 8 / 4 per Gasteiger et al. DimeNet defaults).
+    vectorize : bool
+        If True, batches the angle/dihedral quadruplet compute across all
+        walks after the main loop (numerically equivalent to the scalar
+        path), mirroring ``sample_dfs``.
+    emit_xyz : bool
+        If True, emit ``data.walk_xyz`` of shape (m, max_len, 3): the xyz
+        of the atom at each walk position (zeros at padding).
+    ligand_graph : {'distance', 'bond'}
+        ABLATION knob for the ligand DFS *traversal connectivity only*.
+        ``'distance'`` (default): unchanged behavior -- ligand-step
+        neighbors come from ``get_neighbor_dict`` (the 4.5A radius graph)
+        restricted to ``segment == 1``. ``'bond'``: ligand-step neighbors
+        instead come from ``data.ligand_bond_edge_index`` (ligand-ligand
+        heavy-atom bonds; see ``generation.pdbbind.extract_ligand_bond_edges``
+        / ``augment_cache_with_bonds``). If ``data`` lacks
+        ``ligand_bond_edge_index`` or it is empty, this silently FALLS BACK
+        to the distance-graph neighbors (no crash). Everything else --
+        protein prefix, the edge-window/angle/dihedral features (still
+        computed over the full 4.5A neighbor graph + ``data.pos``),
+        ``walk_pe`` layout, and all output shapes -- is unaffected by this
+        flag; only which ligand atom the DFS is allowed to step to next
+        changes.
+    protein_order : {'allatom', 'torsion'}
+        ABLATION knob for the PROTEIN PREFIX ordering only (default-off;
+        additive; see ``generation.pdbbind.build_protein_torsion_order`` /
+        ``augment_cache_with_torsion``). ``'allatom'`` (default): BYTE-FOR-
+        BYTE the original behavior above -- flat ``(residue_id,
+        atom_index)`` prefix, distance-based nearest-atom truncation, NO
+        segment gating on the edge-window/angle/dihedral features. Every
+        line of that path is unchanged from before this flag existed.
+        ``'torsion'``: the protein prefix instead comes from
+        ``data.torsion_order`` (a torsion-aware ordering: backbone spine
+        blocks per fragment, then per-residue chi-path + tail blocks; see
+        ``build_protein_torsion_order``'s docstring for the full design
+        rationale) with per-position segment ids from ``data.torsion_seg``.
+        If ``data`` lacks ``torsion_order``/``torsion_seg`` or either is
+        empty, this FALLS BACK to the exact ``'allatom'`` behavior for that
+        complex (with a ``RuntimeWarning``), so it never crashes on an
+        un-augmented cache. When active (non-fallback):
+          - Truncation drops whole RESIDUES (all of a residue's spine +
+            chi-path + tail slots, wherever they sit in the order) farthest
+            from the ligand (by min per-atom interface distance) until the
+            prefix fits, instead of dropping individual nearest/farthest
+            atoms; kept atoms retain their ORIGINAL segment ids unchanged
+            ("segments stay intact" -- no renumbering/compaction).
+          - Each of the ``m`` ligand DFS walks gets ONE segment id (a
+            sentinel distinct from every non-negative protein segment id),
+            shared by every position of that walk.
+          - The edge-window/angle/dihedral features are additionally
+            GATED on segment equality: the edge-window offset ``d`` only
+            fires if ``seg[pos - d] == seg[pos]``; the angle quadruplet at
+            ``pos >= 2`` only fires if
+            ``seg[pos-2] == seg[pos-1] == seg[pos]``; the dihedral
+            quadruplet at ``pos >= 3`` only fires if
+            ``seg[pos-3] == seg[pos-2] == seg[pos-1] == seg[pos]``;
+            otherwise that entry is left at its zero-initialized value
+            (same convention as below-threshold/padding positions). This
+            hard-resets those features at every
+            fragment/chi-path/tail/ligand-walk boundary, so a dihedral is
+            only ever computed from 4 consecutive atoms that are ALL part
+            of the same contiguous torsion-meaningful block. The per-step
+            ``add_edge_feat`` stream (``walk_pe_extra``) is deliberately
+            NOT gated (mirrors ``'allatom'``'s unconditional
+            ``(prev, node)`` lookup).
+
+    Returns
+    -------
+    data : torch_geometric.data.Data
+        The input ``data`` with the following new attributes:
+          - ``walk_emb``: (m, max_len) token ids (``data.x_emb[node]``),
+            PAD-padded with ``vocab['PAD']``.
+          - ``walk_ids``: (1, m, max_len) raw node indices, -1 padded
+            (exactly like ``sample_dfs``: ``searches[None, :, :]``).
+          - ``walk_pe``: (m, max_len, D), the concatenation, in this
+            order, of [encoding_edge (width s), per-step edge_feat
+            (width d_edge, if ``add_edge_feat is not None``), angle
+            (width angle_K, if ``angles``), dihedral (width
+            2 * dihedral_K, if ``dihedrals``)]. ``D`` matches
+            ``compute_pe_in_dim("search", w=s, ...)`` for the
+            corresponding flags/widths.
+          - ``lengths``: (m,) realized sequence length per walk.
+          - ``walk_xyz``: (m, max_len, 3) if ``emit_xyz`` (zeros at
+            padding).
+    """
+    if not hasattr(data, "pos") or data.pos is None:
+        raise ValueError(
+            "sample_protein_ligand requires data.pos (N, 3): it is used "
+            "for the interface-distance protein-prefix truncation policy "
+            "(and for angles/dihedrals/emit_xyz when requested)."
+        )
+    pos_xyz = data.pos
+
+    if ligand_graph not in ('distance', 'bond'):
+        raise ValueError(
+            f"ligand_graph must be 'distance' or 'bond', got {ligand_graph!r}"
+        )
+    if protein_order not in ('allatom', 'torsion'):
+        raise ValueError(
+            f"protein_order must be 'allatom' or 'torsion', got {protein_order!r}"
+        )
+
+    segment = data.segment
+    residue_id = data.residue_id
+    num_nodes = segment.size(0)
+
+    # Use the precomputed neighbor dictionary (or compute & store it if not
+    # present). Built from data.edge_index (assumed undirected).
+    neighbor_dict = get_neighbor_dict(data)
+
+    ligand_max_len = (
+        min(max_len, 32) if ligand_max_len is None else int(ligand_max_len)
+    )
+
+    # ``protein_order='torsion'`` ABLATION (default-off; see
+    # generation.pdbbind.build_protein_torsion_order /
+    # augment_cache_with_torsion): swap the flat deterministic protein
+    # prefix for a torsion-aware one carrying per-position segment ids,
+    # consumed below to gate the edge-window/angle/dihedral features.
+    # ``protein_order='allatom'`` (default) executes EXACTLY the original
+    # line (no gating anywhere in this function).
+    use_torsion = False
+    prefix_seg_full = None
+    if protein_order == 'torsion':
+        t_order = getattr(data, 'torsion_order', None)
+        t_seg = getattr(data, 'torsion_seg', None)
+        if t_order is not None and t_seg is not None and t_order.numel() > 0:
+            prefix_full = t_order.tolist()
+            prefix_seg_full = t_seg.tolist()
+            use_torsion = True
+        else:
+            warnings.warn(
+                "sample_protein_ligand: protein_order='torsion' requested "
+                "but data.torsion_order/torsion_seg is missing or empty; "
+                "falling back to the 'allatom' flat protein prefix (no "
+                "segment gating) for this complex. Run "
+                "generation.pdbbind.augment_cache_with_torsion on this "
+                "cache to populate torsion_order/torsion_seg.",
+                RuntimeWarning,
+            )
+            # Deterministic protein prefix: identical for every walk, computed once.
+            prefix_full = sorted(
+                (i for i in range(num_nodes) if int(segment[i]) == 0),
+                key=lambda i: (int(residue_id[i]), i),
+            )
+    else:
+        # Deterministic protein prefix: identical for every walk, computed once.
+        prefix_full = sorted(
+            (i for i in range(num_nodes) if int(segment[i]) == 0),
+            key=lambda i: (int(residue_id[i]), i),
+        )
+    ligand_idx = [i for i in range(num_nodes) if int(segment[i]) == 1]
+    if len(ligand_idx) == 0:
+        raise ValueError(
+            "sample_protein_ligand requires at least one ligand atom "
+            "(segment == 1)."
+        )
+
+    # ``ligand_graph='bond'`` ABLATION: restrict ligand-step traversal
+    # neighbors to the ligand-ligand bond graph instead of the 4.5A distance
+    # graph. Falls back silently to the distance-graph path (same code as
+    # the default) if data.ligand_bond_edge_index is absent/empty.
+    use_bond_graph = False
+    ligand_bond_dict = None
+    if ligand_graph == 'bond':
+        bond_ei = getattr(data, 'ligand_bond_edge_index', None)
+        if bond_ei is not None and bond_ei.numel() > 0:
+            use_bond_graph = True
+            ligand_bond_dict = {i: set() for i in ligand_idx}
+            bond_src = bond_ei[0].tolist()
+            bond_dst = bond_ei[1].tolist()
+            for src, dst in zip(bond_src, bond_dst):
+                if src in ligand_bond_dict:
+                    ligand_bond_dict[src].add(dst)
+
+    # Interface distance (min Euclidean distance to any ligand atom) for
+    # every protein-prefix atom; only consumed if truncation is needed.
+    if len(prefix_full) > 0:
+        prot_pos = pos_xyz[torch.tensor(prefix_full, dtype=torch.long)]
+        lig_pos_all = pos_xyz[torch.tensor(ligand_idx, dtype=torch.long)]
+        interface_dist = torch.cdist(
+            prot_pos.unsqueeze(0), lig_pos_all.unsqueeze(0)
+        ).squeeze(0).min(dim=1).values  # (len(prefix_full),)
+
+    # Pre-allocate tensors for the m sequences.
+    searches_emb = torch.full((m, max_len), vocab['PAD'], dtype=torch.long)
+    searches = torch.full((m, max_len), -1, dtype=torch.long)
+    encoding_edge = torch.zeros((m, max_len, s), dtype=torch.float)
+    lengths = []
+
+    # Optional per-step edge-feature stream appended to walk_pe (variant A).
+    if add_edge_feat is not None:
+        d_edge = int(add_edge_feat.shape[-1])
+        walk_pe_extra = torch.zeros(
+            (m, max_len, d_edge),
+            dtype=add_edge_feat.dtype,
+            device=add_edge_feat.device,
+        )
+    else:
+        walk_pe_extra = None
+
+    # Quadruplet geometric features (per Gasteiger et al. DimeNet) and the
+    # per-walk-position xyz. Allocated only when requested.
+    walk_pe_angle = (
+        torch.zeros((m, max_len, angle_K), dtype=torch.float)
+        if angles else None
+    )
+    walk_pe_dihedral = (
+        torch.zeros((m, max_len, 2 * dihedral_K), dtype=torch.float)
+        if dihedrals else None
+    )
+    walk_xyz = (
+        torch.zeros((m, max_len, 3), dtype=torch.float)
+        if emit_xyz else None
+    )
+
+    # When vectorize=True, collect quadruplet INDICES per step and batch
+    # compute all the angle/dihedral features in a single tensor op after
+    # the loop (mirrors sample_dfs).
+    angle_idx = [] if (vectorize and walk_pe_angle is not None) else None
+    dihedral_idx = [] if (vectorize and walk_pe_dihedral is not None) else None
+
+    for i in range(m):
+        # --- 1) random ligand DFS walk (mirrors sample_dfs canonical=0: ---
+        # --- random start + random.shuffle(neighbors)).                  ---
+        lig_cap = min(ligand_max_len, max_len)
+        start_node = ligand_idx[random.randint(0, len(ligand_idx) - 1)]
+        visited = set()
+        stack = [start_node]
+        lig_order = []
+        while stack and len(lig_order) < lig_cap:
+            node = stack.pop()
+            if node in visited:
+                continue
+            visited.add(node)
+            lig_order.append(node)
+            if use_bond_graph:
+                neighbors = [nb for nb in ligand_bond_dict.get(node, ())]
+            else:
+                neighbors = [nb for nb in neighbor_dict[node]
+                            if int(segment[nb]) == 1]
+            random.shuffle(neighbors)
+            for nb in neighbors:
+                if nb not in visited:
+                    stack.append(nb)
+        lig_len = len(lig_order)
+
+        # --- 2) truncate the protein prefix to make room, if needed. ---
+        prefix_cap = max_len - lig_len
+
+        if protein_order == 'torsion' and use_torsion:
+            # TORSION truncation: drop whole RESIDUES (every position in
+            # prefix_full belonging to that residue_id -- spine slots,
+            # chi-path slots, and tail slots alike, wherever they sit)
+            # farthest from the ligand, instead of dropping individual
+            # atoms. Kept positions retain their ORIGINAL segment ids
+            # unchanged ("segments stay intact": no renumbering).
+            if len(prefix_full) > prefix_cap:
+                keep_n = max(prefix_cap, 0)
+                res_positions = {}
+                for k, node in enumerate(prefix_full):
+                    res_positions.setdefault(int(residue_id[node]), []).append(k)
+                res_dist = {
+                    r: min(interface_dist[k].item() for k in ks)
+                    for r, ks in res_positions.items()
+                }
+                residues_by_dist = sorted(res_dist.keys(), key=lambda r: res_dist[r])
+                kept_residues = set()
+                n_kept_atoms = 0
+                for r in residues_by_dist:
+                    cnt = len(res_positions[r])
+                    if n_kept_atoms + cnt > keep_n:
+                        break
+                    kept_residues.add(r)
+                    n_kept_atoms += cnt
+                kept_positions = sorted(
+                    k for r in kept_residues for k in res_positions[r]
+                )
+                kept_prefix = [prefix_full[k] for k in kept_positions]
+                kept_seg = [prefix_seg_full[k] for k in kept_positions]
+            else:
+                kept_prefix = prefix_full
+                kept_seg = prefix_seg_full
+
+            # Each ligand walk gets ONE segment id, distinct from every
+            # (non-negative) protein segment id.
+            seg_full = (kept_seg + [_TORSION_LIGAND_SEG_ID] * lig_len)[:max_len]
+            order = (kept_prefix + lig_order)[:max_len]
+            lengths.append(len(order))
+
+            for pos, node in enumerate(order):
+                searches_emb[i, pos] = data.x_emb[node]
+                searches[i, pos] = node
+                if walk_xyz is not None:
+                    walk_xyz[i, pos] = pos_xyz[node]
+
+                # Edge encoding on the fly for this position -- GATED: the
+                # offset-d neighbor must be in the SAME segment.
+                for d in range(1, min(s, pos) + 1):
+                    if seg_full[pos - d] != seg_full[pos]:
+                        continue
+                    prev_node = order[pos - d]
+                    if (node in neighbor_dict[prev_node]) or \
+                       (prev_node in neighbor_dict[node]):
+                        encoding_edge[i, pos, d - 1] = 1
+
+                # Per-step edge feature: unconditional, NOT segment-gated
+                # (mirrors the 'allatom' path / sample_dfs's DFS path).
+                if walk_pe_extra is not None and pos > 0:
+                    prev_in_order = order[pos - 1]
+                    walk_pe_extra[i, pos] = add_edge_feat[prev_in_order, node]
+
+                # Quadruplet geometric features -- GATED on segment equality.
+                if walk_pe_angle is not None and pos >= 2 and \
+                   seg_full[pos - 2] == seg_full[pos - 1] == seg_full[pos]:
+                    v0 = order[pos - 2]
+                    v1 = order[pos - 1]
+                    if vectorize:
+                        angle_idx.append((i, pos, v0, v1, node))
+                    else:
+                        theta = _bond_angle(pos_xyz[v0], pos_xyz[v1],
+                                            pos_xyz[node])
+                        walk_pe_angle[i, pos] = _angle_basis(theta, angle_K)
+                if walk_pe_dihedral is not None and pos >= 3 and \
+                   seg_full[pos - 3] == seg_full[pos - 2] == \
+                   seg_full[pos - 1] == seg_full[pos]:
+                    u0 = order[pos - 3]
+                    u1 = order[pos - 2]
+                    u2 = order[pos - 1]
+                    if vectorize:
+                        dihedral_idx.append((i, pos, u0, u1, u2, node))
+                    else:
+                        phi = _dihedral(pos_xyz[u0], pos_xyz[u1], pos_xyz[u2],
+                                        pos_xyz[node])
+                        walk_pe_dihedral[i, pos] = _dihedral_basis(phi, dihedral_K)
+
+            continue  # skip the untouched 'allatom' block below for this walk
+
+        # --- ORIGINAL 'allatom' path (also used for a 'torsion' complex
+        # that fell back above) -- UNCHANGED, no segment gating. ---
+        if len(prefix_full) > prefix_cap:
+            keep_n = max(prefix_cap, 0)
+            order_by_dist = torch.argsort(
+                interface_dist, stable=True
+            )[:keep_n].tolist()
+            kept_nodes = [prefix_full[k] for k in order_by_dist]
+            kept_prefix = sorted(
+                kept_nodes, key=lambda i: (int(residue_id[i]), i)
+            )
+        else:
+            kept_prefix = prefix_full
+
+        order = (kept_prefix + lig_order)[:max_len]
+        lengths.append(len(order))
+
+        for pos, node in enumerate(order):
+            searches_emb[i, pos] = data.x_emb[node]
+            searches[i, pos] = node
+            if walk_xyz is not None:
+                walk_xyz[i, pos] = pos_xyz[node]
+
+            # Edge encoding on the fly for this position.
+            for d in range(1, min(s, pos) + 1):
+                prev_node = order[pos - d]
+                if (node in neighbor_dict[prev_node]) or \
+                   (prev_node in neighbor_dict[node]):
+                    encoding_edge[i, pos, d - 1] = 1
+
+            # Per-step edge feature: always populate from the (prev, node)
+            # entry of add_edge_feat regardless of graph-adjacency (mirrors
+            # sample_dfs's DFS path).
+            if walk_pe_extra is not None and pos > 0:
+                prev_in_order = order[pos - 1]
+                walk_pe_extra[i, pos] = add_edge_feat[prev_in_order, node]
+
+            # Quadruplet geometric features.
+            if walk_pe_angle is not None and pos >= 2:
+                v0 = order[pos - 2]
+                v1 = order[pos - 1]
+                if vectorize:
+                    angle_idx.append((i, pos, v0, v1, node))
+                else:
+                    theta = _bond_angle(pos_xyz[v0], pos_xyz[v1],
+                                        pos_xyz[node])
+                    walk_pe_angle[i, pos] = _angle_basis(theta, angle_K)
+            if walk_pe_dihedral is not None and pos >= 3:
+                u0 = order[pos - 3]
+                u1 = order[pos - 2]
+                u2 = order[pos - 1]
+                if vectorize:
+                    dihedral_idx.append((i, pos, u0, u1, u2, node))
+                else:
+                    phi = _dihedral(pos_xyz[u0], pos_xyz[u1], pos_xyz[u2],
+                                    pos_xyz[node])
+                    walk_pe_dihedral[i, pos] = _dihedral_basis(phi, dihedral_K)
+
+    # Vectorized quadruplet compute (only when vectorize=True and there is
+    # at least one valid step to score).
+    if angle_idx is not None and len(angle_idx) > 0:
+        idx_a = torch.tensor(angle_idx, dtype=torch.long)  # (M, 5)
+        p_prev2 = pos_xyz[idx_a[:, 2]]
+        p_prev1 = pos_xyz[idx_a[:, 3]]
+        p_curr = pos_xyz[idx_a[:, 4]]
+        thetas = _batch_bond_angle(p_prev2, p_prev1, p_curr)  # (M,)
+        basis_a = _batch_angle_basis(thetas, angle_K)         # (M, angle_K)
+        walk_pe_angle[idx_a[:, 0], idx_a[:, 1]] = basis_a.to(walk_pe_angle.dtype)
+    if dihedral_idx is not None and len(dihedral_idx) > 0:
+        idx_d = torch.tensor(dihedral_idx, dtype=torch.long)  # (M, 6)
+        p0 = pos_xyz[idx_d[:, 2]]
+        p1 = pos_xyz[idx_d[:, 3]]
+        p2 = pos_xyz[idx_d[:, 4]]
+        p3 = pos_xyz[idx_d[:, 5]]
+        phis = _batch_dihedral(p0, p1, p2, p3)                # (M,)
+        basis_d = _batch_dihedral_basis(phis, dihedral_K)     # (M, 2*dihedral_K)
+        walk_pe_dihedral[idx_d[:, 0], idx_d[:, 1]] = basis_d.to(walk_pe_dihedral.dtype)
+
+    data.walk_emb = searches_emb
+    data.walk_ids = searches[None, :, :]
+    parts = [encoding_edge]
+    if walk_pe_extra is not None:
+        parts.append(walk_pe_extra)
+    if walk_pe_angle is not None:
+        parts.append(walk_pe_angle)
+    if walk_pe_dihedral is not None:
+        parts.append(walk_pe_dihedral)
+    data.walk_pe = parts[0] if len(parts) == 1 else torch.cat(parts, dim=-1)
+    data.lengths = torch.tensor(lengths, dtype=torch.long)
+    if walk_xyz is not None:
+        data.walk_xyz = walk_xyz
+    return data
