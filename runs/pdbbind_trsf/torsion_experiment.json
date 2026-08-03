@@ -1,0 +1,50 @@
+{
+  "experiment": "Protein torsion ordering for RSNN_TRSF on PDBbind-Benchmark identity30",
+  "asana_task": "1216271703845860",
+  "goal": "Reorder the protein prefix so consecutive-atom dihedrals become REAL torsions (backbone phi/psi/omega + side-chain chi1..chiN), instead of the current all-atom (residue_id, PDB-order) sequence whose quadruplets are a hodgepodge (one N-CA-C-O per residue + carbonyl->sidechain + boundary noise). Ablate protein_order=torsion vs allatom.",
+  "status": "RUNNING. Implemented + verified (209 pytest pass; correctness independently confirmed: 216 real spine dihedrals == phi/psi/omega to <1e-15 rad, chi-path == chi1..chiN on real Lys/Met/Arg, gating leaks nothing). Cache augmented (0 fallbacks). SLURM job 68270544 (dym-lab2, 3 A40): torsion 3 seeds training. Results pending.",
+
+  "decisions": {
+    "note": "Resolved via /grill-me, 6 branches, most-logical/context-aligned choices.",
+    "Q1_token_layout": "One sequence = [backbone spine] ++ [per-residue sidechain runs] ++ [ligand walk]. N/CA repeated to anchor each side-chain run (so chi1=N-CA-CB-CG is a consecutive quadruplet). RSNN scatter-mean node aggregation absorbs the repeats.",
+    "Q2_backbone_continuity": "Pockets are the 8A interface, ~22% of consecutive residues NOT peptide-bonded (median ~7 backbone fragments/pocket). Split the spine into contiguous fragments at ||C(i)-N(i+1)|| >= 1.8A; reset ALL THREE feature streams (edge-window, angle, dihedral) at every segment boundary.",
+    "Q3_chi_precision": "Approximate, no raw-PDB: linearize side chain to first atom per Greek level (atom_positions codes B,G,D,E,Z,H, un-dropped from the .pkl). Exact chi for linear residues (Lys/Arg/Met/Glu/Gln/Ser/Cys/...); near-canonical for branched (PDB lists the '1' atom first). Branch/duplicate atoms kept as TOKENS in a reset tail (no dihedral off them).",
+    "Q4_carbonyl_O": "Spine = N,CA,C only (no torsion needs O). O goes in the per-residue reset tail (token only) - preserves H-bond-acceptor identity without re-breaking psi/omega.",
+    "Q5_degenerate_residues": "General rule, no special-casing: Gly -> empty chi (len-2 anchor); Ala -> len-3 chi path (angle only); Pro -> linear path, ignore N-CD ring bond; incomplete residues -> break spine, emit side chain if CA+CB present. A segment computes a dihedral only where it has >=4 atoms, an angle where >=3.",
+    "Q6_logistics": "Ablation flag --protein_order {allatom(default, byte-identical), torsion}; deterministic torsion order precomputed once + cached (augment_cache_with_torsion); residue-granular truncation (drop whole farthest-from-ligand residues, keep segments intact)."
+  },
+
+  "hyperparameters": {
+    "shared_config": "dropout0.1 / h_dim 120 / num_layers 3 / nhead 4 / ffn_mult 4 / pos_enc rope / attn_mode full / reduce mean / dropout 0.1 / m 6 / w(s) 8 / max_len 448 / ligand_max_len 72 / angles 1 / dihedrals 1 / angle_K 8 / dihedral_K 4 / distances 0 / mol_edge_feat 0 / epochs 500 / patience 50 / batch_size 8 / num_workers 8 / standardize 1 / lr 1e-3",
+    "n_params": 692009,
+    "torsion_specific": {
+      "peptide_bond_threshold_A": 1.8,
+      "chi_linearization": "first atom per increasing Greek level (B<G<D<E<Z<H)",
+      "segment_reset": "edge-window + angle + dihedral all reset at fragment / chi-path / tail / ligand boundaries",
+      "truncation": "residue-granular (drop whole residues farthest from ligand)",
+      "ligand_walk": "unchanged (random DFS over 4.5A distance graph, m draws/epoch)",
+      "default": "protein_order=allatom (byte-identical to prior runs)"
+    },
+    "seeds": [42, 43, 44],
+    "std": "population (ddof=0, matches GET)"
+  },
+
+  "pipeline": {
+    "files_changed": ["generation/pdbbind.py (decode_item +atom_positions; build_protein_torsion_order; augment_cache_with_torsion; --mode augment_torsion)", "utils/search.py (sample_protein_ligand protein_order + segment gating)", "quickstart/train_pdbbind.py (--protein_order + _STRIP_KEYS)", "tests/test_protein_torsion_order.py"],
+    "augment_cmd": "conda run -n rwnn python -m generation.pdbbind --mode augment_torsion --cache_dir data/pdbbind/identity30 --pkl_dir GET/datasets/PDBBind/processed/identity30 --splits train valid test",
+    "train_cmd": "python -m quickstart.train_pdbbind --data_dir data/pdbbind/identity30 --protein_order torsion --dropout 0.1 --out_dir runs/pdbbind_trsf/torsion/seed<S> [+ shared_config]",
+    "dispatcher": "runs/pdbbind_trsf/dispatch_torsion.py (to be written); sbatch dym-lab"
+  },
+
+  "baselines_for_comparison": {
+    "allatom_dropout0.1_h120": {"pearson": 0.5847, "pearson_std": 0.0119, "spearman": 0.5689, "rmse": 1.3805, "mae": 1.1121, "note": "the config this ablation changes ONLY the protein ordering from"},
+    "GET": {"pearson": 0.5887, "pearson_std": 0.0095}
+  },
+
+  "results": {
+    "status": "COMPLETE (job 68270544)",
+    "torsion_3seed": {"pearson": "0.5483 +/- 0.0068", "spearman": "0.5356 +/- 0.0084", "rmse": "1.4535 +/- 0.0263", "mae": "1.1750 +/- 0.0248", "seeds_pearson": [0.5490, 0.5397, 0.5563], "n_params": 692009, "fallback_frac": 0.0},
+    "allatom_baseline": {"pearson": "0.5847 +/- 0.0119", "spearman": "0.5689", "rmse": "1.3805", "mae": "1.1121"},
+    "verdict": "HURTS. torsion 0.5483 vs allatom 0.5847 = -0.036 Pearson (~6% rel); TIGHT, NON-overlapping error bars (torsion max seed 0.5563 < allatom min seed 0.5704); worse on all 4 metrics (RMSE +0.073, MAE +0.063). Giving the model REAL phi/psi/omega + chi via the backbone-spine + chi-path ordering costs more than it gains: the hard segment resets fragment a ~29-residue pocket into ~59 segments (spine fragments + per-residue chi paths + tails) with N/CA repeats, so the edge-window/angle/dihedral streams lose the dense local-contact context the all-atom order provided. Consistent with the project pattern that dense/spatial representations beat structured/sparse ones (cf. the ligand bond graph, which also hurt). DECISION: keep protein_order=allatom."
+  }
+}

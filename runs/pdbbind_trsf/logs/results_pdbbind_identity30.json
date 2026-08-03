@@ -1,0 +1,47 @@
+{
+  "experiment": "RSNN_TRSF (transformer + dihedral) vs GET on PDBbind-Benchmark identity30",
+  "asana_task": "1216271703845860",
+  "dataset": {"split": "identity30", "train": 3507, "valid": 466, "test": 490},
+  "protocol": {"metric_std": "population (ddof=0, matches GET)", "seeds": [42, 43, 44],
+    "param_matched": true, "RSNN_params": 692009, "GET_params": 719356,
+    "note": "GET native recipe (20 epochs); RSNN up to 500 epochs, early stop patience 50, standardized target."},
+  "best_config": {
+    "name": "dropout0.1",
+    "flags": "--base transformer --h_dim 120 --num_layers 3 --nhead 4 --ffn_mult 4 --pos_enc rope --attn_mode full --reduce mean --dropout 0.1 --m 6 --w 8 --max_len 448 --ligand_max_len 72 --angles 1 --dihedrals 1",
+    "why": "Best transformer variant: 3-seed Pearson 0.5847 -- statistically indistinguishable from GET (0.5887); beats GET on Spearman & MAE. dropout is the lever that closes the ~6% gap of the naive rope/no-dropout config."
+  },
+  "results_test_3seed": {
+    "GET":                {"pearson": 0.5887, "pearson_std": 0.0095, "spearman": 0.5641, "rmse": 1.3751, "mae": 1.1316, "n_params": 719356},
+    "RSNN_standard_rope": {"pearson": 0.5516, "pearson_std": 0.0128, "spearman": 0.5397, "rmse": 1.4401, "mae": 1.1641, "n_params": 692009},
+    "RSNN_sinusoidal":    {"pearson": 0.5787, "pearson_std": 0.0153, "spearman": 0.5660, "rmse": 1.4034, "mae": 1.1411, "n_params": 692009},
+    "RSNN_dropout0.1":    {"pearson": 0.5847, "pearson_std": 0.0119, "spearman": 0.5689, "rmse": 1.3805, "mae": 1.1121, "n_params": 692009, "BEST_transformer": true}
+  },
+  "verdict": "STATISTICAL PARITY. At equal parameter budget, RSNN_TRSF with dropout 0.1 matches the equivariant GET (overlapping error bars on all 4 metrics; 2/4 each -- GET edges Pearson/RMSE, transformer edges Spearman/MAE). The gap is closed by regularization, not equivariance. 'Transformer BEATS GET' is NOT supported (single-seed artifact).",
+  "per_seed_pearson": {
+    "RSNN_standard_rope": {"42": 0.5611, "43": 0.5602, "44": 0.5336},
+    "RSNN_sinusoidal": {"42": 0.5941, "43": 0.5578, "44": 0.5840},
+    "RSNN_dropout0.1": {"42": 0.5995, "43": 0.5841, "44": 0.5704},
+    "GET": {"2023": 0.5755, "2022": 0.5976, "2021": 0.5931}
+  },
+  "followups_running": {
+    "slurm_job": "68268814 (dym-lab, 3 A40, pends until free; 6 jobs in 2 waves; runs/pdbbind_trsf/dispatch_followup.py)",
+    "param_bump": {
+      "config": "dropout0.1_h122 = dropout0.1 with h_dim=122/nhead=3 -> 712,395 params (-1.0% vs GET 719,356; was 692,009 at h120/nh4). distance ligand graph. 3 seeds.",
+      "compare_vs": "dropout0.1 h120 (0.5847 Pearson) -- does the extra capacity help?"
+    },
+    "smiles_bond_ablation": {
+      "config": "dropout0.1_bond = best config but ligand DFS walks the ligand CHEMICAL BOND graph (--ligand_graph bond; bonds from <pid>_ligand.sdf via RDKit, coord-matched exact, 0/4463 fallbacks) instead of the 4.5A geometric graph. 3 seeds.",
+      "compare_vs": "dropout0.1 distance (0.5847 Pearson) -- does using true bonds vs spatial proximity change ligand-affinity prediction?",
+      "impl": "additive: generation/pdbbind.py extract_ligand_bond_edges/augment_cache_with_bonds; utils/search.py sample_protein_ligand(ligand_graph=); quickstart/train_pdbbind.py --ligand_graph. 199 pytest pass, verified."
+    },
+    "collect": "runs/pdbbind_trsf/{dropout0.1_h122,dropout0.1_bond}/seed{42,43,44}/metrics.json -> test_metrics.",
+    "RESULTS_3seed_pop_std": {
+      "dropout0.1_h122_712k_distance": {"pearson": "0.5371 +/- 0.0042", "spearman": "0.5268 +/- 0.0125", "rmse": "1.4767 +/- 0.0261", "mae": "1.1937 +/- 0.0252", "seeds_pearson": [0.5421, 0.5320, 0.5373]},
+      "dropout0.1_bond_692k": {"pearson": "0.5297 +/- 0.0529", "spearman": "0.5349 +/- 0.0493", "rmse": "1.4712 +/- 0.0604", "mae": "1.2009 +/- 0.0441", "seeds_pearson": [0.4784, 0.6026, 0.5081]}
+    },
+    "VERDICT_param_bump": "HURTS. 712k (0.5371 +/- 0.0042) is clearly below the 692k baseline (0.5847); tight, non-overlapping error bars. Extra capacity overfits the small 3.5k-complex dataset. KEEP h120/692k.",
+    "VERDICT_bond_graph": "LOSES + far noisier. Bond graph 0.5297 +/- 0.0529 vs 4.5A distance 0.5847: lower mean AND ~5x the variance (seeds 0.478-0.603). The dense geometric 4.5A graph (bonds + through-space contacts) gives more stable, informative ligand walks than the sparse chemical bond graph. The 4.5A DISTANCE GRAPH is the better, more reliable ligand connectivity for this affinity task.",
+    "BEST_OVERALL": "dropout0.1, h120 (692k), 4.5A distance ligand graph, all-atom protein order -> Pearson 0.5847 +/- 0.0119, statistical parity with GET (0.5887). No ablation improved on it.",
+    "protein_torsion_ordering_ablation": {"pearson": "0.5483 +/- 0.0068", "spearman": "0.5356 +/- 0.0084", "rmse": "1.4535 +/- 0.0263", "mae": "1.1750 +/- 0.0248", "seeds_pearson": [0.5490, 0.5397, 0.5563], "verdict": "HURTS vs all-atom (0.5847): -0.036 Pearson, tight non-overlapping error bars, worse on all 4 metrics. Real phi/psi/omega+chi ordering fragments the ~29-residue pocket into ~59 hard-reset segments (spine fragments + chi paths + tails + N/CA repeats) and loses local-contact context. Same 692k params; single lever = protein token order. Keep protein_order=allatom."}
+  }
+}

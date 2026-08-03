@@ -1,0 +1,26 @@
+{
+  "experiment": "Hypothesis re-test on more protein-ligand datasets/splits (RSNN_TRSF vs GET)",
+  "asana_task": "1216271703845860",
+  "hypothesis": "A param-matched plain transformer (dropout0.1, all-atom + 4.5A distance graph, 692k params) reaches statistical parity with the equivariant GET, and chemistry-informed tweaks don't help. Established on PDBbind-Benchmark identity30 (RSNN 0.5847 vs GET 0.5887). Now re-tested on other splits + a new dataset.",
+  "config_under_test": "dropout0.1 = --base transformer --h_dim 120 --num_layers 3 --nhead 4 --ffn_mult 4 --pos_enc rope --attn_mode full --reduce mean --dropout 0.1 --m 6 --w 8 --max_len 448 --ligand_max_len 72 --angles 1 --dihedrals 1 (~692k params). 3 seeds. Plus grid points causal (rope/causal/dropout0) + lr5e4 (lr 5e-4) at seed42.",
+  "datasets": {
+    "identity60": {"source": "on disk (PDBbind-Benchmark identity60 split, 3563/448/452, same complexes as id30)", "get_config": "PDBBind/identity60_get.json", "our_cache": "data/pdbbind/identity60"},
+    "scaffold": {"source": "on disk (PDBbind-Benchmark scaffold split, 3767/471/471)", "get_config": "PDBBind/scaffold_get.json", "our_cache": "data/pdbbind/scaffold"},
+    "lba": {"source": "Atom3D LBA (Zenodo 4914718, protein-ligand affinity, ready-split 30% seq-id 3507/466/490); DOWNLOADING then process LMDB->our pkl format via GET LBADataset+blocks_to_data->cache", "get_config": "LBA/get.json (694,252 params, max_epoch 10)", "our_cache": "data/lba/lba30 (TBD)"}
+  },
+  "slurm_jobs": {
+    "68311520": "RSNN id60+scaffold {dropout0.1 x3, causal, lr5e4}; running dym-lab2. -> runs/pdbbind_trsf/<ds>/<cfg>/seed<S>/metrics.json",
+    "68311522": "GET baselines id60+scaffold (GET env). -> GET/datasets/PDBBind/processed/<split>/models/GET/split*_epoch*_results.jsonl",
+    "68311543": "RSNN LBA {dropout0.1 x3, causal, lr5e4}; dispatch_multidataset.py lba. -> runs/pdbbind_trsf/lba/<cfg>/seed<S>/metrics.json",
+    "68311544": "GET LBA baseline (GET env, LBA/get.json, reads LMDB directly). -> GET/datasets/LBA/.../models/GET/split*_results.jsonl"
+  },
+  "lba_processing": "DONE: LMDB -> our pkl (GET/datasets/LBA/processed) via LBADataset logic; cache data/lba/lba30 (3507/466/490, vocab 24). GET LBA params ~694,252 (our dropout0.1 692,009, matched).",
+  "baselines": {"GET_PDBbind_config_params": 719356, "RSNN_dropout0.1_params": 692009, "identity30_reference": {"GET": "0.5887 +/- 0.0095", "RSNN_dropout0.1": "0.5847 +/- 0.0119"}},
+  "results": {
+    "identity60": {"GET": {"pearson": "0.6685 +/- 0.0033", "spearman": "0.6738 +/- 0.0042", "rmse": "1.5171 +/- 0.009", "mae": "1.2079 +/- 0.0092"}, "RSNN_dropout0.1": {"pearson": "0.6855 +/- 0.0052", "rmse": "1.5069", "mae": "1.1921"}, "verdict": "RSNN BEATS GET on identity60: Pearson 0.6855 vs 0.6685 (non-overlapping bands), also better RMSE + MAE. causal/lr5e4 pending."},
+    "scaffold": {"GET": {"pearson": "0.4615 +/- 0.0096", "spearman": "0.4628 +/- 0.0113", "rmse": "1.5627 +/- 0.0215", "mae": "1.2471 +/- 0.0162"}, "RSNN_dropout0.1": {"pearson": "0.4771 +/- 0.019", "spearman": "0.4746 +/- 0.016", "rmse": "1.555", "mae": "1.2311", "causal_s42": 0.4598, "lr5e4_s42": 0.4915}, "verdict": "PARITY (RSNN nominally ahead, overlapping bands): RSNN 0.4771 vs GET 0.4615; RSNN also slightly better RMSE (1.555 vs 1.5627) + MAE (1.2311 vs 1.2471). Grid points ~comparable."},
+    "lba": {"GET": {"pearson": "0.6165 +/- 0.004", "spearman": "0.6048 +/- 0.0048", "rmse": "1.3329 +/- 0.0055", "mae": "1.0521 +/- 0.0083"}, "RSNN_dropout0.1": {"pearson": "0.5946 +/- 0.0192", "rmse": "1.3878", "mae": "1.1047", "causal_s42": 0.5718, "lr5e4_s42": 0.5286}, "verdict": "GET modestly beats RSNN on LBA: 0.6165 vs 0.5946 (barely non-overlapping), also better RMSE/MAE. Grid points inferior (causal 0.5718, lr5e4 0.5286 < 0.5946)."},
+    "note": "GET Pearson varies sharply by split difficulty: scaffold 0.4615 (hard) < identity30 0.5887 < identity60 0.6685 (easy). The RSNN-vs-GET comparison is per-split (each config trains its own; label/split distributions differ)."
+  },
+  "verdict": "REPLICATES. Across 3 PDBbind splits + Atom3D LBA, the param-matched plain transformer (RSNN_TRSF dropout0.1, 692k) is COMPETITIVE with the equivariant GET -- differences <=0.022 Pearson, mostly within overlapping error bars, neither systematically ahead. RSNN nominally wins 2/4 (identity60 clearly non-overlapping +0.017; scaffold +0.016 overlapping), GET wins 2/4 (LBA +0.022 modest; identity30 +0.004 marginal/overlapping). On RMSE/MAE the same trade: RSNN better on id60+scaffold, GET better on id30+LBA. Conclusion: 'plain param-matched transformer roughly matches equivariant GET' holds robustly on protein-ligand affinity; and no chemistry/config lever helped (causal/lr5e4 here; earlier param-bump, ligand bond-graph, protein torsion-order all hurt or tied). GET's absolute score swings with split difficulty (scaffold 0.46 < id30 0.59 < LBA 0.62 < id60 0.67); comparison is within-split."
+}

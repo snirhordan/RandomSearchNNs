@@ -1,0 +1,121 @@
+{
+  "$schema_note": "Plan + live progress for the PDBbind-Benchmark RSNN_TRSF vs GET task. Machine-readable companion to the Asana dashboard. Keep last_updated current; update phase.status + artifacts after each stage.",
+  "task": {
+    "name": "run Transformer RSNN + dihedral features on Atom3D Dataset",
+    "asana_gid": "1216271703845860",
+    "asana_url": "https://app.asana.com/1/606426252627279/project/1213608056267108/task/1216271703845860",
+    "project": "ito",
+    "project_gid": "1213608056267108",
+    "section": "Optimization of model",
+    "tier": "FULL",
+    "started": "2026-07-05",
+    "last_updated": "2026-07-05T14:40:00Z"
+  },
+  "goal": "Run the transformer RSNN (RSNN_TRSF_Reg) with dihedral features on a protein-ligand binding-affinity dataset and compare, at matched parameter budget, against GET (THUNLP-MT/GET). Modular so the same backbone can run many datasets.",
+  "locked_decisions": {
+    "dataset": "PDBbind-Benchmark, identity30 split (NOT Atom3D LBA). Zenodo 8102783 -> GET process_PDBbind_benchmark.py -> datasets/PDBBind/processed/identity30/{train,valid,test}.pkl.",
+    "sequence_construction": "All-atom. Protein atoms in deterministic residue order (N->C, canonical within residue) as a shared prefix, then m random ligand DFS walks each concatenated onto that prefix (within-walk attention captures binding interaction).",
+    "get_baseline": "Native recipe as coded (PDBBind/identity30_get.json: max_epoch 20, lr 1e-4, hidden64/radial64/3L/4H/k9). No extended training.",
+    "compute": "SLURM dym-lab: request 6 A40 GPUs, fewer if unavailable. After primary comparison, run more Atom3D datasets starting with PPI (likely GET PPA, protein-protein affinity, 176 complexes; confirm mapping).",
+    "param_match": "RSNN_TRSF_Reg tuned to GET PDBbind-config trainable param count 719,356 within +/-5% => target range [683388, 755324]. (LESSONS.md h128/nl3 transformer=774,433 is +7.7%, so shrink slightly, e.g. h_dim~116-120 or nl2.) GET count script: GET/scripts/exps/_count_params_identity30.py."
+  },
+  "resolved_facts": {
+    "model_name": "RSNN_TRSF_Reg (regression), quickstart/train_qm9.py:238. NOT legacy classification RSNN_TRSF in models/rwnn.py (wrong nhead + sigmoid).",
+    "dihedral_features": "Already implemented + used in QM9 transformer sweep: per-walk-step quadruplet stream (utils/search.py) + GeometricAttentionBias (models/seq_encoder.py). Only wired for single small molecules with data.pos; helpers reusable.",
+    "split_flag_resolution": "identity30_split.json (what the code loads) = 3507/466/490 (train/valid/test) = 4463 selected from the 4709-complex affinities.json pool. Resolves App.D.5 (3507/466/490) vs Table 9 (3563/448/452): code uses App.D.5 numbers.",
+    "graph_recipe": "OUR model: nodes=atoms; edges between all atom pairs < 4.5 A; edge weight w=1/d+eps (eps=1e-5); node features one-hot atom type. (Atom3D/Townshend recipe, followed literally.) GET uses its own KNN block graph (k=9, RBF cutoff 7.0) - each model builds its own graph on the same complexes.",
+    "metrics": "Pearson, Spearman, RMSE, MAE (GET evaluate.py standard for PLA/PDBBind).",
+    "get_pdbbind_config": {"hidden_size": 64, "radial_size": 64, "n_layers": 3, "n_head": 4, "k_neighbors": 9, "n_rbf": 32, "max_epoch": 20, "lr": 1e-4, "batching": "dynamic max_n_vertex_per_gpu=1500", "run_cmd": "python scripts/exps/exps_3.py --config ./scripts/exps/configs/PDBBind/identity30_get.json --gpus 0"}
+  },
+  "environments": {
+    "rwnn": "torch 2.4.0+cu121, pyg 2.6.1, torch_cluster 1.6.3, rdkit. Used for RSNN model + our data reader (no GET/biopython dependency).",
+    "GET": "torch 1.13.1+cu117, atom3d 0.2.6, e3nn, biopython 1.80, biopandas, mmseqs2. From GET/env.yml. Used to process raw PDBbind -> .pkl and to run GET. STATUS: building."
+  },
+  "key_paths": {
+    "repo": "/home/snirhordan/ito/RandomSearchNNs",
+    "get_repo": "/home/snirhordan/ito/RandomSearchNNs/GET (commit ce68ea8)",
+    "raw_pdbbind": "GET/datasets/PDBBind/pdbbind (4709 complexes: metadata/ + pdb_files/{id}/{id}.pdb,{id}_ligand.mol2)",
+    "processed_pkl_target": "GET/datasets/PDBBind/processed/identity30/{train,valid,test}.pkl",
+    "our_cache_target": "data/pdbbind/identity30/ (built by generation/pdbbind.py)",
+    "experiment_dir": "runs/pdbbind_trsf/ (this file, dispatcher, sbatch, results)",
+    "code_review_graph": "/home/snirhordan/ito/RandomSearchNNs/.code-review-graph",
+    "memory": "~/.claude/projects/-home-snirhordan/memory/project_pdbbind_rsnn_trsf.md"
+  },
+  "phases": [
+    {"id": 1, "subject": "Data reader generation/pdbbind.py + tests", "status": "done",
+     "artifacts": ["generation/pdbbind.py", "tests/test_pdbbind_data.py"],
+     "notes": "Reviewed + 12 tests pass. strict <4.5 edges, 1/d+eps weights, one-hot, decode_item strips global nodes, residue_id N->C, SE(3) invariant. FIX APPLIED: vocab PAD moved to LAST index (== n_emb-1) to match RSNN_TRSF_Reg hardcoded padding_idx; UNK=0. TODO(real-data): validate X.ndim(2vs3) + 2-segment assumption on first processed .pkl."},
+    {"id": 2, "subject": "Sampler sample_protein_ligand + tests", "status": "done",
+     "artifacts": ["utils/search.py (sample_protein_ligand, +321 lines, 0 deletions)", "tests/test_protein_ligand_sampler.py", "tests/test_pdbbind_integration.py"],
+     "notes": "12 sampler tests + test_search.py 38 pass (no regression). INTEGRATION VALIDATED: build_data->sample_protein_ligand->DataLoader->RSNN_TRSF_Reg fwd+bwd passes (tests/test_pdbbind_integration.py, incl rope/causal). Truncation: never drop ligand; keep prefix_cap nearest-to-ligand protein atoms in chain order. walk_pe channels == compute_pe_in_dim('search',...)."},
+    {"id": 3, "subject": "Modular trainer quickstart/train_pdbbind.py + param-match", "status": "pending",
+     "artifacts": [], "blocked_by": [1, 2],
+     "notes": "Imports RSNN_TRSF_Reg/compute_pe_in_dim from train_qm9 (no QM9 regression). PDBbindWalkDataset, Pearson/Spearman/RMSE/MAE, >=500 epochs. Param-match to GET PDBbind count."},
+    {"id": 4, "subject": "GET env + process data + GET native baseline", "status": "in_progress",
+     "artifacts": ["GET/scripts/exps/_count_params_identity30.py"],
+     "notes": "GET env built; mamba pip section hung on resolver backtracking (pip -U) - FIXED by killing it and targeted wheel-only installs (processing deps: pandas/biopandas/rdkit/networkx OK; VOCAB.idx2atom len==121 confirms reader decode). GET param count DONE=719,356. process_PDBbind_benchmark.py RUNNING (bg, ~4709 complexes). TODO: GET-training extras install, then GET native run (max_epoch 20) on SLURM."},
+    {"id": 5, "subject": "SLURM sweep: standard config then grid search", "status": "launched_running",
+     "artifacts": ["runs/pdbbind_trsf/dispatch.py", "runs/pdbbind_trsf/sbatch_rsnn.sh"],
+     "notes": "LAUNCHED job 68266251 on dym-lab2 (3 A40; 6 not free -> user's 'fewer if unavailable'; dispatcher adapts + resumable to scale to 6). GPU-validated first (srun 1xA40 smoke passed). Standard config x3 seeds training now (~95s/epoch, val Pearson ~0.55 after epoch 0); 4 grid configs queued. Fixed CUDA_VISIBLE_DEVICES logical->physical mapping for cgroup isolation."},
+    {"id": 6, "subject": "Regression checks + Asana complete + reflect", "status": "in_progress",
+     "artifacts": [], "notes": "Full pytest green (189 passed, 8 pre-existing skips). All changes additive (new function in utils/search.py = 0 deletions; new files elsewhere). TODO: /regression-dog on diff, update code-review-graph, collect final metrics when jobs finish, update Asana + /project-reflect. Follow-on: PPI/PPA dataset if GPUs."}
+  ],
+  "slurm_jobs": [
+    {"job": "68266251", "what": "RSNN_TRSF sweep (standard x3 + grid)", "node": "dym-lab2", "gpus": 3, "env": "rwnn", "status": "running", "out": "runs/pdbbind_trsf/<config>/seed<S>/metrics.json", "epoch_sec": 95},
+    {"job": "68266252", "what": "GET native baseline (exps_3.py, 20 epochs x3 seeds)", "node": "dym-lab", "gpus": 1, "env": "GET", "status": "DONE (~33min)", "out": "GET/datasets/PDBBind/processed/identity30/models/GET/split{0,1,2}_epoch*_results.jsonl"}
+  ],
+  "results": {
+    "GET_baseline_identity30_test": {
+      "n_test": 490, "n_params_trainable": 719356, "seeds": [2023, 2022, 2021],
+      "per_seed": {
+        "2023": {"pearson": 0.5755, "spearman": 0.5497, "rmse": 1.3975, "mae": 1.1531},
+        "2022": {"pearson": 0.5976, "spearman": 0.5759, "rmse": 1.3632, "mae": 1.1175},
+        "2021": {"pearson": 0.5931, "spearman": 0.5668, "rmse": 1.3645, "mae": 1.1244}
+      },
+      "mean_std": {"pearson": "0.5887 +/- 0.0095", "spearman": "0.5641 +/- 0.0109", "rmse": "1.3751 +/- 0.0158", "mae": "1.1316 +/- 0.0154"}
+    },
+    "RSNN_TRSF_standard_identity30_test": {
+      "n_test": 490, "n_params_trainable": 692009, "config": "h_dim120/nl3/nhead4/ffn4/pos_enc rope/attn full/reduce mean/m6/max_len448/ligand_max_len72/angles+dihedrals",
+      "seeds": {"42": {"pearson": 0.5611, "spearman": 0.5527, "rmse": 1.4327, "mae": 1.1517, "best_epoch": 58},
+                 "43": {"pearson": 0.5602, "spearman": 0.5375, "rmse": 1.4292, "mae": 1.1536, "best_epoch": 40},
+                 "44": {"pearson": 0.5336, "spearman": 0.5290, "rmse": 1.4585, "mae": 1.1871, "best_epoch": 33}},
+      "mean_std_pop": {"pearson": "0.5516 +/- 0.0128", "spearman": "0.5397 +/- 0.0098", "rmse": "1.4401 +/- 0.0131", "mae": "1.1641 +/- 0.0163"}
+    },
+    "head_to_head_standard": "GET wins all 4 metrics by a modest margin (Pearson 0.5887 vs 0.5516 = +0.037/+6.7% rel; RMSE 1.375 vs 1.440). As expected: equivariant/hierarchical GET > plain transformer, but close. Param-matched (692,009 vs 719,356, -3.8%).",
+    "grid_seed42_test_pearson": {
+      "sinusoidal": {"pearson": 0.5941, "spearman": 0.5770, "rmse": 1.3784, "mae": 1.1276, "note": "BEST variant; ~GET parity (GET 0.5887)"},
+      "lr5e4": {"pearson": 0.5703, "spearman": 0.5468, "rmse": 1.4268, "mae": 1.1542},
+      "standard_rope_full": {"pearson": 0.5611, "spearman": 0.5527, "rmse": 1.4327, "mae": 1.1517},
+      "causal": {"pearson": 0.5310, "spearman": 0.5425, "rmse": 1.4643, "mae": 1.1848, "note": "WORST; causal attention hurts"},
+      "dropout0.1": {"pearson": 0.5995, "spearman": 0.5831, "rmse": 1.3586, "mae": 1.0844, "note": "BEST single-seed; BEATS GET (0.5887)! best_epoch~89. single-seed -> needs 3-seed confirm"}
+    },
+    "confirmation_3seed": {
+      "status": "DONE (job 68268635)",
+      "sinusoidal_mean_std_pop": {"pearson": "0.5787 +/- 0.0153", "spearman": "0.5660 +/- 0.0152", "rmse": "1.4034 +/- 0.0218", "mae": "1.1411 +/- 0.0097", "seeds_pearson": [0.5941, 0.5578, 0.5840]},
+      "dropout0.1_mean_std_pop": {"pearson": "0.5847 +/- 0.0119", "spearman": "0.5689 +/- 0.0109", "rmse": "1.3805 +/- 0.0159", "mae": "1.1121 +/- 0.0209", "seeds_pearson": [0.5995, 0.5841, 0.5704]},
+      "verdict": "STATISTICAL PARITY, not a win. The seed42 single-seed 'beat' (dropout0.1 0.5995 > GET) was noise -> regressed to the mean. dropout0.1 3-seed (P 0.5847) is indistinguishable from GET (0.5887): error bars overlap on all 4 metrics; GET edges Pearson/RMSE, the transformer edges Spearman (0.5689 vs 0.5641) & MAE (1.1121 vs 1.1316) -> 2/4 each. sinusoidal (0.5787) similar. The ~6% standard-config gap essentially vanishes with dropout. HEADLINE: a param-matched plain transformer with dropout MATCHES equivariant GET on PDBbind identity30; 'beats' is NOT supported."
+    },
+    "grid_conclusion": "On seed42, positional-encoding choice matters more than the equivariance gap: sinusoidal PE (0.5941) reaches GET parity (0.5887) while rope-standard is 0.5611 and causal attention is worst (0.5310). Recommend a 3-seed confirmation of sinusoidal (and dropout0.1 once it finishes) before any headline claim. Core head-to-head (standard config, 3 seeds) already answered: GET wins ~6%.",
+    "task_status": "CORE DELIVERABLE COMPLETE (GET vs RSNN_TRSF head-to-head, param-matched, 3 seeds). Grid 6/7 done; dropout0.1 finishing."
+  },
+  "early_signal": "After epoch 0, RSNN_TRSF standard config val Pearson ~0.53-0.57 across 3 seeds (untrained ~0) -> model learning binding-affinity signal. Final head-to-head vs GET pending job completion (hours-days). Expectation per task: GET (equivariant, hierarchical) should beat a plain transformer.",
+  "how_to_collect_results": "RSNN: read runs/pdbbind_trsf/<config>/seed<S>/metrics.json -> test_metrics {rmse,mae,pearson_r,spearman_rho}. GET: GET/evaluate.py output / models/GET/*/ per-seed -> Pearson/Spearman/RMSE/MAE. Compare standard config (3-seed mean+/-std) vs GET (3-seed). Both param-matched (~692k vs 719,356).",
+  "background_jobs": [
+    {"id": "download", "desc": "Zenodo 8102783 pdbbind_raw.tar.gz (2GB)", "status": "done"},
+    {"id": "extract", "desc": "extract raw pdbbind (4709 complexes)", "status": "done"},
+    {"id": "get_env", "desc": "GET conda env (conda solve done; pip section repaired via targeted wheels)", "status": "done_partial", "note": "processing deps installed; training extras + atom3d/e3nn pending/optional"},
+    {"id": "bs0zp41tt", "desc": "process_PDBbind_benchmark.py -> processed/*/{train,valid,test}.pkl", "status": "running"},
+    {"id": "b1privq2s", "desc": "GET-training extras pip install (tensorboard/sympy/einops/...)", "status": "running"}
+  ],
+  "open_followups": [
+    "3-seed confirmation of the sinusoidal-PE config (best variant, seed42 0.5941 ~ GET parity) before any 'transformer matches GET' claim. Also finalize dropout0.1 (was still training, val Pearson ~0.61 rising).",
+    "dropout0.1/seed42 metrics.json test_metrics: append when it finishes (job 68266251 dispatcher exits after it)."
+  ],
+  "follow_on_PPA_PPI": {
+    "status": "BLOCKED - needs a design decision + data; NOT started.",
+    "mapping": "User's 'PPI' most likely == GET's PPA (Protein-Protein Affinity) task, config scripts/exps/configs/PPA/get.json (hidden128/radial16/3L/4H, max_epoch 20, ~176 complexes).",
+    "blocker_1_data": "Not on disk (only PPAB_V2.csv + fasta_dict.json). Needs: (a) PDBbind_v2020_PP.tar.gz from pdbbind.org.cn -- REGISTRATION REQUIRED (manual, cannot automate); (b) benchmark5.5.tgz (Zenodo 8318025, automatable). Then process_PPAB.py.",
+    "blocker_2_sampler": "PPA is protein-PROTEIN (two protein chains, NO small-molecule ligand). sample_protein_ligand assumes segment0=protein / segment1=ligand and does a random DFS over the ligand -- there is no ligand here. Needs a new sequence-construction decision: e.g. both chains as deterministic residue-ordered sequences concatenated (receptor ++ partner), or treat one chain as the randomly-sampled part. USER DECISION NEEDED before implementing.",
+    "recommended_next": "Ask user how to construct PP sequences; meanwhile the LBA (Atom3D protein-ligand, ready-split Zenodo 4914718) would be a lower-friction next protein-ligand dataset that DOES fit the existing sampler."
+  }
+}
