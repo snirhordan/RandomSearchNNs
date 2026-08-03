@@ -15,3 +15,13 @@ data/qm9/qm9_d_rwnn_cache/
 !runs/qm9_egnn/**/*.log
 !runs/qm9_rwnn/**/*.log
 .ipynb_checkpoints/
+# Protein-ligand (PDBbind/LBA) processed caches -- large, regenerable from GET.
+data/pdbbind/
+data/lba/
+# Vendored THUNLP-MT/GET baseline (~11G: code + processed datasets + checkpoints).
+GET/
+# SLURM stdout dumps.
+slurm-*.out
+runs/**/slurm_*.txt
+# Claude Code project-local dir.
+.claude/
