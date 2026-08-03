@@ -157,6 +157,17 @@ def run_jobs(jobs):
 
 
 def main():
+    # --- "full" mode: run the complete CUTOFFS x SEEDS_FULL grid (idempotent).
+    # Used after the val-based cutoff selection proved too noisy at n=1 seed
+    # (cut15 had best val but worst test): get 3 seeds for EVERY cutoff so the
+    # geom_bias verdict rests on 3-seed means, not a single-seed selection.
+    if "full" in sys.argv[1:]:
+        grid = [{"cut": c, "seed": s} for c in CUTOFFS for s in SEEDS_FULL]
+        print(f"[geom] === FULL GRID: {CUTOFFS} x {SEEDS_FULL} (idempotent) ===", flush=True)
+        run_jobs(grid)
+        print("[geom] FULL GRID DONE", flush=True)
+        return 0
+
     # --- Phase A: cutoff sweep at seed 42 ---
     phase_a = [{"cut": c, "seed": 42} for c in CUTOFFS]
     print("[geom] === Phase A: cutoff sweep {5,10,15} @ seed42 ===", flush=True)
