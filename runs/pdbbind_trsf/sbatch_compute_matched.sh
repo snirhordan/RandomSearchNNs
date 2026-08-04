@@ -4,10 +4,10 @@
 #SBATCH --job-name=cm_rsnn
 #SBATCH --partition=dym
 #SBATCH --account=dym-lab
-#SBATCH --gres=gpu:A40:4
-#SBATCH --cpus-per-task=32
-#SBATCH --mem=128G
-#SBATCH --time=03:00:00
+#SBATCH --gres=gpu:A40:2
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --time=01:30:00
 #SBATCH --output=/home/snirhordan/ito/RandomSearchNNs/runs/pdbbind_trsf/slurm-cm-%j.out
 
 set -uo pipefail

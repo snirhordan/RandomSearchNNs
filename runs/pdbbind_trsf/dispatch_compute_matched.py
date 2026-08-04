@@ -32,9 +32,16 @@ from pathlib import Path
 
 REPO = Path("/home/snirhordan/ito/RandomSearchNNs")
 PYTHON = "/home/snirhordan/miniconda3/envs/rwnn/bin/python3"
-OUT_ROOT = REPO / "runs/pdbbind_trsf/compute_matched"
 MAX_RETRIES = 1
 SEEDS = [42, 43, 44]
+
+# CM_SCHEDULE=constant (default) reproduces the first compute-matched sweep; 'cosine'
+# anneals the lr over the capped budget so the short run converges instead of stopping
+# mid-flight at full lr. Same epoch caps either way, so compute stays matched.
+SCHEDULE = os.environ.get("CM_SCHEDULE", "constant")
+assert SCHEDULE in ("constant", "cosine"), f"bad CM_SCHEDULE={SCHEDULE}"
+OUT_ROOT = REPO / ("runs/pdbbind_trsf/compute_matched"
+                   + ("_cosine" if SCHEDULE == "cosine" else ""))
 
 # dataset -> (rwnn cache dir, epoch cap matching GET's wall clock)
 DATASETS = {
@@ -108,7 +115,8 @@ def launch(j, gpu):
            "--out_dir", str(d), "--seed", str(j["seed"]),
            "--data_dir", j["ddir"],
            "--epochs", str(j["cap"]),
-           "--patience", str(j["cap"] + 10)] + BASE
+           "--patience", str(j["cap"] + 10),
+           "--lr_schedule", SCHEDULE] + BASE
     phys = VISIBLE[gpu]
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=phys, OMP_NUM_THREADS="2")
     p = subprocess.Popen(cmd, stdout=logf, stderr=subprocess.STDOUT,

@@ -226,6 +226,11 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--epochs", type=int, default=500)
     p.add_argument("--batch_size", type=int, default=8)
     p.add_argument("--lr", type=float, default=1e-3)
+    p.add_argument("--lr_schedule", choices=["constant", "cosine"], default="constant",
+                   help="'cosine' anneals lr over the epoch budget (per-batch steps). "
+                        "'constant' (default) reproduces earlier runs byte-identically.")
+    p.add_argument("--lr_min_frac", type=float, default=0.01,
+                   help="Cosine floor as a fraction of --lr (eta_min). Ignored when constant.")
     p.add_argument("--num_workers", type=int, default=4)
     p.add_argument("--patience", type=int, default=50,
                    help="Early stop after this many epochs without a val-RMSE "
@@ -480,6 +485,17 @@ def main(argv=None) -> int:
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     criterion = nn.MSELoss()
 
+    # Cosine annealing over the full epoch budget, stepped per batch. Matters most for
+    # short/compute-capped runs, which otherwise stop mid-flight at the full learning rate
+    # and select a noisy checkpoint. Default 'constant' keeps prior runs byte-identical.
+    scheduler = None
+    if args.lr_schedule == "cosine":
+        total_steps = max(1, args.epochs * max(1, len(train_loader)))
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=total_steps, eta_min=args.lr * args.lr_min_frac)
+        log(f"lr_schedule=cosine total_steps={total_steps} "
+            f"eta_min={args.lr * args.lr_min_frac:.2e}")
+
     config = dict(vars(args))
     config.update({
         "n_params": n_params,
@@ -519,6 +535,8 @@ def main(argv=None) -> int:
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
+            if scheduler is not None:
+                scheduler.step()
             train_losses.append(float(loss.item()))
         train_mse = float(np.mean(train_losses)) if train_losses else float("nan")
 
