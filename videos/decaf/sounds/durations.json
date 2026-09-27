@@ -1,0 +1,178 @@
+{
+ "S01_Intro__cost": {
+  "duration": 17.306916666666666,
+  "sha1": "5ea73da78d026a42a1b1d07725c77cd996611dc9"
+ },
+ "S01_Intro__jump": {
+  "duration": 12.811083333333332,
+  "sha1": "1abff5eebab675521a2cb25efc79e112ddbe4afb"
+ },
+ "S01_Intro__plan": {
+  "duration": 26.47683333333333,
+  "sha1": "d5e1a1227633650ceaf26df5ab2c5d3c5869b6e1"
+ },
+ "S01_Intro__title": {
+  "duration": 13.834083333333334,
+  "sha1": "2de423ba4ff3cdcd2d90e0b8d10d7a76a5eb8e1f"
+ },
+ "S02_Teacher__denoiser": {
+  "duration": 10.69575,
+  "sha1": "c79524a7561fd4ba16beabffd8415dc1a32fad21"
+ },
+ "S02_Teacher__euler": {
+  "duration": 17.140833333333333,
+  "sha1": "aef06de13f8fbcfe80ad45d9ea12c5a700a78d0b"
+ },
+ "S02_Teacher__noising": {
+  "duration": 20.429541666666665,
+  "sha1": "23c0ff4aa7f9f829aa721b3cacc500875fe72075"
+ },
+ "S02_Teacher__ode": {
+  "duration": 18.233791666666665,
+  "sha1": "ae199172aae2bb5f7d0b4c1238d7241e7b872098"
+ },
+ "S02_Teacher__picture": {
+  "duration": 24.162416666666665,
+  "sha1": "26554665ac29b7fd3e3ed25b72be6c58534c6098"
+ },
+ "S03_FlowMaps__define": {
+  "duration": 13.656666666666666,
+  "sha1": "200680b10741e7e1228fe9fb950d3ca5785a7307"
+ },
+ "S03_FlowMaps__euler_eq": {
+  "duration": 16.277666666666665,
+  "sha1": "58279f11ccd2a4c922d52e64290863750cd6826e"
+ },
+ "S03_FlowMaps__lagrange": {
+  "duration": 14.832875,
+  "sha1": "88ce229dd31bb43499ef741de7215f35421a8bcb"
+ },
+ "S03_FlowMaps__props": {
+  "duration": 21.546625,
+  "sha1": "cab2cfe0c7ac4a9b2e0c6c5360338f1b96503fa1"
+ },
+ "S03_FlowMaps__segue": {
+  "duration": 5.311416666666666,
+  "sha1": "4a07176c04517f4714c442e8c94d9afe476e6e0b"
+ },
+ "S04_SigmaSpace__chain": {
+  "duration": 21.013708333333334,
+  "sha1": "311965f92db2b194da4b1e079ece328f4b53ecbc"
+ },
+ "S04_SigmaSpace__fix": {
+  "duration": 27.025375,
+  "sha1": "d528c1d5d966b811c78e587b257e51469e256ec1"
+ },
+ "S04_SigmaSpace__problem": {
+  "duration": 31.998416666666667,
+  "sha1": "cf11205bdd629249828f54c1c9d5db17c3d07da0"
+ },
+ "S04_SigmaSpace__schedule": {
+  "duration": 16.25,
+  "sha1": "6827b6095eb1f911c1a2e12c9e79289653ebfed7"
+ },
+ "S05_DenoiserMap__arch": {
+  "duration": 12.575875,
+  "sha1": "7ae9bc14c12f906cd7bd22a1fda68675e09640a9"
+ },
+ "S05_DenoiserMap__chord": {
+  "duration": 19.366041666666668,
+  "sha1": "5d1703fc35c51e6c5e15db3d3eded5acb8f578c3"
+ },
+ "S05_DenoiserMap__ddim": {
+  "duration": 22.162375,
+  "sha1": "ad6b7b12aba85904c65ad89797d233eab109abd7"
+ },
+ "S05_DenoiserMap__decaf_form": {
+  "duration": 16.23575,
+  "sha1": "817fb0e901ed43640c904d97c2f9bcbfaff50d68"
+ },
+ "S05_DenoiserMap__free": {
+  "duration": 33.36179166666667,
+  "sha1": "88ad8f48c4675a08a87769a41873a3cbf8095c58"
+ },
+ "S05_DenoiserMap__tangent": {
+  "duration": 18.532583333333335,
+  "sha1": "feabba1da3095e99cfedf9e3f44e1eed9662e804"
+ },
+ "S06_AlignedLoss__identity": {
+  "duration": 26.616416666666666,
+  "sha1": "86dc037c3874a8d55dafcffdb5e1e25521244a8e"
+ },
+ "S06_AlignedLoss__kabsch": {
+  "duration": 25.11425,
+  "sha1": "8480c2575708e9b52cb0dd10749f9ad9fd3f0709"
+ },
+ "S06_AlignedLoss__loss": {
+  "duration": 14.33125,
+  "sha1": "90e55a32c3ed83e5a0b567e4fe050b188f55c807"
+ },
+ "S06_AlignedLoss__structures": {
+  "duration": 20.258958333333332,
+  "sha1": "b860f9235298e96f45c9446c46b2f33c6c41966a"
+ },
+ "S06_AlignedLoss__summary": {
+  "duration": 24.440416666666668,
+  "sha1": "543e6f207d76f374931c4377233de32204eebace"
+ },
+ "S06_AlignedLoss__why": {
+  "duration": 24.054375,
+  "sha1": "3102c2a21ee41e83049575c0b8c616f82326d0b4"
+ },
+ "S07_Sampling__chain": {
+  "duration": 15.047541666666667,
+  "sha1": "3087fa7cfb77a918850ccf53f8c5928c77cfb3a0"
+ },
+ "S07_Sampling__gamma": {
+  "duration": 25.722458333333332,
+  "sha1": "d9adee2f740ca97f4ae8e956171e0653d3c9960e"
+ },
+ "S08_Search__lookahead": {
+  "duration": 15.656708333333333,
+  "sha1": "9ce4d30fbeb7d43da030baf39668df1864bffa07"
+ },
+ "S08_Search__loop": {
+  "duration": 15.182833333333333,
+  "sha1": "0514d94f6b82d2f525ddc0b73d98bab1b25e7958"
+ },
+ "S08_Search__mean": {
+  "duration": 13.267416666666668,
+  "sha1": "7730245f5a7387afc4fc4732b12471f1237f1c68"
+ },
+ "S08_Search__rules": {
+  "duration": 19.6595,
+  "sha1": "676140edd1498753d653ba7c80b97e41ac3a2393"
+ },
+ "S08_Search__steer": {
+  "duration": 16.663,
+  "sha1": "7cbccdcf9d4c83ed19bd1d1e29c68439fefa11d1"
+ },
+ "S09_Results__bars": {
+  "duration": 20.243541666666665,
+  "sha1": "67f3d4d1caf7ff2b8a91b4981bbe380f6115badf"
+ },
+ "S09_Results__benchmark": {
+  "duration": 15.268541666666666,
+  "sha1": "bfbce92b9bd95187ee1a75c5bd243b3c7e30edde"
+ },
+ "S09_Results__claims": {
+  "duration": 25.131666666666668,
+  "sha1": "7b7235554e05c548c59b48b828720d6f1b6c5b36"
+ },
+ "S09_Results__honest": {
+  "duration": 26.258166666666668,
+  "sha1": "26a91798ec02978021e3160feaa400b504a158bf"
+ },
+ "S10_Takeaways__caveats": {
+  "duration": 21.537375,
+  "sha1": "877108c1212ffb600d69254e994ac92012b95f38"
+ },
+ "S10_Takeaways__close": {
+  "duration": 16.00675,
+  "sha1": "12d6dbb0f94ef08607d20db18ecb869d16e25217"
+ },
+ "S10_Takeaways__three": {
+  "duration": 32.39595833333333,
+  "sha1": "b2c75eb60553857e01461470c73a3ec950713623"
+ }
+}

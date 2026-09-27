@@ -1,0 +1,19 @@
+# manimgl configuration for this video (read when manimgl runs from this folder).
+# Mirrors the look of 3b1b/videos/custom_config.yml: black background,
+# CMU Serif for Text, 30 fps.
+directories:
+  mirror_module_path: False
+  base: ""
+  subdirs:
+    output: "build/videos"
+    sounds: "sounds"
+camera:
+  resolution: (1920, 1080)
+  background_color: "#000000"
+  fps: 30
+  background_opacity: 1.0
+text:
+  font: "CMU Serif"
+  alignment: "CENTER"
+tex:
+  template: "default"

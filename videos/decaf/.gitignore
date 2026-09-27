@@ -1,0 +1,5 @@
+# Render outputs and intermediate files (re-created by render.sh / assemble.py)
+build/
+# Voice-over clips are re-created by tts.py; durations.json is kept for reference.
+sounds/*.wav
+__pycache__/
