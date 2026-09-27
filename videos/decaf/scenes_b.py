@@ -37,8 +37,8 @@ class S06_AlignedLoss(DecafScene):
             e3 = tex(R"\frac{du}{d\rho} = \partial_{\rho} u + (\nabla_x u)\, v", font_size=40,
                      t2c={V_KEY: TEACHER_C})
             jvp = text("one Jacobian-vector product, tangent (v, 1)", font_size=26, color=GREY_B)
-            col = VGroup(row1, e2, VGroup(e3, jvp).arrange(RIGHT, buff=0.6)).arrange(DOWN, buff=0.55)
-            col.move_to(UP * 1.75)
+            col = VGroup(row1, e2, VGroup(e3, jvp).arrange(RIGHT, buff=0.6)).arrange(DOWN, buff=0.45)
+            col.next_to(label, DOWN, buff=0.35).set_x(0)
             b.until("Write the jump")
             self.play(Write(e1), run_time=1.5)
             b.until("where u is")
@@ -81,7 +81,7 @@ class S06_AlignedLoss(DecafScene):
             b.until("The loss becomes")
             e7 = tex(R"\mathcal{L} = \frac{1}{\rho^2}\,\big\Vert \hat D_\theta - D(x;\rho)\big\Vert^2",
                      font_size=46, t2c={TEACHER_D: TEACHER_C})
-            e7.next_to(e6, DOWN, buff=0.35)
+            e7.next_to(e6, DOWN, buff=0.55)
             box = SurroundingRectangle(e7, buff=0.15).set_stroke(STUDENT_C, 2)
             self.play(Write(e7), ShowCreation(box), run_time=1.5)
             clouds = self.clouds_pair(0.0, (0, 0)).scale(0.6).to_edge(DOWN, buff=0.2)

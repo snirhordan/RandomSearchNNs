@@ -1,6 +1,9 @@
 # DeCAF, explained: a 3Blue1Brown-style video
 
-An explainer video (≈ 16 min, 1080p, voice-over + soft English subtitles) of
+**Watch:** [`DeCAF_explained.mp4`](DeCAF_explained.mp4) (14.8 min, 1080p30, synthetic voice-over,
+soft English subtitle track; the same subtitles are in [`DeCAF_explained.srt`](DeCAF_explained.srt)).
+
+An explainer video of
 
 > **Few-step Cofolding with All-Atom Flow Maps** — Scarpellini, Shprints, Holderrieth, Nam,
 > Murugan, Gómez-Bombarelli, Jaakkola, Al-Shedivat, Boffi, Bose. arXiv:2606.08375 (v2).
@@ -77,6 +80,13 @@ for s in S01_Intro S02_Teacher S03_FlowMaps S04_SigmaSpace S05_DenoiserMap; do .
 for s in S06_AlignedLoss S07_Sampling S08_Search S09_Results S10_Takeaways; do ./render.sh scenes_b.py $s --hd; done
 python assemble.py                                               # build/DeCAF_explained.mp4 + .srt
 ```
+
+or everything at once: `JOBS=4 QUALITY=--hd ./render_all.sh` (about an hour on 4 CPU cores
+with software OpenGL). The voice is Kokoro's `af_heart` (Apache-2.0 model), generated
+offline. To use a human voice-over instead, record one WAV per beat of `narration.py`
+under the same file names in `sounds/` and update the matching `duration` entries in
+`sounds/durations.json`; the animations re-time themselves from those durations (do not
+re-run `tts.py` afterwards, it would overwrite the recordings).
 
 Files: `narration.py` (the script, one entry per beat), `common.py` (palette, voice-over
 timing, the σ–x plane), `scenes_a.py` / `scenes_b.py` (scenes), `toy.py` (exact 1D model),

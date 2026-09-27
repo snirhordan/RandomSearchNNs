@@ -585,27 +585,30 @@ class S04_SigmaSpace(DecafScene):
             self.play(TransformMatchingTex(avg, avg_s), run_time=1.5)
             self.play(TransformMatchingTex(lt, lsig), TransformMatchingTex(jvp, jvps), run_time=2)
             eqs = VGroup(avg_s, lsig, jvps)
-            self.play(FadeOut(chain, shift=0.3 * UP), eqs.animate.to_edge(UP, buff=0.9), run_time=1)
+            self.play(FadeOut(chain, shift=0.3 * UP),
+                      eqs.animate.scale(0.82).to_corner(UL, buff=0.5).shift(DOWN * 0.75), run_time=1.2)
             b.until("The sigma velocity is")
-            vdef = tex(R"v(x,\rho) = \frac{x - D(x;\rho)}{\rho}\ \approx\ \hat\varepsilon"
-                       R"\quad\text{(order one at every }\rho)",
+            vdef = tex(R"v(x,\rho) = \frac{x - D(x;\rho)}{\rho}\ \approx\ \hat\varepsilon",
                        font_size=36, t2c={V_KEY: TEACHER_C, TEACHER_D: TEACHER_C})
-            vdef.next_to(jvps, DOWN, buff=0.5)
-            self.play(Write(vdef), run_time=2)
+            vdef_note = text("order one at every noise level", font_size=26, color=GREY_A)
+            VGroup(vdef, vdef_note).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
+            VGroup(vdef, vdef_note).next_to(eqs, DOWN, buff=0.55).align_to(eqs, LEFT)
+            self.play(Write(vdef), FadeIn(vdef_note), run_time=2)
             b.until("The tangent of")
-            tang = text("JVP tangent: (v, 1)", font_size=30, color=GREY_A).next_to(vdef, DOWN, buff=0.35)
+            tang = text("JVP tangent: (v, 1)", font_size=30, color=GREY_A)
+            tang.next_to(vdef_note, DOWN, buff=0.45).align_to(eqs, LEFT)
             self.play(FadeIn(tang), run_time=0.8)
             b.until("The factor d sigma d t")
             gone = text("σ̇(t): never appears", font_size=30, color=WARN_C)
-            gone.next_to(tang, RIGHT, buff=0.8)
+            gone.next_to(tang, DOWN, buff=0.3).align_to(eqs, LEFT)
             self.play(FadeIn(gone), run_time=0.6)
-            mag = self.magnitude_plot().to_edge(DOWN, buff=0.9)
+            mag = self.magnitude_plot().scale(0.85).to_edge(RIGHT, buff=0.35).set_y(0.3)
             self.play(FadeIn(mag[0]), ShowCreation(mag[1]), FadeIn(mag[3]), run_time=1.2)
             self.play(ShowCreation(mag[2]), FadeIn(mag[4]), run_time=1.2)
             b.until("The schedule survives")
             surv = text("the schedule only chooses which (ρ, σ) to train on and to step through",
                         font_size=28, color=GREY_A)
-            surv.to_edge(DOWN, buff=0.3)
+            surv.to_edge(DOWN, buff=0.45)
             self.play(FadeIn(surv, shift=0.1 * UP), run_time=1)
 
     def magnitude_plot(self):

@@ -1,0 +1,1051 @@
+1
+00:00:00,000 --> 00:00:02,189
+This video is about one paper:
+
+2
+00:00:02,239 --> 00:00:07,222
+Few-step cofolding with all-atom flow maps, from Genesis Molecular AI, with
+
+3
+00:00:07,272 --> 00:00:11,910
+collaborators at MIT, Carnegie Mellon, Imperial College and Mila.
+
+4
+00:00:11,960 --> 00:00:13,784
+The method is called DeCAF.
+
+5
+00:00:15,200 --> 00:00:20,352
+Cofolding models, like AlphaFold 3 or Boltz, predict a protein together with the
+
+6
+00:00:20,402 --> 00:00:22,134
+small molecule bound to it.
+
+7
+00:00:22,184 --> 00:00:26,960
+Their last stage is a diffusion model over the coordinates of every atom, and
+
+8
+00:00:27,010 --> 00:00:31,936
+producing a single structure means running that diffusion module about two hundred
+
+9
+00:00:31,986 --> 00:00:32,457
+times.
+
+10
+00:00:33,033 --> 00:00:35,926
+DeCAF distills such a model into a flow map:
+
+11
+00:00:35,976 --> 00:00:41,144
+a network that, instead of walking along the denoising trajectory in small steps,
+
+12
+00:00:41,194 --> 00:00:42,194
+jumps along it.
+
+13
+00:00:42,244 --> 00:00:45,794
+The same network can take one jump, or five, or ten.
+
+14
+00:00:46,867 --> 00:00:48,789
+Flow maps themselves are not new.
+
+15
+00:00:48,839 --> 00:00:53,387
+The contribution is making them work for an all-atom teacher of the EDM kind, and
+
+16
+00:00:53,437 --> 00:00:55,360
+it comes down to three decisions.
+
+17
+00:00:55,410 --> 00:00:58,820
+First, index the flow map by noise level instead of time.
+
+18
+00:00:58,870 --> 00:01:03,212
+Second, parameterize it as a denoiser, so that the training loss compares
+
+19
+00:01:03,262 --> 00:01:07,633
+structures and can be rigidly aligned, exactly like the teacher's own loss.
+
+20
+00:01:07,683 --> 00:01:11,825
+Third, use the map's cheap look-ahead to guide search at inference time.
+
+21
+00:01:11,875 --> 00:01:13,293
+Let's take them in order.
+
+22
+00:01:13,867 --> 00:01:15,324
+First, the teacher.
+
+23
+00:01:15,374 --> 00:01:19,022
+Stack all the atom coordinates into one long vector, x.
+
+24
+00:01:19,072 --> 00:01:21,936
+The noising process is variance exploding:
+
+25
+00:01:21,986 --> 00:01:27,083
+x sigma equals the clean structure, x zero, plus sigma times standard Gaussian
+
+26
+00:01:27,133 --> 00:01:27,611
+noise.
+
+27
+00:01:27,661 --> 00:01:32,607
+In Boltz, sigma ranges from under a hundredth of an angstrom to about two and a
+
+28
+00:01:32,657 --> 00:01:34,246
+half thousand angstroms.
+
+29
+00:01:34,800 --> 00:01:39,818
+The network is a denoiser, D of x and sigma, which predicts the clean structure.
+
+30
+00:01:39,868 --> 00:01:42,251
+Ideally, it is the posterior mean:
+
+31
+00:01:42,301 --> 00:01:45,446
+the expected clean structure, given the noisy one.
+
+32
+00:01:46,000 --> 00:01:51,355
+Sampling integrates the probability flow ODE, or a stochastic version of it.
+
+33
+00:01:51,405 --> 00:01:56,869
+Written directly in terms of the noise level, the ODE is remarkably simple:
+
+34
+00:01:56,919 --> 00:02:00,445
+d x, d sigma, equals x minus D, over sigma.
+
+35
+00:02:00,495 --> 00:02:04,184
+We'll call the right-hand side the sigma velocity, v.
+
+36
+00:02:04,767 --> 00:02:07,026
+Here is a picture we'll use throughout.
+
+37
+00:02:07,076 --> 00:02:09,557
+The horizontal axis is the noise level:
+
+38
+00:02:09,607 --> 00:02:12,593
+pure noise on the left, clean data on the right.
+
+39
+00:02:12,643 --> 00:02:16,399
+The vertical axis is a one-dimensional stand-in for the structure.
+
+40
+00:02:16,449 --> 00:02:21,072
+The data distribution has two modes; think of two different binding poses.
+
+41
+00:02:21,122 --> 00:02:25,680
+Every curve is an exact trajectory of the ODE, carrying a point from the broad
+
+42
+00:02:25,730 --> 00:02:28,879
+Gaussian on the left to one of the modes on the right.
+
+43
+00:02:29,433 --> 00:02:33,981
+A standard sampler walks along a trajectory with small Euler steps, one network
+
+44
+00:02:34,031 --> 00:02:34,905
+call per step.
+
+45
+00:02:34,955 --> 00:02:37,280
+With many steps, it tracks the curve.
+
+46
+00:02:37,330 --> 00:02:41,814
+With only five, each step follows the local tangent, the curvature makes it
+
+47
+00:02:41,864 --> 00:02:46,524
+undershoot, and it ends up between the modes, where there is no data at all.
+
+48
+00:02:47,100 --> 00:02:49,094
+A flow map skips the walking.
+
+49
+00:02:49,144 --> 00:02:54,925
+Capital X, sub rho sigma, takes a point at noise level rho, and returns where its
+
+50
+00:02:54,975 --> 00:02:58,017
+trajectory is at the lower noise level sigma.
+
+51
+00:02:58,067 --> 00:03:00,707
+It is the solution operator of the ODE.
+
+52
+00:03:01,267 --> 00:03:03,050
+Two properties pin it down.
+
+53
+00:03:03,100 --> 00:03:05,629
+Mapping a level to itself does nothing.
+
+54
+00:03:05,679 --> 00:03:07,021
+And maps compose:
+
+55
+00:03:07,071 --> 00:03:11,874
+going from rho to sigma and then on to tau is the same as going from rho to tau
+
+56
+00:03:11,924 --> 00:03:12,601
+directly.
+
+57
+00:03:12,651 --> 00:03:17,031
+A consistency model is the special case that only ever jumps to zero.
+
+58
+00:03:17,081 --> 00:03:22,228
+A flow map can jump between any two levels, so one network supports any number of
+
+59
+00:03:22,278 --> 00:03:22,763
+steps.
+
+60
+00:03:23,333 --> 00:03:27,313
+To learn it, you need a differential equation that it satisfies.
+
+61
+00:03:27,363 --> 00:03:29,944
+The Lagrangian view moves the end point:
+
+62
+00:03:29,994 --> 00:03:34,504
+the derivative of X with respect to the target level is the velocity at the end
+
+63
+00:03:34,554 --> 00:03:35,004
+point.
+
+64
+00:03:35,054 --> 00:03:38,116
+The Eulerian view moves the starting point instead.
+
+65
+00:03:38,667 --> 00:03:43,557
+Slide the start along its own trajectory, and the destination does not move.
+
+66
+00:03:43,607 --> 00:03:48,854
+So the derivative with respect to rho, taken along the velocity field, is zero.
+
+67
+00:03:48,904 --> 00:03:53,956
+This is the equation the released DeCAF code enforces, with the teacher's velocity
+
+68
+00:03:54,006 --> 00:03:54,894
+as the field.
+
+69
+00:03:55,467 --> 00:03:59,818
+Before that can work, there is a problem that looks like bookkeeping, but turns out
+
+70
+00:03:59,868 --> 00:04:00,728
+to matter a lot.
+
+71
+00:04:01,100 --> 00:04:06,248
+Generic flow map recipes are written in a time variable, t, between zero and one.
+
+72
+00:04:06,298 --> 00:04:11,180
+The teacher lives in noise level, and the two are connected by the schedule it was
+
+73
+00:04:11,230 --> 00:04:12,255
+trained with:
+
+74
+00:04:12,305 --> 00:04:17,300
+a Karras schedule, which interpolates linearly in sigma to the power one seventh.
+
+75
+00:04:17,867 --> 00:04:20,771
+Changing variables brings in the chain rule.
+
+76
+00:04:20,821 --> 00:04:24,826
+The velocity in t is the sigma velocity times d sigma, d t.
+
+77
+00:04:24,876 --> 00:04:30,103
+For this schedule, d sigma d t is about a quarter of an angstrom per unit time at
+
+78
+00:04:30,153 --> 00:04:34,179
+the clean end, and about fifteen thousand at the noisy end.
+
+79
+00:04:34,229 --> 00:04:38,830
+That is a factor of sixty thousand, almost five orders of magnitude.
+
+80
+00:04:39,400 --> 00:04:42,385
+Now look at what the Eulerian objective needs.
+
+81
+00:04:42,435 --> 00:04:47,595
+It regresses onto the teacher's velocity, and it differentiates the network along
+
+82
+00:04:47,645 --> 00:04:52,548
+the trajectory, which is a Jacobian-vector product whose tangent is that same
+
+83
+00:04:52,598 --> 00:04:53,280
+velocity.
+
+84
+00:04:53,330 --> 00:04:57,047
+In time coordinates, both carry the factor d sigma d t.
+
+85
+00:04:57,097 --> 00:05:02,365
+Depending on where the pair of times lands, the targets and the derivatives change
+
+86
+00:05:02,415 --> 00:05:05,325
+scale by up to that factor of sixty thousand.
+
+87
+00:05:05,375 --> 00:05:10,317
+The paper reports that time-parameterized objectives become numerically unstable
+
+88
+00:05:10,367 --> 00:05:11,348
+because of it.
+
+89
+00:05:11,900 --> 00:05:13,967
+The fix is a change of variables.
+
+90
+00:05:14,017 --> 00:05:18,937
+Index the flow map by noise levels directly, and write every objective and every
+
+91
+00:05:18,987 --> 00:05:20,469
+sampling step in sigma.
+
+92
+00:05:20,519 --> 00:05:25,541
+The sigma velocity is just the teacher's noise prediction, so it is of order one at
+
+93
+00:05:25,591 --> 00:05:26,775
+every noise level.
+
+94
+00:05:26,825 --> 00:05:30,876
+The tangent of the Jacobian-vector product is simply v, and one.
+
+95
+00:05:30,926 --> 00:05:33,229
+The factor d sigma d t never appears.
+
+96
+00:05:33,279 --> 00:05:37,939
+The schedule survives only as a choice of which noise levels to train on and to
+
+97
+00:05:37,989 --> 00:05:38,875
+step through.
+
+98
+00:05:39,433 --> 00:05:40,715
+Second decision:
+
+99
+00:05:40,765 --> 00:05:42,603
+how to parameterize the map.
+
+100
+00:05:42,653 --> 00:05:47,772
+Start from the simplest possible jump, one Euler step of the ODE from rho down to
+
+101
+00:05:47,822 --> 00:05:48,305
+sigma.
+
+102
+00:05:48,355 --> 00:05:51,477
+For this process, that is exactly a DDIM step.
+
+103
+00:05:51,527 --> 00:05:54,961
+Rearranged, the new point is a weighted average:
+
+104
+00:05:55,011 --> 00:06:00,262
+sigma over rho times the current point, plus one minus sigma over rho, times the
+
+105
+00:06:00,312 --> 00:06:01,546
+denoised estimate.
+
+106
+00:06:02,100 --> 00:06:05,622
+In our picture, this has a clean geometric meaning.
+
+107
+00:06:05,672 --> 00:06:09,635
+An Euler step moves along the tangent line of the trajectory.
+
+108
+00:06:09,685 --> 00:06:14,811
+And the tangent line at level rho crosses the clean axis, sigma equals zero,
+
+109
+00:06:14,861 --> 00:06:17,003
+exactly at the denoiser's output.
+
+110
+00:06:17,053 --> 00:06:20,583
+The teacher's denoiser is where the tangent line lands.
+
+111
+00:06:21,133 --> 00:06:26,227
+DeCAF keeps this form, but lets the denoiser know where the jump is going.
+
+112
+00:06:26,277 --> 00:06:31,639
+X rho sigma of x equals sigma over rho times x, plus one minus sigma over rho,
+
+113
+00:06:31,689 --> 00:06:34,625
+times D theta of x, rho, and sigma:
+
+114
+00:06:34,675 --> 00:06:37,319
+a denoiser that takes two noise levels.
+
+115
+00:06:37,900 --> 00:06:42,934
+Geometrically, the exact flow map lands on the trajectory, not on the tangent.
+
+116
+00:06:42,984 --> 00:06:47,982
+Draw the chord from the starting point through that landing point, and extend it to
+
+117
+00:06:48,032 --> 00:06:49,012
+the clean axis.
+
+118
+00:06:49,062 --> 00:06:52,267
+Where it crosses is exactly what D theta must output.
+
+119
+00:06:52,317 --> 00:06:54,777
+The tangent gives the teacher's denoiser.
+
+120
+00:06:54,827 --> 00:06:57,216
+The chord gives the flow map's denoiser.
+
+121
+00:06:57,767 --> 00:06:59,757
+Three properties come for free.
+
+122
+00:06:59,807 --> 00:07:04,943
+When sigma equals rho, the map is the identity, whatever the network outputs.
+
+123
+00:07:04,993 --> 00:07:10,514
+As sigma approaches rho, the chord turns into the tangent, so the diagonal, D theta
+
+124
+00:07:10,564 --> 00:07:14,177
+of x, rho, rho, must equal the teacher's denoiser.
+
+125
+00:07:14,227 --> 00:07:19,442
+That is the tangent condition, and training it is ordinary denoiser distillation.
+
+126
+00:07:19,492 --> 00:07:24,011
+And at sigma equals zero, the chord ends at the trajectory's end point.
+
+127
+00:07:24,061 --> 00:07:29,163
+So a single network call, from any noise level, returns a sharp clean structure
+
+128
+00:07:29,213 --> 00:07:31,078
+rather than a posterior mean.
+
+129
+00:07:31,633 --> 00:07:36,017
+In the released code, the student has the same architecture as the teacher's
+
+130
+00:07:36,067 --> 00:07:39,363
+diffusion module, plus a second noise-level embedding.
+
+131
+00:07:39,413 --> 00:07:44,159
+The Pairformer trunk and the teacher are frozen, and only this head is trained.
+
+132
+00:07:44,733 --> 00:07:45,614
+Now the loss.
+
+133
+00:07:45,664 --> 00:07:48,529
+Write the jump with an average velocity, u.
+
+134
+00:07:48,579 --> 00:07:54,228
+X equals x, minus rho minus sigma, times u, where u is x minus D theta, over rho.
+
+135
+00:07:54,278 --> 00:07:58,815
+Substituting into the Eulerian equation gives an identity that the exact map
+
+136
+00:07:58,865 --> 00:07:59,752
+satisfies:
+
+137
+00:07:59,802 --> 00:08:05,186
+u equals v, minus rho minus sigma, times the derivative of u along the trajectory.
+
+138
+00:08:05,236 --> 00:08:10,492
+That derivative costs one Jacobian-vector product, in the direction v in space, and
+
+139
+00:08:10,542 --> 00:08:11,300
+one in rho.
+
+140
+00:08:11,867 --> 00:08:16,318
+So the student regresses u, plus rho minus sigma times the stop-gradient
+
+141
+00:08:16,368 --> 00:08:19,043
+derivative, onto the teacher's velocity.
+
+142
+00:08:19,093 --> 00:08:24,635
+On the diagonal, where sigma equals rho, the correction vanishes, and this is plain
+
+143
+00:08:24,685 --> 00:08:26,148
+denoiser distillation.
+
+144
+00:08:26,700 --> 00:08:28,007
+Here is the key step.
+
+145
+00:08:28,057 --> 00:08:29,842
+Multiply the residual by rho.
+
+146
+00:08:29,892 --> 00:08:32,204
+Both sides turn into clean structures.
+
+147
+00:08:32,254 --> 00:08:37,635
+On one side, the student's clean prediction, corrected by the derivative term; call
+
+148
+00:08:37,685 --> 00:08:38,295
+it D hat.
+
+149
+00:08:38,345 --> 00:08:41,587
+On the other side, the teacher's denoised structure.
+
+150
+00:08:41,637 --> 00:08:46,289
+The loss becomes a distance between two point clouds, weighted by one over rho
+
+151
+00:08:46,339 --> 00:08:46,909
+squared.
+
+152
+00:08:47,467 --> 00:08:48,836
+Why does that matter?
+
+153
+00:08:48,886 --> 00:08:52,385
+AlphaFold-style networks are not built to be equivariant.
+
+154
+00:08:52,435 --> 00:08:57,454
+They are trained with random rotations, and with a loss that first rigidly aligns
+
+155
+00:08:57,504 --> 00:08:59,845
+the ground truth onto the prediction.
+
+156
+00:08:59,895 --> 00:09:04,735
+So nothing in the teacher's training loss depends on the global orientation of its
+
+157
+00:09:04,785 --> 00:09:05,317
+output.
+
+158
+00:09:05,367 --> 00:09:10,227
+Boltz's own sampler even re-aligns the noisy coordinates to the denoised prediction
+
+159
+00:09:10,277 --> 00:09:11,471
+before every step.
+
+160
+00:09:12,033 --> 00:09:16,456
+A velocity-matching loss would ask the student to reproduce that arbitrary pose.
+
+161
+00:09:16,506 --> 00:09:20,724
+Those residuals can be large and systematic, and they say nothing about the
+
+162
+00:09:20,774 --> 00:09:21,420
+structure.
+
+163
+00:09:21,470 --> 00:09:25,039
+In structure space, you can do what the teacher's loss did:
+
+164
+00:09:25,089 --> 00:09:29,588
+find the best rigid motion with the Kabsch algorithm, weighted toward the ligand
+
+165
+00:09:29,638 --> 00:09:34,131
+atoms, align the teacher's structure onto the student's, and only then take the
+
+166
+00:09:34,181 --> 00:09:34,883
+difference.
+
+167
+00:09:34,933 --> 00:09:37,098
+What remains is the part that matters.
+
+168
+00:09:37,667 --> 00:09:42,573
+The paper reports that this alignment substantially reduces gradient variance, and
+
+169
+00:09:42,623 --> 00:09:44,630
+that it is critical for accuracy.
+
+170
+00:09:44,680 --> 00:09:48,319
+The teacher's smooth LDDT loss carries over unchanged, too.
+
+171
+00:09:48,369 --> 00:09:50,014
+So one training step is:
+
+172
+00:09:50,064 --> 00:09:55,123
+draw two noise levels from the teacher's schedule, noise a training structure, make
+
+173
+00:09:55,173 --> 00:10:00,049
+one teacher call and one student call with its Jacobian-vector product, and take an
+
+174
+00:10:00,099 --> 00:10:02,057
+aligned loss in structure space.
+
+175
+00:10:02,633 --> 00:10:05,033
+Sampling with the trained map is simple.
+
+176
+00:10:05,083 --> 00:10:09,628
+Deterministically, you chain jumps along a short schedule of noise levels.
+
+177
+00:10:09,678 --> 00:10:15,019
+Five jumps, five network calls, and in this toy, with an exact map, the end points
+
+178
+00:10:15,069 --> 00:10:17,631
+land on the data, not between the modes.
+
+179
+00:10:18,200 --> 00:10:22,995
+DeCAF also uses gamma sampling, a knob between determinism and fresh noise.
+
+180
+00:10:23,045 --> 00:10:28,514
+Jump to a slightly lower level, sigma tilde, equal to root one minus gamma squared,
+
+181
+00:10:28,564 --> 00:10:29,392
+times sigma.
+
+182
+00:10:29,442 --> 00:10:32,247
+Then add gamma sigma worth of Gaussian noise.
+
+183
+00:10:32,297 --> 00:10:34,731
+The total noise level is back to sigma.
+
+184
+00:10:34,781 --> 00:10:37,215
+Gamma equals zero is the pure flow map.
+
+185
+00:10:37,265 --> 00:10:41,831
+Gamma equals one jumps all the way to a clean structure and re-noises, like
+
+186
+00:10:41,881 --> 00:10:43,872
+multistep consistency sampling.
+
+187
+00:10:44,433 --> 00:10:45,672
+Third decision:
+
+188
+00:10:45,722 --> 00:10:47,406
+search at inference time.
+
+189
+00:10:47,456 --> 00:10:52,661
+Boltz-1x steers sampling with physics-based potentials, penalizing clashes, bad
+
+190
+00:10:52,711 --> 00:10:54,965
+bond geometry and wrong chirality.
+
+191
+00:10:55,015 --> 00:11:00,183
+To score a noisy intermediate state, the potential is evaluated on the denoiser's
+
+192
+00:11:00,233 --> 00:11:01,046
+prediction.
+
+193
+00:11:01,600 --> 00:11:04,014
+But a denoiser returns a posterior mean.
+
+194
+00:11:04,064 --> 00:11:08,864
+At high noise, that is an average over very different outcomes, and it can sit
+
+195
+00:11:08,914 --> 00:11:12,026
+between the modes, where no real structure lives.
+
+196
+00:11:12,076 --> 00:11:14,817
+The reward of the mean is not the mean reward.
+
+197
+00:11:15,400 --> 00:11:19,608
+The flow map's full jump lands where the trajectory actually ends:
+
+198
+00:11:19,658 --> 00:11:23,274
+a concrete structure, for the same single network call.
+
+199
+00:11:23,324 --> 00:11:25,848
+The paper calls this an exact look-ahead.
+
+200
+00:11:25,898 --> 00:11:31,007
+Exact with respect to the probability flow, and only as good as the learned map.
+
+201
+00:11:31,567 --> 00:11:34,129
+DeCAF-Search is built around that look-ahead.
+
+202
+00:11:34,179 --> 00:11:36,048
+Keep a population of particles.
+
+203
+00:11:36,098 --> 00:11:41,118
+At each noise level, look ahead with the flow map, refine the clean prediction with
+
+204
+00:11:41,168 --> 00:11:45,690
+reward gradients, re-noise to the next level, and reallocate compute with a
+
+205
+00:11:45,740 --> 00:11:46,699
+selection rule.
+
+206
+00:11:47,267 --> 00:11:50,138
+The choice of rule recovers familiar methods.
+
+207
+00:11:50,188 --> 00:11:54,929
+Resampling in proportion to exponentiated reward gives Feynman-Kac steering.
+
+208
+00:11:54,979 --> 00:11:59,131
+An upper-confidence rule over a tree gives Monte Carlo tree search.
+
+209
+00:11:59,181 --> 00:12:03,762
+Never reallocating, and keeping the best at the end, gives best-of-N.
+
+210
+00:12:03,812 --> 00:12:06,876
+One algorithm, spanning every compute budget.
+
+211
+00:12:07,433 --> 00:12:08,664
+What does this buy?
+
+212
+00:12:08,714 --> 00:12:13,575
+For DeCAF-Boltz, distilled from Boltz-1, the paper reports near-parity with the
+
+213
+00:12:13,625 --> 00:12:16,960
+teacher at about five times fewer network evaluations.
+
+214
+00:12:17,010 --> 00:12:21,776
+At tight budgets of ten to fifty evaluations, it beats Boltz-1x run at the same
+
+215
+00:12:21,826 --> 00:12:24,920
+budget, on both accuracy and physical validity.
+
+216
+00:12:24,970 --> 00:12:30,029
+And on PoseBusters, it matches the full-budget, six-hundred-evaluation Boltz-1x,
+
+217
+00:12:30,079 --> 00:12:32,515
+with roughly twenty times less compute.
+
+218
+00:12:33,067 --> 00:12:35,681
+Here is the headline benchmark:
+
+219
+00:12:35,731 --> 00:12:41,128
+Runs N' Poses, complexes released after 2023, best of five samples.
+
+220
+00:12:41,178 --> 00:12:46,917
+Success means a ligand RMSD under two angstroms, and passing the PoseBusters
+
+221
+00:12:46,967 --> 00:12:48,285
+validity checks.
+
+222
+00:12:48,867 --> 00:12:53,606
+The Pearl teacher, at full budget, scores seventy-eight point three.
+
+223
+00:12:53,656 --> 00:12:56,643
+The distilled DeCAF-Pearl scores seventy-seven.
+
+224
+00:12:56,693 --> 00:13:01,663
+DeCAF-Boltz scores sixty-six point eight, level with Boltz-1x at sixty-six point
+
+225
+00:13:01,713 --> 00:13:02,143
+nine.
+
+226
+00:13:02,193 --> 00:13:03,247
+AlphaFold 3:
+
+227
+00:13:03,297 --> 00:13:04,680
+sixty-nine point six.
+
+228
+00:13:04,730 --> 00:13:05,404
+Chai-1:
+
+229
+00:13:05,454 --> 00:13:06,903
+sixty-two point three.
+
+230
+00:13:06,953 --> 00:13:07,692
+Boltz-2:
+
+231
+00:13:07,742 --> 00:13:09,060
+sixty-one point six.
+
+232
+00:13:09,633 --> 00:13:10,882
+Read this carefully.
+
+233
+00:13:10,932 --> 00:13:15,806
+Relative to its own teacher, distillation cost about one point, at a fraction of
+
+234
+00:13:15,856 --> 00:13:16,644
+the compute.
+
+235
+00:13:16,694 --> 00:13:18,276
+That is the actual result.
+
+236
+00:13:18,326 --> 00:13:23,145
+The margin over AlphaFold 3, Chai-1 and Boltz-2 comes from the teacher, Pearl,
+
+237
+00:13:23,195 --> 00:13:27,200
+which is Genesis's own model; it is not created by distillation.
+
+238
+00:13:27,250 --> 00:13:29,362
+DeCAF-Boltz sits level with Boltz-1x.
+
+239
+00:13:29,412 --> 00:13:33,110
+What the distilled models do show is high physical validity:
+
+240
+00:13:33,160 --> 00:13:35,841
+ninety-eight to ninety-nine and a half percent.
+
+241
+00:13:36,400 --> 00:13:37,311
+To summarize.
+
+242
+00:13:37,361 --> 00:13:37,889
+One:
+
+243
+00:13:37,939 --> 00:13:40,124
+index the flow map by noise level.
+
+244
+00:13:40,174 --> 00:13:45,062
+This removes a schedule-induced factor spanning five orders of magnitude from the
+
+245
+00:13:45,112 --> 00:13:46,403
+training objective.
+
+246
+00:13:46,453 --> 00:13:46,980
+Two:
+
+247
+00:13:47,030 --> 00:13:49,847
+parameterize the map as a two-level denoiser.
+
+248
+00:13:49,897 --> 00:13:55,021
+This builds in the boundary and tangent conditions, and turns distillation into a
+
+249
+00:13:55,071 --> 00:13:59,952
+distance between structures, which can be rigidly aligned exactly the way the
+
+250
+00:14:00,002 --> 00:14:01,345
+teacher was trained.
+
+251
+00:14:01,395 --> 00:14:02,049
+Three:
+
+252
+00:14:02,099 --> 00:14:07,111
+use the flow map's look-ahead for reward-guided search, which unifies steering,
+
+253
+00:14:07,161 --> 00:14:08,746
+tree search and best-of-N.
+
+254
+00:14:09,300 --> 00:14:10,335
+And the caveats.
+
+255
+00:14:10,385 --> 00:14:13,699
+This is distillation, so the ceiling is the teacher.
+
+256
+00:14:13,749 --> 00:14:16,353
+The savings are in the structure module:
+
+257
+00:14:16,403 --> 00:14:21,268
+the trunk still runs once per complex, so end-to-end speedups depend on system size
+
+258
+00:14:21,318 --> 00:14:23,335
+and on how many samples you draw.
+
+259
+00:14:23,385 --> 00:14:27,497
+Training needs Jacobian-vector products through the structure module.
+
+260
+00:14:27,547 --> 00:14:30,787
+And the look-ahead is only as exact as the learned map.
+
+261
+00:14:31,367 --> 00:14:38,139
+Within those limits, it is a clean example of a general idea, flow maps, adapted to
+
+262
+00:14:38,189 --> 00:14:40,630
+a domain with its own geometry.
+
+263
+00:14:40,680 --> 00:14:47,323
+The paper is arXiv 2606.08375, and the code and the DeCAF-Boltz weights are public.
